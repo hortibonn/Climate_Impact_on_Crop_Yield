@@ -124,28 +124,6 @@ if (!requireNamespace("data.table", quietly = TRUE)) {
 }
 library(data.table, warn.conflicts = F)
 
-if (!requireNamespace("DT", quietly = TRUE)) {
-  install.packages("DT")
-}
-library(DT, warn.conflicts = F)
-
-if (!requireNamespace("DBI", quietly = TRUE)) {
-  install.packages("DBI")
-}
-library(DBI, warn.conflicts = F)
-
-if (!requireNamespace("RSQLite", quietly = TRUE)) {
-  install.packages("RSQLite")
-}
-library(RSQLite, warn.conflicts = F)
-
-if (!requireNamespace("pool", quietly = TRUE)) {
-  install.packages("pool")
-}
-library(pool, warn.conflicts = F)
-
-
-
 # Load functins and inputs ----
 # Provide Location of DA model script(s), dynamic-helper
 # source("functions/saveLoad-module.R")
@@ -165,10 +143,6 @@ source("functions/onion_model_shiny.R")
 
 # Dynamic helper to load the UI variables from the excel sheet
 source("functions/dynamic_helper_v3.R")
-
-# Feedback SQL helper
-source("functions/SQL_helper.R")
-
 # Provide Location of excel workbook containing the input parameters (prepared for the dynamic-helper)
 file_path_vars <- "data/ASP_input_parameters_german1.xlsx"
 sheet_meta <- readxl::read_excel(file_path_vars, sheet = "sheet_names",
@@ -223,7 +197,7 @@ ui <- fluidPage(
       box-sizing: border-box; background-color: #f2f2f2;",
     
     # tags$a(href = "https://www.uni-bonn.de", target = "_blank",
-    tags$img(src = "logo-mix-nobg.png", height = "100px",
+    tags$img(src = "UniBonnHortiBonn_logo_transparent.png", height = "100px",
              style = "margin-left: auto; max-width: 20%; height: auto; cursor: pointer;"),
     # ),
     # Provide Title of the DA model
@@ -267,7 +241,7 @@ ui <- fluidPage(
                        
                        fluidRow(
                          column(6, actionButton("load_btn",   tagList(icon("rotate"),  "Laden"  ), class = "btn btn-secondary")),
-                         # column(6, actionButton("delete_btn", tagList(icon("trash"),   "Löschen"), class = "btn btn-secondary"))
+                         column(6, actionButton("delete_btn", tagList(icon("trash"),   "Löschen"), class = "btn btn-secondary"))
                        ),
                        hr(),
                        downloadButton("download_csv", label = tagList(icon("download"), "Aktuelle Eingaben herunterladen (.csv)"))
@@ -339,103 +313,78 @@ ui <- fluidPage(
               br(), br(),
               
               ### Plots ----
-              conditionalPanel(
-                condition = "output.show_image",
-                #imageOutput("myImage"),
-                div(class = "scroll-xy",
-                    imageOutput("myImage", height = "550px"),
-                ),
-                br(),
+              #imageOutput("myImage"),
+              div(class = "scroll-xy",
+                  imageOutput("myImage", height = "550px"),
               ),
+              br(),
+              uiOutput("download_ui"),
+              br(), br(),br(), br(),
+              #downloadButton("downloadImage", "Konzeptmodell herunterladen"),
               
-              conditionalPanel(
-                condition = "output.show_results",
-                uiOutput("download_ui"),
-                br(), br(),br(), br(),
-                #downloadButton("downloadImage", "Konzeptmodell herunterladen"),
-                
-                br(), br(),
-                div(class = "scroll-xy",
-                    plotOutput("plot1_ui", height = "550px"),
-                ),
-                br(),
-                uiOutput("plot1_dl_ui"),
-                br(), br(),br(), br(),
-                
-                div(class = "scroll-xy",
-                    plotOutput("plot2_ui", height = "550px"),
-                ),
-                br(),
-                uiOutput("plot2_dl_ui"),
-                br(), br(),br(), br(),
-                
-                div(class = "scroll-xy",
-                    plotOutput("plot3_ui", height = "700px"),
-                ),
-                br(),
-                uiOutput("plot3_dl_ui"),
-                br(), br(),br(), br(),
-                
-                # div(class = "scroll-xy",
-                #     plotOutput("plot4_ui", height = "550px"),
-                # ),
-                # br(),
-                # uiOutput("plot4_dl_ui"),
-                # br(), br(),br(), br(),
-                # 
-                # div(class = "scroll-xy",
-                #     plotOutput("plot5_ui", height = "550px"),
-                # ),
-                # br(),
-                # uiOutput("plot5_dl_ui"),
-                # br(), br(),br(), br(),
-                
-                # div(class = "scroll-xy",
-                # plotOutput("plot6_ui", height = "550px"),
-                # ),
-                # br(),
-                # uiOutput("plot6_dl_ui"),
-                # br(), br(),br(), br(),
-                # 
-                # div(class = "scroll-xy", plotOutput("plot7_ui", height = "550px"),),
-                # br(),
-                # uiOutput("plot7_dl_ui"),
-                # br(), br(),br(), br(),
-                
-                # div(class = "scroll-xy", 
-                #     plotOutput("plot8_ui", height = "550px"),
-                # ),
-                # br(),
-                # uiOutput("plot8_dl_ui"),
+              br(), br(),
+              div(class = "scroll-xy",
+                  plotOutput("plot1_ui", height = "550px"),
               ),
+              br(),
+              uiOutput("plot1_dl_ui"),
+              br(), br(),br(), br(),
               
-              if (NOTES_ENABLED) {
-                tagList(
-                  h4("Geben Sie uns Feedback"),
-                  textInput("email", label = NULL, placeholder = "Ihre@E-Mail.Adresse (optional)*", width = "100%"),
-                  textAreaInput("note", label = NULL, placeholder = "Ihr Feedback…", width = "100%", height = "200px"),
-                  actionButton("submit", "Feedback absenden", class = "btn btn-primary"),
-                  br(),br(),
-                  p(style = "color: grey; font-style: italic; font-size: 0.9em;",
-                    "* Die Angabe Ihrer E-Mail-Adresse ist optional und wird ausschließlich verwendet, um Sie bezüglich Ihres Feedbacks zu kontaktieren. Gespeicherte personenbezogene Daten werden mit Ende des Projekts oder nach einem Jahr gelöscht."),
-                  br(),
-                  uiOutput("viewer_panel"),
-                )
-              } else {
-                NULL
-              },
+              div(class = "scroll-xy",
+                  plotOutput("plot2_ui", height = "550px"),
+              ),
+              br(),
+              uiOutput("plot2_dl_ui"),
+              br(), br(),br(), br(),
               
+              div(class = "scroll-xy",
+                  plotOutput("plot3_ui", height = "700px"),
+              ),
+              br(),
+              uiOutput("plot3_dl_ui"),
+              br(), br(),br(), br(),
               
+              div(class = "scroll-xy",
+                  plotOutput("plot4_ui", height = "550px"),
+              ),
+              br(),
+              # uiOutput("plot4_dl_ui"),
+              # br(), br(),br(), br(),
+              # 
+              # div(class = "scroll-xy",
+              #     plotOutput("plot5_ui", height = "550px"),
+              # ),
+              # br(),
+              # uiOutput("plot5_dl_ui"),
+              # br(), br(),br(), br(),
+              
+              # div(class = "scroll-xy",
+              # plotOutput("plot6_ui", height = "550px"),
+              # ),
+              # br(),
+              # uiOutput("plot6_dl_ui"),
+              # br(), br(),br(), br(),
+              # 
+              # div(class = "scroll-xy", plotOutput("plot7_ui", height = "550px"),),
+              # br(),
+              # uiOutput("plot7_dl_ui"),
+              # br(), br(),br(), br(),
+              
+              # div(class = "scroll-xy", 
+              #     plotOutput("plot8_ui", height = "550px"),
+              # ),
+              # br(),
+              # uiOutput("plot8_dl_ui"),
               
               ### Requisites ----
               # Provide Funding declaration
-              # tags$img(src = "INRES_UniBonn.png", height = "100px",
-              #          style = "margin-right: auto; max-width: 100%; height: auto; cursor: pointer;"),
+              tags$img(src = "INRES_UniBonn.png", height = "100px",
+                       style = "margin-right: auto; max-width: 100%; height: auto; cursor: pointer;"),
               #Provide tool usage disclaimer
               tags$p(
-                # tags$a("Disclaimer", href = "https://www.gartenbauwissenschaften.uni-bonn.de/imprint",
-                #        target = "_blank"),
-                # " | ",  
+                tags$a("Disclaimer", href = "https://www.gartenbauwissenschaften.uni-bonn.de/imprint",
+                       target = "_blank"),
+                " | ",  
                 #Provide the correct link once the app and codes are hosted in HortiBonn repo
                 tags$a("View Source", href = "https://github.com/hortibonn/Climate_Impact_on_Crop_Yield", # temp link
                        target = "_blank")
@@ -635,9 +584,9 @@ server <- function(input, output, session) {
   # Provide Folder name instead of the current 'Germany' to store user saves
   get_base_dir <- function() {
     if (Sys.info()[["sysname"]] == "Windows")
-      "user-states/Germany_onion"
+      "user-states/German_crops"
     else
-      "/srv/shiny-app-data/user-states/Germany_onion"
+      "/srv/shiny-app-data/user-states/German_crops"
   }
   
   get_user_dir <- function() {
@@ -659,7 +608,7 @@ server <- function(input, output, session) {
     files <- list.files(dir, pattern = "\\.rds$", full.names = TRUE)
     
     if (length(files) >= 1000) {
-      showModal(modalDialog("There are too many save states on the server. Please contact the Admin if you need to save more.",
+      showModal(modalDialog("You already have several versions. Delete one first.",
                             easyClose = TRUE))
       return()
     }
@@ -867,12 +816,6 @@ server <- function(input, output, session) {
   }
   
   
-  # Boolean flag: do we have results yet?
-  output$show_results <- reactive({
-    !is.null(mcSimulation_results())
-  })
-  # needed so conditionalPanel can see it
-  outputOptions(output, "show_results", suspendWhenHidden = FALSE)
   
   observeEvent(mcSimulation_results(), {
     mc_data <- mcSimulation_results()
@@ -950,13 +893,13 @@ server <- function(input, output, session) {
       source("functions/VIP_Plot_onion.R")
       plot2<-make_onion_vip_combined_plot(mc_data) 
       # |>
-      # add_meta(
-      #   title    = "Figure 1. Distribution of the *incremental* NPV",
-      #   subtitle = "Difference between agroforestry and treeless farming under identical conditions",
-      #   caption  = "Figure 2 shows the NPV distributions of the decision to establish the apple alley cropping system
-      #               as compared to the decision to continue with monoculture for the specified time (i.e., NPV agroforestry - NPV monoculture under identical conditions).
-      #               The x-axis displays NPV values (i.e., the sum of discounted annual cash flows) and y-axis displays the probability of each NPV amount to occur (i.e., higer y-values indicate higher probability)"
-      #   , legend = "none")
+        # add_meta(
+        #   title    = "Figure 1. Distribution of the *incremental* NPV",
+        #   subtitle = "Difference between agroforestry and treeless farming under identical conditions",
+        #   caption  = "Figure 2 shows the NPV distributions of the decision to establish the apple alley cropping system
+        #               as compared to the decision to continue with monoculture for the specified time (i.e., NPV agroforestry - NPV monoculture under identical conditions).
+        #               The x-axis displays NPV values (i.e., the sum of discounted annual cash flows) and y-axis displays the probability of each NPV amount to occur (i.e., higer y-values indicate higher probability)"
+        #   , legend = "none")
       # replace this line with codes in lines 911 - 919
       plot3<-make_onion_vip_combined_plot(mc_data)
       # |>
@@ -1181,14 +1124,6 @@ server <- function(input, output, session) {
     
   })
   
-  
-  # image flag
-  output$show_image <- reactive({
-    !is.null(selected_crop())
-  })
-  outputOptions(output, "show_image", suspendWhenHidden = FALSE)
-  
-  
   # display of conceptual model image from www folder
   img_info <- eventReactive(selected_crop(), {
     crop <- selected_crop()
@@ -1241,116 +1176,6 @@ server <- function(input, output, session) {
       file.copy(from = info$path, to = file, overwrite = TRUE)
     }
   )
-  
-  # Feedback logic ---------------------------
-  # Auth: current user + can_view flag
-  user <- reactiveVal(NA_character_)
-  observe({ user(current_user(session)) })
-  can_view_db <- reactive({
-    u <- user()
-    !is.na(u) && u %in% ALLOWED_VIEWERS
-  })
-  
-  # # Simple email checker: optional field, but if present must look like an email
-  # is_valid_email <- function(x) {
-  #   if (!nzchar(x)) return(TRUE)  # optional
-  #   # simple pattern: something@something.suffix (no spaces)
-  #   grepl("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", x)
-  # }
-  
-  last_submit <- reactiveVal(as.POSIXct(0, origin = "1970-01-01", tz = "UTC"))
-  
-  observeEvent(input$submit, {
-    if (!NOTES_ENABLED) return(NULL)
-    now <- Sys.time()
-    if (difftime(now, last_submit(), units = "secs") < 10) {  # 10s cooldown
-      showModal(modalDialog(
-        title = "Zu viele Anfragen!",
-        "Bitte versuchen Sie es nach einigen Sekunden noch einmal.",
-        easyClose = TRUE, footer = modalButton("Close")
-      ))
-      return(invisible())
-    }
-    last_submit(now)
-    msg   <- trimws(input$note %||% "")
-    email <- tolower(trimws(input$email %||% ""))
-    
-    # Inline validations -> modals for feedback
-    if (!nzchar(msg)) {
-      showModal(modalDialog(title = "Fehlendes Feedback",
-                            "Kein Text im Feedback!",
-                            easyClose = TRUE, footer = modalButton("Close")))
-      return(invisible())
-    }
-    if (nchar(msg) > 5000) {
-      showModal(modalDialog(title = "Feedback zu lang",
-                            "Maximal 5000 Zeichen zulässig.",
-                            easyClose = TRUE, footer = modalButton("Close")))
-      return(invisible())
-    }
-    # if (!is_valid_email(email)) {
-    #   showModal(modalDialog(title = "Invalid email",
-    #                         "Please enter a valid email address or leave it blank.",
-    #                         easyClose = TRUE, footer = modalButton("Close")))
-    #   return(invisible())
-    # }
-    if (!NOTES_ENABLED) {
-      showModal(modalDialog(title = "Feedback disabled",
-                            "The feedback database is disabled in this environment.",
-                            easyClose = TRUE, footer = modalButton("Close")))
-      return(invisible())
-    }
-    
-    db_insert_note(submitted_at = now_iso(), user_label = user(), email = email, note = msg)
-    updateTextAreaInput(session, "note", value = "")
-    updateTextInput(session, "email", value = "")
-    
-    showModal(modalDialog(
-      title = "Feedback gespeichert",
-      "Danke! Ihr Feedback wurde aufgenommen.",
-      easyClose = TRUE, footer = modalButton("Close")
-    ))
-  }, ignoreInit = TRUE)
-  
-  # CSV export now includes email
-  output$dl_csv <- downloadHandler(
-    filename = function() sprintf("Feedback-%s.csv", format(Sys.time(), "%Y%m%d-%H%M%S")),
-    content = function(file) {
-      req(NOTES_ENABLED); req(can_view_db())
-      dat <- db_get_all_notes()
-      write.csv(dat, file, row.names = FALSE)
-    }
-  ) 
-  
-  # Admin panel only when enabled + authorized
-  output$viewer_panel <- renderUI({
-    if (isTRUE(NOTES_ENABLED) && isTRUE(can_view_db())) {
-      tagList(
-        h4("Admin only"),
-        textOutput("note_count"),
-        br(),
-        p("Download Feedback"),
-        downloadButton("dl_csv", "Export CSV")
-      )
-    } else NULL
-  })
-  
-  # Optional: small note in dev
-  output$dev_notice <- renderUI({
-    if (!NOTES_ENABLED) {
-      tags$p(class = "text-muted", style = "margin-top:10px;",
-             "Feedback are disabled in this environment.")
-    } else NULL
-  })
-  
-  # Count of rows in DB table
-  output$note_count <- renderText({
-    req(NOTES_ENABLED); req(can_view_db())
-    n <- db_count_notes()
-    sprintf("Total number of Feedbacks in database: %d", n)
-  })
-  
-  # Feedback logic end ---------------------------
   
 }
 
