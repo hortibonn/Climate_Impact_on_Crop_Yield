@@ -348,15 +348,15 @@ ui <- fluidPage(
                   plotOutput("plot4_ui", height = "550px"),
               ),
               br(),
-              uiOutput("plot4_dl_ui"),
-              br(), br(),br(), br(),
-              
-              div(class = "scroll-xy",
-                  plotOutput("plot5_ui", height = "550px"),
-              ),
-              br(),
-              uiOutput("plot5_dl_ui"),
-              br(), br(),br(), br(),
+              # uiOutput("plot4_dl_ui"),
+              # br(), br(),br(), br(),
+              # 
+              # div(class = "scroll-xy",
+              #     plotOutput("plot5_ui", height = "550px"),
+              # ),
+              # br(),
+              # uiOutput("plot5_dl_ui"),
+              # br(), br(),br(), br(),
               
               # div(class = "scroll-xy",
               # plotOutput("plot6_ui", height = "550px"),
@@ -378,7 +378,7 @@ ui <- fluidPage(
               
               ### Requisites ----
               # Provide Funding declaration
-              tags$img(src = "Funding_declaration.png", height = "100px",
+              tags$img(src = "INRES_UniBonn.png", height = "100px",
                        style = "margin-right: auto; max-width: 100%; height: auto; cursor: pointer;"),
               #Provide tool usage disclaimer
               tags$p(
@@ -386,7 +386,7 @@ ui <- fluidPage(
                        target = "_blank"),
                 " | ",  
                 #Provide the correct link once the app and codes are hosted in HortiBonn repo
-                tags$a("View Source", href = "https://github.com/JBSLutum/asparagus_cif_app", # temp link
+                tags$a("View Source", href = "https://github.com/hortibonn/Climate_Impact_on_Crop_Yield", # temp link
                        target = "_blank")
               ),
               br(), br(),br(), br(),
