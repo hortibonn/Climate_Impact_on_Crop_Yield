@@ -411,7 +411,7 @@ ui <- fluidPage(
               
               if (NOTES_ENABLED) {
                 tagList(
-                  h4("Geben Sie uns Feedback."),
+                  h4("Geben Sie uns Feedback"),
                   textInput("email", label = NULL, placeholder = "Ihre@E-Mail.Adresse (optional)*", width = "100%"),
                   textAreaInput("note", label = NULL, placeholder = "Ihr Feedback…", width = "100%", height = "200px"),
                   actionButton("submit", "Feedback absenden", class = "btn btn-primary"),
