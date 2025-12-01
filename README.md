@@ -9,7 +9,8 @@ Entscheidungshilfe für die Landwirtschaft (R Shiny App)Dieses Repository enthä
 Die App verwendet eine **Monte-Carlo-Simulation** (über das Paket „decisionSupport“), um zu untersuchen, wie sich Unsicherheiten bei den Eingabeparametern und klimatischen Bedingungen unter verschiedenen Klimaszenarien auf die Ernteerträge um das Jahr **2075** auswirken.
 Die Benutzeroberfläche und der Text sind überwiegend in **Deutsch**, da die App für ein Projekt entwickelt wurde, das sich mit der deutschen Landwirtschaft befasst.
 
----## Hauptmerkmale
+---
+## Hauptmerkmale
 
 - **Dynamische Eingabeschnittstelle**
 
