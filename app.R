@@ -223,7 +223,7 @@ ui <- fluidPage(
       box-sizing: border-box; background-color: #f2f2f2;",
     
     # tags$a(href = "https://www.uni-bonn.de", target = "_blank",
-    tags$img(src = "UniBonnHortiBonn_logo_transparent.png", height = "100px",
+    tags$img(src = "logo-mix-nobg.png", height = "100px",
              style = "margin-left: auto; max-width: 20%; height: auto; cursor: pointer;"),
     # ),
     # Provide Title of the DA model
@@ -411,13 +411,13 @@ ui <- fluidPage(
               
               if (NOTES_ENABLED) {
                 tagList(
-                  h4("Leave some Feedback"),
-                  textInput("email", label = NULL, placeholder = "you@example.com (optional)*", width = "100%"),
-                  textAreaInput("note", label = NULL, placeholder = "Your Feedback…", width = "100%", height = "200px"),
-                  actionButton("submit", "Submit Feedback", class = "btn btn-primary"),
+                  h4("Geben Sie uns Feedback."),
+                  textInput("email", label = NULL, placeholder = "Ihre@E-Mail.Adresse (optional)*", width = "100%"),
+                  textAreaInput("note", label = NULL, placeholder = "Ihr Feedback…", width = "100%", height = "200px"),
+                  actionButton("submit", "Feedback absenden", class = "btn btn-primary"),
                   br(),br(),
                   p(style = "color: grey; font-style: italic; font-size: 0.9em;",
-                    "* Providing your E-Mail is optional and only used to contact you about your feedback. Stored personal information will be deleted after a year or at the end of the project."),
+                    "* Die Angabe Ihrer E-Mail-Adresse ist optional und wird ausschließlich verwendet, um Sie bezüglich Ihres Feedbacks zu kontaktieren. Gespeicherte personenbezogene Daten werden mit Ende des Projekts oder nach einem Jahr gelöscht."),
                   br(),
                   uiOutput("viewer_panel"),
                 )
@@ -1265,8 +1265,8 @@ server <- function(input, output, session) {
     now <- Sys.time()
     if (difftime(now, last_submit(), units = "secs") < 10) {  # 10s cooldown
       showModal(modalDialog(
-        title = "Slow down",
-        "Please wait a few seconds before submitting another feedback.",
+        title = "Zu viele Anfragen!",
+        "Bitte versuchen Sie es nach einigen Sekunden noch einmal.",
         easyClose = TRUE, footer = modalButton("Close")
       ))
       return(invisible())
@@ -1277,14 +1277,14 @@ server <- function(input, output, session) {
     
     # Inline validations -> modals for feedback
     if (!nzchar(msg)) {
-      showModal(modalDialog(title = "Missing Feedback",
-                            "Please enter a feedback.",
+      showModal(modalDialog(title = "Fehlendes Feedback",
+                            "Kein Text im Feedback!",
                             easyClose = TRUE, footer = modalButton("Close")))
       return(invisible())
     }
     if (nchar(msg) > 5000) {
-      showModal(modalDialog(title = "Feedback too long",
-                            "Max 5000 characters allowed.",
+      showModal(modalDialog(title = "Feedback zu lang",
+                            "Maximal 5000 Zeichen zulässig.",
                             easyClose = TRUE, footer = modalButton("Close")))
       return(invisible())
     }
@@ -1306,8 +1306,8 @@ server <- function(input, output, session) {
     updateTextInput(session, "email", value = "")
     
     showModal(modalDialog(
-      title = "Feedback saved",
-      "Thanks! Your feedback was recorded.",
+      title = "Feedback gespeichert",
+      "Danke! Ihr Feedback wurde aufgenommen.",
       easyClose = TRUE, footer = modalButton("Close")
     ))
   }, ignoreInit = TRUE)
