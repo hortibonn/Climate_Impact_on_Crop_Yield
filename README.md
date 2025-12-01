@@ -15,36 +15,36 @@ Die Benutzeroberfläche und der Text sind überwiegend in **Deutsch**, da die Ap
 - **Dynamische Eingabeschnittstelle**
 
 Die UI-Elemente werden aus einer Excel-Datei mit `dynamic_helper_v3.R` generiert. Benutzer können:
-- Eine Kulturpflanze auswählen
-- Variablen nach **Fachgebiet** filtern
-- Parameterbereiche interaktiv anpassen
+  - Eine Kulturpflanze auswählen
+  - Variablen nach **Fachgebiet** filtern
+  - Parameterbereiche interaktiv anpassen
 
 - **Kulturspezifische Modelle**
 
-- **Spargelmodell**: Verwendet spargelspezifische Simulationsfunktionen und Diagramme.
-- **Zwiebelmodell**: Verwendet zwiebel-spezifische Klimawirkungs- und Ertragsmodelle, einschließlich einer Heatmap zur Ertragsreduktion.
+  - **Spargelmodell**: Verwendet spargelspezifische Simulationsfunktionen und Diagramme.
+  - **Zwiebelmodell**: Verwendet zwiebel-spezifische Klimawirkungs- und Ertragsmodelle, einschließlich einer Heatmap zur Ertragsreduktion.
 
 - **Probabilistische Simulation**
 
-- Führt eine Monte-Carlo-Simulation über `decisionSupport::mcSimulation` durch
-- Die Anzahl der Durchläufe ist benutzerdefiniert
-- Verwendet aktuelle UI-Parameterbereiche als Eingabeverteilungen
+  - Führt eine Monte-Carlo-Simulation über `decisionSupport::mcSimulation` durch
+  - Die Anzahl der Durchläufe ist benutzerdefiniert
+  - Verwendet aktuelle UI-Parameterbereiche als Eingabeverteilungen
 
 - **Diagramme und Visualisierung**
 
-- Konzeptuelles Modellbild pro Kulturpflanze
-- Kulturspezifische Verteilungen, VIP-Diagramme (Variable Importance).
+  - Konzeptuelles Modellbild pro Kulturpflanze
+  - Kulturspezifische Verteilungen, VIP-Diagramme (Variable Importance).
 
 - **Projektstatus speichern/laden**
 
-- Benutzer können:   
+  - Benutzer können:   
     - Speichern Sie die aktuellen Eingabeeinstellungen unter einem benutzerdefinierten Projektnamen.
     - Laden Sie zuvor gespeicherte Zustände.
     - Laden Sie die aktuelle Eingabetabelle als CSV-Datei herunter.
 
 - **Kontinuierliche Verbesserung**
 
-- Benutzer können über das Feedback-Feld Verbesserungsvorschläge einreichen.
+  - Benutzer können über das Feedback-Feld Verbesserungsvorschläge einreichen.
 
 
 ## In English
