@@ -339,69 +339,75 @@ ui <- fluidPage(
               br(), br(),
               
               ### Plots ----
-              #imageOutput("myImage"),
-              div(class = "scroll-xy",
-                  imageOutput("myImage", height = "550px"),
+              conditionalPanel(
+                condition = "output.show_image",
+                #imageOutput("myImage"),
+                div(class = "scroll-xy",
+                    imageOutput("myImage", height = "550px"),
+                ),
+                br(),
               ),
-              br(),
-              uiOutput("download_ui"),
-              br(), br(),br(), br(),
-              #downloadButton("downloadImage", "Konzeptmodell herunterladen"),
               
-              br(), br(),
-              div(class = "scroll-xy",
-                  plotOutput("plot1_ui", height = "550px"),
+              conditionalPanel(
+                condition = "output.show_results",
+                uiOutput("download_ui"),
+                br(), br(),br(), br(),
+                #downloadButton("downloadImage", "Konzeptmodell herunterladen"),
+                
+                br(), br(),
+                div(class = "scroll-xy",
+                    plotOutput("plot1_ui", height = "550px"),
+                ),
+                br(),
+                uiOutput("plot1_dl_ui"),
+                br(), br(),br(), br(),
+                
+                div(class = "scroll-xy",
+                    plotOutput("plot2_ui", height = "550px"),
+                ),
+                br(),
+                uiOutput("plot2_dl_ui"),
+                br(), br(),br(), br(),
+                
+                div(class = "scroll-xy",
+                    plotOutput("plot3_ui", height = "700px"),
+                ),
+                br(),
+                uiOutput("plot3_dl_ui"),
+                br(), br(),br(), br(),
+                
+                # div(class = "scroll-xy",
+                #     plotOutput("plot4_ui", height = "550px"),
+                # ),
+                # br(),
+                # uiOutput("plot4_dl_ui"),
+                # br(), br(),br(), br(),
+                # 
+                # div(class = "scroll-xy",
+                #     plotOutput("plot5_ui", height = "550px"),
+                # ),
+                # br(),
+                # uiOutput("plot5_dl_ui"),
+                # br(), br(),br(), br(),
+                
+                # div(class = "scroll-xy",
+                # plotOutput("plot6_ui", height = "550px"),
+                # ),
+                # br(),
+                # uiOutput("plot6_dl_ui"),
+                # br(), br(),br(), br(),
+                # 
+                # div(class = "scroll-xy", plotOutput("plot7_ui", height = "550px"),),
+                # br(),
+                # uiOutput("plot7_dl_ui"),
+                # br(), br(),br(), br(),
+                
+                # div(class = "scroll-xy", 
+                #     plotOutput("plot8_ui", height = "550px"),
+                # ),
+                # br(),
+                # uiOutput("plot8_dl_ui"),
               ),
-              br(),
-              uiOutput("plot1_dl_ui"),
-              br(), br(),br(), br(),
-              
-              div(class = "scroll-xy",
-                  plotOutput("plot2_ui", height = "550px"),
-              ),
-              br(),
-              uiOutput("plot2_dl_ui"),
-              br(), br(),br(), br(),
-              
-              div(class = "scroll-xy",
-                  plotOutput("plot3_ui", height = "700px"),
-              ),
-              br(),
-              uiOutput("plot3_dl_ui"),
-              br(), br(),br(), br(),
-              
-              div(class = "scroll-xy",
-                  plotOutput("plot4_ui", height = "550px"),
-              ),
-              br(),
-              # uiOutput("plot4_dl_ui"),
-              # br(), br(),br(), br(),
-              # 
-              # div(class = "scroll-xy",
-              #     plotOutput("plot5_ui", height = "550px"),
-              # ),
-              # br(),
-              # uiOutput("plot5_dl_ui"),
-              # br(), br(),br(), br(),
-              
-              # div(class = "scroll-xy",
-              # plotOutput("plot6_ui", height = "550px"),
-              # ),
-              # br(),
-              # uiOutput("plot6_dl_ui"),
-              # br(), br(),br(), br(),
-              # 
-              # div(class = "scroll-xy", plotOutput("plot7_ui", height = "550px"),),
-              # br(),
-              # uiOutput("plot7_dl_ui"),
-              # br(), br(),br(), br(),
-              
-              # div(class = "scroll-xy", 
-              #     plotOutput("plot8_ui", height = "550px"),
-              # ),
-              # br(),
-              # uiOutput("plot8_dl_ui"),
-              
               
               if (NOTES_ENABLED) {
                 tagList(
@@ -423,13 +429,13 @@ ui <- fluidPage(
               
               ### Requisites ----
               # Provide Funding declaration
-              tags$img(src = "INRES_UniBonn.png", height = "100px",
-                       style = "margin-right: auto; max-width: 100%; height: auto; cursor: pointer;"),
+              # tags$img(src = "INRES_UniBonn.png", height = "100px",
+              #          style = "margin-right: auto; max-width: 100%; height: auto; cursor: pointer;"),
               #Provide tool usage disclaimer
               tags$p(
-                tags$a("Disclaimer", href = "https://www.gartenbauwissenschaften.uni-bonn.de/imprint",
-                       target = "_blank"),
-                " | ",  
+                # tags$a("Disclaimer", href = "https://www.gartenbauwissenschaften.uni-bonn.de/imprint",
+                #        target = "_blank"),
+                # " | ",  
                 #Provide the correct link once the app and codes are hosted in HortiBonn repo
                 tags$a("View Source", href = "https://github.com/hortibonn/Climate_Impact_on_Crop_Yield", # temp link
                        target = "_blank")
@@ -861,6 +867,12 @@ server <- function(input, output, session) {
   }
   
   
+  # Boolean flag: do we have results yet?
+  output$show_results <- reactive({
+    !is.null(mcSimulation_results())
+  })
+  # needed so conditionalPanel can see it
+  outputOptions(output, "show_results", suspendWhenHidden = FALSE)
   
   observeEvent(mcSimulation_results(), {
     mc_data <- mcSimulation_results()
@@ -938,13 +950,13 @@ server <- function(input, output, session) {
       source("functions/VIP_Plot_onion.R")
       plot2<-make_onion_vip_combined_plot(mc_data) 
       # |>
-        # add_meta(
-        #   title    = "Figure 1. Distribution of the *incremental* NPV",
-        #   subtitle = "Difference between agroforestry and treeless farming under identical conditions",
-        #   caption  = "Figure 2 shows the NPV distributions of the decision to establish the apple alley cropping system
-        #               as compared to the decision to continue with monoculture for the specified time (i.e., NPV agroforestry - NPV monoculture under identical conditions).
-        #               The x-axis displays NPV values (i.e., the sum of discounted annual cash flows) and y-axis displays the probability of each NPV amount to occur (i.e., higer y-values indicate higher probability)"
-        #   , legend = "none")
+      # add_meta(
+      #   title    = "Figure 1. Distribution of the *incremental* NPV",
+      #   subtitle = "Difference between agroforestry and treeless farming under identical conditions",
+      #   caption  = "Figure 2 shows the NPV distributions of the decision to establish the apple alley cropping system
+      #               as compared to the decision to continue with monoculture for the specified time (i.e., NPV agroforestry - NPV monoculture under identical conditions).
+      #               The x-axis displays NPV values (i.e., the sum of discounted annual cash flows) and y-axis displays the probability of each NPV amount to occur (i.e., higer y-values indicate higher probability)"
+      #   , legend = "none")
       # replace this line with codes in lines 911 - 919
       plot3<-make_onion_vip_combined_plot(mc_data)
       # |>
@@ -1168,6 +1180,14 @@ server <- function(input, output, session) {
     # })
     
   })
+  
+  
+  # image flag
+  output$show_image <- reactive({
+    !is.null(selected_crop())
+  })
+  outputOptions(output, "show_image", suspendWhenHidden = FALSE)
+  
   
   # display of conceptual model image from www folder
   img_info <- eventReactive(selected_crop(), {
