@@ -1,5 +1,5 @@
 # Climate_Impact_on_Crop_Yield
-# Auswirkungen des Klimawandels auf Ernteerträge#
+# Auswirkungen des Klimawandels auf Ernteerträge
 
 Entscheidungshilfe für die Landwirtschaft (R Shiny App)Dieses Repository enthält eine R Shiny-Anwendung, die **zukünftige Ernteerträge unter den Bedingungen des Klimawandels für das Jahr 2075** für ausgewählte Kulturen simuliert, derzeit:
 - **Spargel**
@@ -9,11 +9,17 @@ Entscheidungshilfe für die Landwirtschaft (R Shiny App)Dieses Repository enthä
 Die App verwendet eine **Monte-Carlo-Simulation** (über das Paket „decisionSupport“), um zu untersuchen, wie sich Unsicherheiten bei den Eingabeparametern und klimatischen Bedingungen unter verschiedenen Klimaszenarien auf die Ernteerträge um das Jahr **2075** auswirken.
 Die Benutzeroberfläche und der Text sind überwiegend in **Deutsch**, da die App für ein Projekt entwickelt wurde, das sich mit der deutschen Landwirtschaft befasst.
 
----## Hauptmerkmale- **Dynamische Eingabeschnittstelle**Die UI-Elemente werden aus einer Excel-Datei mit `dynamic_helper_v3.R` generiert. 
+---## Hauptmerkmale
 
-Benutzer können:
-- Eine Kulturpflanze auswählen- Variablen nach **Fachgebiet** filtern
-- Parameterbereiche interaktiv anpassen- **Kulturspezifische Modelle**
+- **Dynamische Eingabeschnittstelle**
+
+Die UI-Elemente werden aus einer Excel-Datei mit `dynamic_helper_v3.R` generiert. Benutzer können:
+- Eine Kulturpflanze auswählen
+- Variablen nach **Fachgebiet** filtern
+- Parameterbereiche interaktiv anpassen
+
+- **Kulturspezifische Modelle**
+
 - **Spargelmodell**: Verwendet spargelspezifische Simulationsfunktionen und Diagramme.
 - **Zwiebelmodell**: Verwendet zwiebel-spezifische Klimawirkungs- und Ertragsmodelle, einschließlich einer Heatmap zur Ertragsreduktion.
 
@@ -24,17 +30,21 @@ Benutzer können:
 - Verwendet aktuelle UI-Parameterbereiche als Eingabeverteilungen
 
 - **Diagramme und Visualisierung**
+
 - Konzeptuelles Modellbild pro Kulturpflanze
 - Kulturspezifische Verteilungen, VIP-Diagramme (Variable Importance).
 
 - **Projektstatus speichern/laden**
+
 - Benutzer können:   
     - Speichern Sie die aktuellen Eingabeeinstellungen unter einem benutzerdefinierten Projektnamen.
     - Laden Sie zuvor gespeicherte Zustände.
     - Laden Sie die aktuelle Eingabetabelle als CSV-Datei herunter.
 
 - **Kontinuierliche Verbesserung**
+
 - Benutzer können über das Feedback-Feld Verbesserungsvorschläge einreichen.
+
 
 ## In English
 # Agriculture Decision Support Tool (R Shiny App)
