@@ -1,6 +1,6 @@
 ## Main function: build combined VIP plot for all scenarios -----------
 
-make_onion_vip_combined_plot <- function(sim_list,
+make_onion_vip_combined_plot <- function(mcSimulation_results,
                                          scenarios = c("historical",
                                                        "ssp126",
                                                        "ssp245",
@@ -9,16 +9,94 @@ make_onion_vip_combined_plot <- function(sim_list,
   
   # 1) Load packages --------------------------------------------------
   load_if_needed(c(
+    "ggplot2",
     "dplyr",
     "tidyr",
-    "purrr",
-    "ggplot2",
+    "data.table",
+    "decisionSupport",
     "patchwork",
+    "stringr",
     "assertthat",
-    "decisionSupport"
+    "tibble"
   )) 
   
-  # 2) VIP table helper -----------------------------------------------
+  ############################################################
+  ## 1) Common Definitions
+  ############################################################
+  
+  # allow user to choose subset and/or order
+  scenario_order_codes <- scenarios
+  
+  scenario_labels <- c(
+    historical = "2020",
+    ssp126     = "2075 (SSP 1-2.6)",
+    ssp245     = "2075 (SSP 2-4.5)",
+    ssp370     = "2075 (SSP 3-7.0)",
+    ssp585     = "2075 (SSP 5-8.5)"
+  )
+  
+  stress_labels <- c(
+    # Keimphase (em)
+    "m_exrain_em"   = "Starkregen (Keimphase)",
+    "m_hail_em"     = "Hagel (Keimphase)",
+    "m_fus_em"      = "Fusarium (Keimphase)",
+    
+    # Vegetative Phase (vg)
+    "m_heat_vg"     = "Hitze (Vegetative Phase)",
+    "m_exrain_vg"   = "Starkregen (Vegetative Phase)",
+    "m_hail_vg"     = "Hagel (Vegetative Phase)",
+    "m_fus_vg"      = "Fusarium (Vegetative Phase)",
+    "m_mildew_vg"   = "Falscher Mehltau (Vegetative Phase)",
+    "m_thrips_vg"   = "Thripse (Vegetative Phase)",
+    
+    # Zwiebelbildung (bl)
+    "m_heat_bl"     = "Hitze (Zwiebelbildung)",
+    "m_exrain_bl"   = "Starkregen (Zwiebelbildung)",
+    "m_hail_bl"     = "Hagel (Zwiebelbildung)",
+    "m_fus_bl"      = "Fusarium (Zwiebelbildung)",
+    "m_mildew_bl"   = "Falscher Mehltau (Zwiebelbildung)",
+    "m_botrytis_bl" = "Botrytis (Zwiebelbildung)",
+    "m_thrips_bl"   = "Thripse (Zwiebelbildung)",
+    
+    # Reifephase (mt)
+    "m_heat_mt"     = "Hitze (Reifephase)",
+    "m_exrain_mt"   = "Starkregen (Reifephase)",
+    "m_hail_mt"     = "Hagel (Reifephase)",
+    "m_fus_mt"      = "Fusarium (Reifephase)",
+    "m_mildew_mt"   = "Falscher Mehltau (Reifephase)",
+    "m_botrytis_mt" = "Botrytis (Reifephase)",
+    "m_thrips_mt"   = "Thripse (Reifephase)"
+  )
+  
+  phase_order  <- c("Keimphase", "Vegetative Phase", "Zwiebelbildung", "Reifephase")
+  order_labels <- unname(stress_labels)
+  
+  ############################################################
+  ## 2) Multipliers -> Damage (0 = no damage)
+  ############################################################
+  
+  # work on a copy of the provided simulation
+  onion_mc_sim_damage <- mcSimulation_results
+  
+  stress_cols <- grep("\\.m_", names(onion_mc_sim_damage$y), value = TRUE)
+  if (length(stress_cols) > 0) {
+    onion_mc_sim_damage$y[stress_cols] <-
+      1 - onion_mc_sim_damage$y[stress_cols]
+  }
+  
+  ############################################################
+  ## 3) Helper: remove variables with too little variation
+  ############################################################
+  
+  filter_stress_vars <- function(df, min_nonzero = 5) {
+    keep <- sapply(df, function(x) sum(x != 0, na.rm = TRUE) >= min_nonzero)
+    df[, keep, drop = FALSE]
+  }
+  
+  ############################################################
+  ## 4) VIP helper
+  ############################################################
+  
   VIP_table <- function (plsrResults, input_table = NULL, cut_off_line = 1, 
                          threshold = 0.8, x_axis_name = "Variable Importance in Projection", 
                          y_axis_name = NULL, legend_name = "Coefficient", 
@@ -26,9 +104,8 @@ make_onion_vip_combined_plot <- function(sim_list,
                          pos_color = "cadetblue", neg_color = "firebrick", 
                          base_size = 11, ...) 
   {
-    # allow class c("mvr", "plsr", ...)
     assertthat::assert_that(inherits(plsrResults, "mvr"),
-                            msg = "plsrResults is not class 'mvr'.")
+                            msg = "plsrResults ist nicht Klasse 'mvr'.")
     
     VIP <- function(object) {
       if (object$method != "oscorespls") 
@@ -41,142 +118,186 @@ make_onion_vip_combined_plot <- function(sim_list,
       sqrt(nrow(SSW) * apply(SSW, 1, cumsum)/cumsum(SS))
     }
     
-    if (plsrResults$ncomp == 1) {
+    if (plsrResults$ncomp == 1) 
       vipResult <- VIP(plsrResults)
-    } else {
-      vipResult <- VIP(plsrResults)["Comp 1", ]
-    }
+    else vipResult <- VIP(plsrResults)["Comp 1", ]
     
     coef <- plsrResults$coefficients[, , 1]
     pls_outputs <- data.frame(
-      Variable    = names(vipResult),
-      VIP         = vipResult,
-      Coefficient = coef
+      Variable    = names(vipResult), 
+      VIP         = vipResult, 
+      Coefficient = coef,
+      row.names   = NULL
     )
-    rownames(pls_outputs) <- NULL
     
     if (!is.null(input_table)) {
       combined_table <- dplyr::left_join(
-        pls_outputs, input_table,
-        by = c(Variable = "variable")
+        pls_outputs, input_table, by = c(Variable = "variable")
       )
     } else {
       combined_table <- pls_outputs
     }
     
-    filtered_table <- dplyr::filter(combined_table, VIP > threshold)
-    
-    return(list(VIP_table_results = filtered_table))
+    dplyr::filter(combined_table, VIP > threshold) |>
+      list(VIP_table_results = _)
   }
   
-  # 3) German labels for stressors & phases ---------------------------
-  stress_labels <- c(
-    # Keimphase (em)
-    "m_drought_em"  = "Dürre (Keimphase)",
-    "m_exrain_em"   = "Starkregen (Keimphase)",
-    "m_hail_em"     = "Hagel (Keimphase)",
-    "m_fus_em"      = "Fusarium (Keimphase)",
-    
-    # Vegetative Phase (vg)
-    "m_drought_vg"      = "Dürre (Vegetative Phase)",
-    "m_exrain_vg"       = "Starkregen (Vegetative Phase)",
-    "m_hail_vg"         = "Hagel (Vegetative Phase)",
-    "m_fus_vg"          = "Fusarium (Vegetative Phase)",
-    "m_mildew_vg"       = "Falscher Mehltau (Vegetative Phase)",
-    "m_thrips_vg"       = "Thripse (Vegetative Phase)",
-    
-    # Zwiebelbildung (bl)
-    "m_drought_bl"      = "Dürre (Zwiebelbildung)",
-    "m_exrain_bl"       = "Starkregen (Zwiebelbildung)",
-    "m_hail_bl"         = "Hagel (Zwiebelbildung)",
-    "m_botrytis_bl"     = "Botrytis (Zwiebelbildung)",
-    "m_fus_bl"          = "Fusarium (Zwiebelbildung)",
-    "m_mildew_bl"       = "Falscher Mehltau (Zwiebelbildung)",
-    
-    # Reifephase (mt)
-    "m_drought_mt"      = "Dürre (Reifephase)",
-    "m_exrain_mt"       = "Starkregen (Reifephase)",
-    "m_hail_mt"         = "Hagel (Reifephase)",
-    "m_botrytis_mt"     = "Botrytis (Reifephase)",
-    "m_fus_mt"          = "Fusarium (Reifephase)",
-    "m_mildew_mt"       = "Falscher Mehltau (Reifephase)"
-  )
+  ############################################################
+  ## 5) PLSR + VIP plot for a single scenario
+  ############################################################
   
-  # 4) Scenario-specific PLSR helper ---------------------------------
-  run_plsr_for_scenario <- function(sim_list, scenario = "historical") {
-    # 1. Response: final yield
-    y <- sim_list$y[[paste0(scenario, ".final_yield_per_ha")]]
+  run_plsr_for_scenario_onion <- function(sim_list_damage, scen_code,
+                                          min_nonzero = 5) {
     
-    # 2. Predictors: all m_* multipliers for this scenario
-    x <- sim_list$y %>%
-      dplyr::select(dplyr::starts_with(paste0(scenario, ".m_"))) %>%
-      dplyr::mutate(across(everything(), ~ 1 - .))  # multiplier -> yield reduction
+    y_col <- paste0(scen_code, ".final_yield_per_ha_irrigated")
+    if (!y_col %in% names(sim_list_damage$y))
+      stop("Spalte ", y_col, " nicht in sim_list$y gefunden.")
     
-    # 3. Build minimal mcSimulation object for plsr.mcSimulation
-    sim_obj <- list(
-      y = data.frame(y = y),
-      x = as.data.frame(x)
-    )
+    y <- data.frame(yield = sim_list_damage$y[[y_col]])
+    
+    stress_base <- names(stress_labels)
+    stress_cols_scen <- paste0(scen_code, ".", stress_base)
+    stress_cols_scen <- stress_cols_scen[stress_cols_scen %in% names(sim_list_damage$y)]
+    
+    x_raw <- sim_list_damage$y[, stress_cols_scen, drop = FALSE]
+    x <- filter_stress_vars(x_raw, min_nonzero = min_nonzero)
+    if (ncol(x) == 0) {
+      stop("Für Szenario ", scen_code,
+           " gibt es keine Stressvariablen mit ausreichender Variation.")
+    }
+    
+    names(x) <- sub(paste0("^", scen_code, "\\."), "", names(x))
+    
+    sim_obj <- list(y = y, x = x)
     class(sim_obj) <- c("mcSimulation", "list")
     
-    # 4. PLSR
     pls_res <- plsr.mcSimulation(
-      object     = sim_obj,
-      resultName = "y",
-      ncomp      = 1
+      object      = sim_obj,
+      resultName  = "yield",
+      variables.x = names(sim_obj$x),
+      ncomp       = 1
     )
     
-    # 5. VIP table (no threshold, keep all)
-    vip_tab <- VIP_table(pls_res, threshold = 0)$VIP_table_results
+    vip_tab <- VIP_table(pls_res, threshold = 0.8)$VIP_table_results |>
+      as_tibble() |>
+      mutate(
+        CleanVar   = Variable,
+        stress_lab = stress_labels[CleanVar],
+        Phase      = sub(".*\\((.*)\\).*", "\\1", stress_lab),
+        Phase      = factor(Phase, levels = phase_order),
+        coef_sign  = dplyr::case_when(
+          Coefficient >  0 ~ "positive",
+          Coefficient <  0 ~ "negative",
+          TRUE             ~ "zero"
+        ),
+        scenario   = factor(scen_code, levels = scenario_order_codes)
+      )
     
-    # 6. Clean variable names: remove 'scenario.' prefix
-    vip_tab$CleanVar <- sub(paste0("^", scenario, "\\."), "", vip_tab$Variable)
-    
-    # 7. Apply German labels where available
-    vip_tab$Variable <- dplyr::recode(
-      vip_tab$CleanVar,
-      !!!stress_labels,
-      .default = vip_tab$CleanVar
+    vip_tab$stress_lab <- factor(
+      vip_tab$stress_lab,
+      levels  = order_labels,
+      ordered = TRUE
     )
     
-    # 8. Plot
-    plot <- ggplot(vip_tab, aes(x = reorder(Variable, VIP), y = VIP)) +
-      geom_col(fill = "firebrick") +
-      coord_flip() +
+    vip_range  <- range(vip_tab$VIP, na.rm = TRUE)
+    vip_breaks <- pretty(vip_range, n = 3)
+    vip_breaks <- vip_breaks[vip_breaks >= vip_range[1] & vip_breaks <= vip_range[2]]
+    if (length(vip_breaks) == 0) vip_breaks <- vip_range
+    
+    p <- ggplot(vip_tab, aes(x = scenario, y = stress_lab)) +
+      geom_point(aes(size = VIP, color = coef_sign), shape = 16) +
+      scale_size_continuous(
+        range  = c(3, 10),
+        breaks = vip_breaks,
+        labels = round(vip_breaks, 2),
+        name   = "VIP\n(Variable Importance in Projection)"
+      ) +
+      scale_color_manual(
+        values = c(
+          negative = "firebrick",
+          zero     = "grey70",
+          positive = "cadetblue"
+        ),
+        guide = "none"
+      ) +
+      scale_y_discrete(
+        limits = rev(order_labels),
+        drop   = FALSE,
+        expand = expansion(mult = c(0.02, 0.06))
+      ) +
       labs(
-        title = paste("VIP Plot – Ertragsmindernde Faktoren", scenario),
-        y     = "Variable Importance in Projection (VIP)"
+        title = scenario_labels[scen_code],
+        x     = "Szenario",
+        y     = "Stressfaktor (Phase)"
       ) +
       theme_minimal(base_size = 12) +
       theme(
-        plot.title  = element_text(hjust = 0.5),
-        axis.title.y = element_blank()
+        plot.title         = element_text(hjust = 0.5),
+        axis.text.y        = element_text(hjust = 0),
+        legend.position    = "right",
+        legend.title.align = 0,
+        legend.box         = "vertical",
+        legend.key.height  = grid::unit(0.6, "cm"),
+        legend.key.width   = grid::unit(0.6, "cm"),
+        legend.text        = element_text(size = 9)
+      ) +
+      guides(
+        size = guide_legend(
+          override.aes  = list(color = "firebrick", fill = "firebrick"),
+          order         = 1,
+          title.position = "top"
+        )
       )
     
-    return(list(result = pls_res, plot = plot, vip_table = vip_tab))
+    list(result = pls_res, plot = p)
   }
   
-  # 5) Run PLSR for all scenarios & collect plots --------------------
-  res_list <- purrr::map(scenarios, ~ run_plsr_for_scenario(sim_list, .x))
-  plot_list <- purrr::map(res_list, "plot")
-  names(plot_list) <- scenarios
+  ############################################################
+  ## 6) VIP comparison plot for all scenarios
+  ############################################################
   
-  # Expecting 5 scenarios in this order:
-  p_hist <- plot_list[["historical"]]
-  p_126  <- plot_list[["ssp126"]]
-  p_245  <- plot_list[["ssp245"]]
-  p_370  <- plot_list[["ssp370"]]
-  p_585  <- plot_list[["ssp585"]]
+  VIP_plot_onion <- function(sim_results, min_nonzero = 5) {
+    scen_codes <- scenario_order_codes
+    
+    results <- lapply(scen_codes, function(sc) 
+      run_plsr_for_scenario_onion(sim_results, sc, min_nonzero = min_nonzero)
+    )
+    names(results) <- scen_codes
+    
+    no_x <- theme(
+      axis.title.x = element_blank(),
+      axis.text.x  = element_blank(),
+      axis.ticks.x = element_blank()
+    )
+    no_y <- theme(
+      axis.title.y = element_blank(),
+      axis.text.y  = element_blank(),
+      axis.ticks.y = element_blank()
+    )
+    
+    # build list of modified plots for arbitrary number of scenarios
+    plots <- lapply(seq_along(scen_codes), function(i) {
+      p <- results[[i]]$plot
+      if (i == 1L) {
+        # first: keep y, remove x, no legend
+        p + no_x + theme(legend.position = "none")
+      } else if (i == length(scen_codes)) {
+        # last: remove x and y, keep legend
+        p + no_x + no_y
+      } else {
+        # middle: remove x & y, no legend
+        p + no_x + no_y + theme(legend.position = "none")
+      }
+    })
+    
+    patchwork::wrap_plots(plots, ncol = length(scen_codes))
+  }
   
-  # 6) Build combined plot (2 rows x 3 columns) ----------------------
-  combined_plot <- (p_hist | p_126 | p_245) /
-    (p_370 | p_585 | patchwork::plot_spacer())
-  
-  return(combined_plot)
+  # return combined comparison plot
+  return(VIP_plot_onion(onion_mc_sim_damage))
 }
 
-## Display Plot ------------------------------------------------------
+# p_vip <- make_onion_vip_combined_plot(onion_mc_simulation)
+# p_vip
 
- # combined_plot <- make_onion_vip_combined_plot(onion_mc_simulation)
- # combined_plot
 

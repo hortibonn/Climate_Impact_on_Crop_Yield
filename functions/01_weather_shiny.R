@@ -44,6 +44,7 @@ process_weather_data <- function(
     base_temp = 1
 ) 
   {
+  #print(101)
   # 1) Read and convert to data.table ----------------------------------------
   weather_combined <- readRDS(file_path)
   data.table::setDT(weather_combined)  # in-place conversion

@@ -123,6 +123,25 @@ if (!requireNamespace("data.table", quietly = TRUE)) {
   install.packages("data.table")
 }
 library(data.table, warn.conflicts = F)
+if (!requireNamespace("DT", quietly = TRUE)) {
+  install.packages("DT")
+}
+library(DT, warn.conflicts = F)
+
+if (!requireNamespace("DBI", quietly = TRUE)) {
+  install.packages("DBI")
+}
+library(DBI, warn.conflicts = F)
+
+if (!requireNamespace("RSQLite", quietly = TRUE)) {
+  install.packages("RSQLite")
+}
+library(RSQLite, warn.conflicts = F)
+
+if (!requireNamespace("pool", quietly = TRUE)) {
+  install.packages("pool")
+}
+library(pool, warn.conflicts = F)
 
 # Load functins and inputs ----
 # Provide Location of DA model script(s), dynamic-helper
@@ -143,8 +162,12 @@ source("functions/onion_model_shiny.R")
 
 # Dynamic helper to load the UI variables from the excel sheet
 source("functions/dynamic_helper_v3.R")
+
+# Feedback SQL helper
+source("functions/SQL_helper.R")
+
 # Provide Location of excel workbook containing the input parameters (prepared for the dynamic-helper)
-file_path_vars <- "data/ASP_input_parameters_german1.xlsx"
+file_path_vars <- "data/ASP_input_parameters_german2.xlsx"
 sheet_meta <- readxl::read_excel(file_path_vars, sheet = "sheet_names",
                                  col_types = c("text", "text"))
 sheet_names <- sheet_meta$sheet_names
@@ -156,8 +179,8 @@ scenario_path<-file.path("data", "scenarios.csv")
 risk_df<-read.csv(risk_path)
 scenarios<-read.csv(scenario_path)
 
-onion_weather_path<-file.path("data", "weather_koeln-bonn_final_compressed.rds")
-onion_weather<-readRDS(onion_weather_path)
+# onion_weather_path<-file.path("data", "weather_koeln-bonn_final_compressed.rds")
+# onion_weather<-readRDS(onion_weather_path)
 
 
 # Interface ----
@@ -197,7 +220,7 @@ ui <- fluidPage(
       box-sizing: border-box; background-color: #f2f2f2;",
     
     # tags$a(href = "https://www.uni-bonn.de", target = "_blank",
-    tags$img(src = "UniBonnHortiBonn_logo_transparent.png", height = "100px",
+    tags$img(src = "logo-mix-nobg.png", height = "100px",
              style = "margin-left: auto; max-width: 20%; height: auto; cursor: pointer;"),
     # ),
     # Provide Title of the DA model
@@ -241,7 +264,7 @@ ui <- fluidPage(
                        
                        fluidRow(
                          column(6, actionButton("load_btn",   tagList(icon("rotate"),  "Laden"  ), class = "btn btn-secondary")),
-                         column(6, actionButton("delete_btn", tagList(icon("trash"),   "Löschen"), class = "btn btn-secondary"))
+                         #column(6, actionButton("delete_btn", tagList(icon("trash"),   "Löschen"), class = "btn btn-secondary"))
                        ),
                        hr(),
                        downloadButton("download_csv", label = tagList(icon("download"), "Aktuelle Eingaben herunterladen (.csv)"))
@@ -313,74 +336,96 @@ ui <- fluidPage(
               br(), br(),
               
               ### Plots ----
-              #imageOutput("myImage"),
-              div(class = "scroll-xy",
-                  imageOutput("myImage", height = "550px"),
+              conditionalPanel(
+                condition = "output.show_image",
+                #imageOutput("myImage"),
+                div(class = "scroll-xy",
+                    imageOutput("myImage", height = "550px"),
+                ),
+                br(),
               ),
-              br(),
-              uiOutput("download_ui"),
-              br(), br(),br(), br(),
-              #downloadButton("downloadImage", "Konzeptmodell herunterladen"),
-              
-              br(), br(),
-              div(class = "scroll-xy",
-                  plotOutput("plot1_ui", height = "550px"),
+              conditionalPanel(
+                condition = "output.show_results",
+                uiOutput("download_ui"),
+                br(), br(),br(), br(),
+                #downloadButton("downloadImage", "Konzeptmodell herunterladen"),
+                
+                br(), br(),
+                div(class = "scroll-xy",
+                    plotOutput("plot1_ui", height = "550px"),
+                ),
+                br(),
+                uiOutput("plot1_dl_ui"),
+                br(), br(),br(), br(),
+                
+                div(class = "scroll-xy",
+                    plotOutput("plot2_ui", height = "550px"),
+                ),
+                br(),
+                uiOutput("plot2_dl_ui"),
+                br(), br(),br(), br(),
+                
+                div(class = "scroll-xy",
+                    plotOutput("plot3_ui", height = "700px"),
+                ),
+                br(),
+                uiOutput("plot3_dl_ui"),
+                br(), br(),br(), br(),
+                
+                # div(class = "scroll-xy",
+                #     plotOutput("plot4_ui", height = "550px"),
+                # ),
+                # br(),
+                # uiOutput("plot4_dl_ui"),
+                # br(), br(),br(), br(),
+                # 
+                # div(class = "scroll-xy",
+                #     plotOutput("plot5_ui", height = "550px"),
+                # ),
+                # br(),
+                # uiOutput("plot5_dl_ui"),
+                # br(), br(),br(), br(),
+                
+                # div(class = "scroll-xy",
+                # plotOutput("plot6_ui", height = "550px"),
+                # ),
+                # br(),
+                # uiOutput("plot6_dl_ui"),
+                # br(), br(),br(), br(),
+                # 
+                # div(class = "scroll-xy", plotOutput("plot7_ui", height = "550px"),),
+                # br(),
+                # uiOutput("plot7_dl_ui"),
+                # br(), br(),br(), br(),
+                
+                # div(class = "scroll-xy", 
+                #     plotOutput("plot8_ui", height = "550px"),
+                # ),
+                # br(),
+                # uiOutput("plot8_dl_ui"),
               ),
-              br(),
-              uiOutput("plot1_dl_ui"),
-              br(), br(),br(), br(),
               
-              div(class = "scroll-xy",
-                  plotOutput("plot2_ui", height = "550px"),
-              ),
-              br(),
-              uiOutput("plot2_dl_ui"),
-              br(), br(),br(), br(),
-              
-              div(class = "scroll-xy",
-                  plotOutput("plot3_ui", height = "700px"),
-              ),
-              br(),
-              uiOutput("plot3_dl_ui"),
-              br(), br(),br(), br(),
-              
-              div(class = "scroll-xy",
-                  plotOutput("plot4_ui", height = "550px"),
-              ),
-              br(),
-              # uiOutput("plot4_dl_ui"),
-              # br(), br(),br(), br(),
-              # 
-              # div(class = "scroll-xy",
-              #     plotOutput("plot5_ui", height = "550px"),
-              # ),
-              # br(),
-              # uiOutput("plot5_dl_ui"),
-              # br(), br(),br(), br(),
-              
-              # div(class = "scroll-xy",
-              # plotOutput("plot6_ui", height = "550px"),
-              # ),
-              # br(),
-              # uiOutput("plot6_dl_ui"),
-              # br(), br(),br(), br(),
-              # 
-              # div(class = "scroll-xy", plotOutput("plot7_ui", height = "550px"),),
-              # br(),
-              # uiOutput("plot7_dl_ui"),
-              # br(), br(),br(), br(),
-              
-              # div(class = "scroll-xy", 
-              #     plotOutput("plot8_ui", height = "550px"),
-              # ),
-              # br(),
-              # uiOutput("plot8_dl_ui"),
+              if (NOTES_ENABLED) {
+                tagList(
+                  h4("Geben Sie uns Feedback"),
+                  textInput("email", label = NULL, placeholder = "Ihre@E-Mail.Adresse (optional)*", width = "100%"),
+                  textAreaInput("note", label = NULL, placeholder = "Ihr Feedback…", width = "100%", height = "200px"),
+                  actionButton("submit", "Feedback absenden", class = "btn btn-primary"),
+                  br(),br(),
+                  p(style = "color: grey; font-style: italic; font-size: 0.9em;",
+                    "* Die Angabe Ihrer E-Mail-Adresse ist optional und wird ausschließlich verwendet, um Sie bezüglich Ihres Feedbacks zu kontaktieren. Gespeicherte personenbezogene Daten werden mit Ende des Projekts oder nach einem Jahr gelöscht."),
+                  br(),
+                  uiOutput("viewer_panel"),
+                )
+              } else {
+                NULL
+              },
               
               ### Requisites ----
               # Provide Funding declaration
-              tags$img(src = "INRES_UniBonn.png", height = "100px",
-                       style = "margin-right: auto; max-width: 100%; height: auto; cursor: pointer;"),
-              #Provide tool usage disclaimer
+              # tags$img(src = "INRES_UniBonn.png", height = "100px",
+              #          style = "margin-right: auto; max-width: 100%; height: auto; cursor: pointer;"),
+              # #Provide tool usage disclaimer
               tags$p(
                 tags$a("Disclaimer", href = "https://www.gartenbauwissenschaften.uni-bonn.de/imprint",
                        target = "_blank"),
@@ -608,7 +653,8 @@ server <- function(input, output, session) {
     files <- list.files(dir, pattern = "\\.rds$", full.names = TRUE)
     
     if (length(files) >= 1000) {
-      showModal(modalDialog("You already have several versions. Delete one first.",
+      showModal(modalDialog("There are too many save states on the server. Please contact the Admin if you need to save more.",
+                            #showModal(modalDialog("You already have several versions. Delete one first.",
                             easyClose = TRUE))
       return()
     }
@@ -725,13 +771,8 @@ server <- function(input, output, session) {
       
     }
     else if (crop=="Zwiebel"){
-      #environment(onion_model_shiny)$onion_weather <- onion_weather
-      environment(process_weather_data)$onion_weather <- onion_weather # get weather file
       
-      # weather_precomputed <- process_weather_data(
-      #   file_path = onion_weather_path,
-      #   base_temp = 1
-      # )
+      #environment(process_weather_data)$onion_weather <- onion_weather # get weather file
       # loading animation
       waiter_show(
         html = tagList(
@@ -783,24 +824,24 @@ server <- function(input, output, session) {
           margin = margin(t = 6,b = 20)
         ),
         plot.subtitle = element_textbox_simple(
-          size   = 18,
+          size   = 14,
           width  = unit(1, "npc"),
           halign = 0.5,
           margin = margin(t = 6,b = 20)
         ),
         plot.caption  = element_textbox_simple(
           size   = 16,
-          width  = unit(0.98, "npc"),
+          width  = unit(1, "npc"),
           halign = 0,              # left-aligned
           margin = margin(t = 6,b = 20),
           hjust = 0,
           vjust = 1
         ),
-        axis.title = element_text(size = 16),
-        axis.text = element_text(size = 14),
-        legend.text     = element_text(size = 14, hjust = 0.5),
+        axis.title = element_text(size = 18),
+        axis.text = element_text(size = 16),
+        legend.text     = element_text(size = 16, hjust = 0.5),
         legend.position = legend,
-        plot.margin = margin(t = 50, r = 10, b = 50, l = 10, unit = "pt")
+        plot.margin = margin(t = 40, r = 10, b = 40, l = 10, unit = "pt")
         
       )  }
   
@@ -815,7 +856,12 @@ server <- function(input, output, session) {
     )
   }
   
-  
+  # Boolean flag: do we have results yet?
+  output$show_results <- reactive({
+    !is.null(mcSimulation_results())
+  })
+  # needed so conditionalPanel can see it
+  outputOptions(output, "show_results", suspendWhenHidden = FALSE)
   
   observeEvent(mcSimulation_results(), {
     mc_data <- mcSimulation_results()
@@ -855,23 +901,35 @@ server <- function(input, output, session) {
       source("functions/plot_yield_asparagus.R")
       plot1<-plot_yield_asparagus(mc_data_order) |>
         add_meta(
-          title    = "Figure 1. Distribution of the *incremental* NPV",
-          subtitle = "Difference between agroforestry and treeless farming under identical conditions",
-          caption  = "Figure 2 shows the NPV distributions of the decision to establish the apple alley cropping system
-                      as compared to the decision to continue with monoculture for the specified time (i.e., NPV agroforestry - NPV monoculture under identical conditions).
-                      The x-axis displays NPV values (i.e., the sum of discounted annual cash flows) and y-axis displays the probability of each NPV amount to occur (i.e., higer y-values indicate higher probability)"
+          title    = "Abb 1. Ertrag für *2020* und *2075* unter verschiedenen Klimaszenarien",
+          #subtitle = "Difference between agroforestry and treeless farming under identical conditions",
+          caption  = "Diese Abbildung zeigt den Unterschied zwischen dem potenziellen Ertrag (ohne Stressereignisse) und 
+          dem tatsächlich erreichten Ertrag (unter Berücksichtigung aller simulierten Stressfaktoren und Qualitätsverluste) 
+          beziehungsweise dem vermarktbaren Ertrag. Für jedes Klimaszenario werden die Ertragsverteilungen aus 
+          Monte-Carlo-Simulationen dargestellt. Die Prozentwerte über den Boxplots geben an, 
+          wie stark der durchschnittliche Ertrag im jeweiligen Szenario durch Stress reduziert wurde. 
+          Die gestrichelte Linie markiert einen regionaltypischen Referenzertrag des Regierungsbezirks Köln 
+          (nach Daten der Landesdatenbank NRW) und dient als Orientierungshilfe. 
+          Die SSP-Szenarien zeigen mögliche zukünftige Klimaentwicklungen: von starkem Klimaschutz mit geringer Erwärmung (SSP1–2.6) 
+          über mittlere Veränderungen (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung 
+          (SSP3–7.0 und SSP5–8.5).Die Darstellung ermöglicht es Landwirtinnen und Landwirten sowie Entscheidungsträgern einzuschätzen, 
+          wie Klimawandel und Stressereignisse zukünftige Erträge beeinflussen können und welche Spannbreite realistischer 
+          Ernteergebnisse zu erwarten ist."
           , legend = "none")
       
       source("functions/VIP_plot.R") 
-      plot2<-VIP_plot(mc_data_order)
-      # |>
-      #   add_meta(
-      #     title    = "Figure 1. Distribution of the *incremental* NPV",
-      #     subtitle = "Difference between agroforestry and treeless farming under identical conditions",
-      #     caption  = "Figure 2 shows the NPV distributions of the decision to establish the apple alley cropping system
-      #                 as compared to the decision to continue with monoculture for the specified time (i.e., NPV agroforestry - NPV monoculture under identical conditions).
-      #                 The x-axis displays NPV values (i.e., the sum of discounted annual cash flows) and y-axis displays the probability of each NPV amount to occur (i.e., higer y-values indicate higher probability)"
-      #     , legend = "none")
+      plot2<-VIP_plot(mc_data_order)|>
+        add_meta(
+          title    = "Abb 2. Bedeutung verschiedener Faktoren für den Ertrag für 2020 und 2075 in unterschiedlichen Klimaszenarien",
+          #subtitle = "Difference between agroforestry and treeless farming under identical conditions",
+          caption  = "Der VIP-Plot (Variable Importance in Projection) zeigt, welche Stressfaktoren die größten Unsicherheiten bei der Berechnung des Ertrags bedeuten. 
+          Jeder Punkt repräsentiert einen Faktor; die Punktgröße gibt an, wie ausschlaggebend die Varianz des Faktors im statistischen Modell 
+          (PLSR) war.Je größer der Punkt, desto stärker trägt der entsprechende Stressor zur Varianz im Ertrag bei. 
+            Diese Darstellung zeigt nicht die Höhe der Ertragsminderung selbst, sondern welche Faktoren für den Ertrag entscheidend sind – 
+            also wo Risikomanagement, Sortenwahl oder Schutzmaßnahmen den größten Nutzen bringen können. Die SSP-Szenarien zeigen mögliche 
+            zukünftige Klimaentwicklungen: von starkem Klimaschutz mit geringer Erwärmung (SSP1–2.6) über mittlere Veränderungen 
+          (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung (SSP3–7.0 und SSP5–8.5)."
+          , legend = "none")
       
       # No plot3 for Spargel → clear outputs
       output$plot3_ui    <- renderPlot(NULL)
@@ -883,43 +941,45 @@ server <- function(input, output, session) {
       source("functions/yield_boxplot_onion.R")
       plot1<-plot_yield_onion(mc_data) |>
         add_meta(
-          title    = "Figure 1. Distribution of the *incremental* NPV",
-          subtitle = "Difference between agroforestry and treeless farming under identical conditions",
-          caption  = "Figure 2 shows the NPV distributions of the decision to establish the apple alley cropping system
-                      as compared to the decision to continue with monoculture for the specified time (i.e., NPV agroforestry - NPV monoculture under identical conditions).
-                      The x-axis displays NPV values (i.e., the sum of discounted annual cash flows) and y-axis displays the probability of each NPV amount to occur (i.e., higer y-values indicate higher probability)"
-          , legend = "none")
-      
+          title    = "Abb 1. Ertrag für *2020* und *2075* unter verschiedenen Klimaszenarien",
+          #subtitle = "Difference between agroforestry and treeless farming under identical conditions",
+          caption  = "Diese Abbildung zeigt den Unterschied zwischen dem potenziellen Ertrag (ohne Stressereignisse) und dem tatsächlich erreichten Ertrag 
+          (unter Berücksichtigung aller simulierten Stressfaktoren). Für jedes Klimaszenario werden die Ertragsverteilungen aus 
+          Monte-Carlo-Simulationen dargestellt. Die Prozentwerte über den Boxplots geben an, wie stark der durchschnittliche Ertrag im jeweiligen Szenario 
+          durch Stress reduziert wurde. Die gestrichelte Linie markiert einen regionaltypischen Zwiebel-Referenzertrag des Regierungsbezirks Köln und dient 
+          als Orientierungshilfe. Die SSP-Szenarien zeigen mögliche zukünftige Klimaentwicklungen: von starkem Klimaschutz mit geringer Erwärmung (SSP1–2.6) 
+          über mittlere Veränderungen (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung (SSP3–7.0 und SSP5–8.5).
+          Die Darstellung ermöglicht es Landwirtinnen und Landwirten sowie Entscheidungsträgern einzuschätzen, wie Klimawandel und Stressereignisse 
+          zukünftige Zwiebelerträge beeinflussen können und welche Spannbreite realistischer Ernteergebnisse zu erwarten ist.")
+          #, legend = "none")
+
       source("functions/VIP_Plot_onion.R")
-      plot2<-make_onion_vip_combined_plot(mc_data) 
-      # |>
-        # add_meta(
-        #   title    = "Figure 1. Distribution of the *incremental* NPV",
-        #   subtitle = "Difference between agroforestry and treeless farming under identical conditions",
-        #   caption  = "Figure 2 shows the NPV distributions of the decision to establish the apple alley cropping system
-        #               as compared to the decision to continue with monoculture for the specified time (i.e., NPV agroforestry - NPV monoculture under identical conditions).
-        #               The x-axis displays NPV values (i.e., the sum of discounted annual cash flows) and y-axis displays the probability of each NPV amount to occur (i.e., higer y-values indicate higher probability)"
-        #   , legend = "none")
-      # replace this line with codes in lines 911 - 919
-      plot3<-make_onion_vip_combined_plot(mc_data)
-      # |>
-      #   add_meta(
-      #     title    = "Figure 1. Distribution of the *incremental* NPV",
-      #     subtitle = "Difference between agroforestry and treeless farming under identical conditions",
-      #     caption  = "Figure 2 shows the NPV distributions of the decision to establish the apple alley cropping system
-      #                 as compared to the decision to continue with monoculture for the specified time (i.e., NPV agroforestry - NPV monoculture under identical conditions).
-      #                 The x-axis displays NPV values (i.e., the sum of discounted annual cash flows) and y-axis displays the probability of each NPV amount to occur (i.e., higer y-values indicate higher probability)"
-      #     , legend = "none")
+      plot2<-make_onion_vip_combined_plot(mc_data) |>
+      add_meta(
+        title    = "Abb 2. Bedeutung verschiedener Faktoren für den Ertrag für 2020 und 2075 in unterschiedlichen Klimaszenarien",
+        #subtitle = "Difference between agroforestry and treeless farming under identical conditions",
+        br(),
+        caption  = "Der VIP-Plot (Variable Importance in Projection) zeigt, welche Stressfaktoren die größten Unsicherheiten bei der Berechnung des Ertrags bedeuten.
+          Jeder Punkt repräsentiert einen Faktor; die Punktgröße gibt an, wie ausschlaggebend die Varianz des Faktors im statistischen Modell
+          (PLSR) war.Je größer der Punkt, desto stärker trägt der entsprechende Stressor zur Varianz im Ertrag bei.
+            Diese Darstellung zeigt nicht die Höhe der Ertragsminderung selbst, sondern welche Faktoren für den Ertrag entscheidend sind –
+            also wo Risikomanagement, Sortenwahl oder Schutzmaßnahmen den größten Nutzen bringen können. Die SSP-Szenarien zeigen mögliche
+            zukünftige Klimaentwicklungen: von starkem Klimaschutz mit geringer Erwärmung (SSP1–2.6) über mittlere Veränderungen
+          (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung (SSP3–7.0 und SSP5–8.5).")
+        #, legend = "none")
       
-      # source("functions/yield_reduction_plot_onion.R")
-      # plot3<-make_yield_reduction_heatmap(mc_data) |>
-      # add_meta(
-      #   title    = "Figure 1. Distribution of the *incremental* NPV",
-      #   subtitle = "Difference between agroforestry and treeless farming under identical conditions",
-      #   caption  = "Figure 2 shows the NPV distributions of the decision to establish the apple alley cropping system
-      #                 as compared to the decision to continue with monoculture for the specified time (i.e., NPV agroforestry - NPV monoculture under identical conditions).
-      #                 The x-axis displays NPV values (i.e., the sum of discounted annual cash flows) and y-axis displays the probability of each NPV amount to occur (i.e., higer y-values indicate higher probability)"
-      #   , legend = "none")
+      source("functions/yield_reduction_plot_onion.R")
+      plot3<-make_yield_reduction_heatmap(mc_data) |>
+        add_meta(
+          title    = "Abb.3 Mittlere Ertragsminderung nach Stressfaktor und Wachstumsphase für 2020 und 2075 unter verschiedenen Klimaszenarien",
+          #subtitle = "Difference between agroforestry and treeless farming under identical conditions",
+
+          caption  = "Diese Heatmap visualisiert die durchschnittliche prozentuale Ertragsminderung landwirtschaftlicher Kulturen 
+          durch verschiedene Stressfaktoren in den Hauptwachstumsphasen der Pflanze. Die Intensität der Rotfärbung zeigt an, 
+          wie stark ein Stressfaktor den Ertrag mindert: Dunkelrot markiert die größten Verluste. Die Ergebnisse werden für das 
+          Basisjahr 2020 und für das Jahr 2075 unter vier Klimaszenarien (SSP) dargestellt – von starkem Klimaschutz (SSP1–2.6) 
+          bis zu extremen Emissionen (SSP5–8.5).")
+          #, legend = "none")
     }
     # source("functions/plot_yield_asparagus.R")
     # plot1<-plot_yield_asparagus(mc_data_order)
@@ -1124,6 +1184,13 @@ server <- function(input, output, session) {
     
   })
   
+  
+  # image flag
+  output$show_image <- reactive({
+    !is.null(selected_crop())
+  })
+  outputOptions(output, "show_image", suspendWhenHidden = FALSE)
+  
   # display of conceptual model image from www folder
   img_info <- eventReactive(selected_crop(), {
     crop <- selected_crop()
@@ -1176,7 +1243,115 @@ server <- function(input, output, session) {
       file.copy(from = info$path, to = file, overwrite = TRUE)
     }
   )
+  # Feedback logic ---------------------------
+  # Auth: current user + can_view flag
+  user <- reactiveVal(NA_character_)
+  observe({ user(current_user(session)) })
+  can_view_db <- reactive({
+    u <- user()
+    !is.na(u) && u %in% ALLOWED_VIEWERS
+  })
   
+  # # Simple email checker: optional field, but if present must look like an email
+  # is_valid_email <- function(x) {
+  #   if (!nzchar(x)) return(TRUE)  # optional
+  #   # simple pattern: something@something.suffix (no spaces)
+  #   grepl("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", x)
+  # }
+  
+  last_submit <- reactiveVal(as.POSIXct(0, origin = "1970-01-01", tz = "UTC"))
+  
+  observeEvent(input$submit, {
+    if (!NOTES_ENABLED) return(NULL)
+    now <- Sys.time()
+    if (difftime(now, last_submit(), units = "secs") < 10) {  # 10s cooldown
+      showModal(modalDialog(
+        title = "Zu viele Anfragen!",
+        "Bitte versuchen Sie es nach einigen Sekunden noch einmal.",
+        easyClose = TRUE, footer = modalButton("Close")
+      ))
+      return(invisible())
+    }
+    last_submit(now)
+    msg   <- trimws(input$note %||% "")
+    email <- tolower(trimws(input$email %||% ""))
+    
+    # Inline validations -> modals for feedback
+    if (!nzchar(msg)) {
+      showModal(modalDialog(title = "Fehlendes Feedback",
+                            "Kein Text im Feedback!",
+                            easyClose = TRUE, footer = modalButton("Close")))
+      return(invisible())
+    }
+    if (nchar(msg) > 5000) {
+      showModal(modalDialog(title = "Feedback zu lang",
+                            "Maximal 5000 Zeichen zulässig.",
+                            easyClose = TRUE, footer = modalButton("Close")))
+      return(invisible())
+    }
+    # if (!is_valid_email(email)) {
+    #   showModal(modalDialog(title = "Invalid email",
+    #                         "Please enter a valid email address or leave it blank.",
+    #                         easyClose = TRUE, footer = modalButton("Close")))
+    #   return(invisible())
+    # }
+    if (!NOTES_ENABLED) {
+      showModal(modalDialog(title = "Feedback disabled",
+                            "The feedback database is disabled in this environment.",
+                            easyClose = TRUE, footer = modalButton("Close")))
+      return(invisible())
+    }
+    
+    db_insert_note(submitted_at = now_iso(), user_label = user(), email = email, note = msg)
+    updateTextAreaInput(session, "note", value = "")
+    updateTextInput(session, "email", value = "")
+    
+    showModal(modalDialog(
+      title = "Feedback gespeichert",
+      "Danke! Ihr Feedback wurde aufgenommen.",
+      easyClose = TRUE, footer = modalButton("Close")
+    ))
+  }, ignoreInit = TRUE)
+  
+  # CSV export now includes email
+  output$dl_csv <- downloadHandler(
+    filename = function() sprintf("Feedback-%s.csv", format(Sys.time(), "%Y%m%d-%H%M%S")),
+    content = function(file) {
+      req(NOTES_ENABLED); req(can_view_db())
+      dat <- db_get_all_notes()
+      write.csv(dat, file, row.names = FALSE)
+    }
+  ) 
+  
+  # Admin panel only when enabled + authorized
+  output$viewer_panel <- renderUI({
+    if (isTRUE(NOTES_ENABLED) && isTRUE(can_view_db())) {
+      tagList(
+        h4("Admin only"),
+        textOutput("note_count"),
+        br(),
+        p("Download Feedback"),
+        downloadButton("dl_csv", "Export CSV")
+      )
+    } else NULL
+  })
+  
+  # Optional: small note in dev
+  output$dev_notice <- renderUI({
+    if (!NOTES_ENABLED) {
+      tags$p(class = "text-muted", style = "margin-top:10px;",
+             "Feedback are disabled in this environment.")
+    } else NULL
+  })
+  
+  # Count of rows in DB table
+  output$note_count <- renderText({
+    req(NOTES_ENABLED); req(can_view_db())
+    n <- db_count_notes()
+    sprintf("Total number of Feedbacks in database: %d", n)
+  })
+  
+  # Feedback logic end ---------------------------
 }
 
 shinyApp(ui = ui, server = server)
