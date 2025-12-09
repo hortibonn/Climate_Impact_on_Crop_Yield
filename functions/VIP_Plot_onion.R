@@ -290,7 +290,9 @@ make_onion_vip_combined_plot <- function(mcSimulation_results,
       }
     })
     
-    patchwork::wrap_plots(plots, ncol = length(scen_codes))
+    patchwork::wrap_plots(plots, ncol = length(scen_codes)) +
+      patchwork::plot_layout(guides = "collect") &
+      theme(legend.position = "bottom")
   }
   
   # return combined comparison plot

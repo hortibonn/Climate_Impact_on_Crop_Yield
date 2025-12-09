@@ -964,17 +964,17 @@ server <- function(input, output, session) {
         desto stärker trägt der entsprechende Stressor zur Varianz im Ertrag bei. Diese Darstellung zeigt nicht die Höhe der Ertragsminderung selbst, 
         sondern welche Faktoren für den Ertrag entscheidend sind – also wo Risikomanagement, Sortenwahl oder Schutzmaßnahmen den größten Nutzen bringen 
         können. Die SSP-Szenarien zeigen mögliche zukünftige Klimaentwicklungen: von starkem Klimaschutz mit geringer Erwärmung (SSP1–2.6) über mittlere 
-        Veränderungen (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung (SSP3–7.0 und SSP5–8.5).")
-      #, legend = "none")
+        Veränderungen (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung (SSP3–7.0 und SSP5–8.5)."
+          , legend = "bottom")
       
       source("functions/yield_reduction_plot_onion.R")
       plot3<-make_yield_reduction_heatmap(mc_data) |>
         add_meta(
-          title    = "Abb.3 Mittlere Ertragsminderung nach Stressfaktor und Wachstumsphase für 2020 und 2075 unter verschiedenen Klimaszenarien",
+          title    = "Abb.3 Mittlere Minderung des Biomassezuwachses nach Stressfaktor und Wachstumsphase für 2020 und 2075 unter verschiedenen Klimaszenarien",
           #subtitle = '',
-          caption  = "Diese Heatmap visualisiert die durchschnittliche prozentuale Ertragsminderung im Zwiebelanbau durch verschiedene Stressfaktoren 
-          in den Hauptwachstumsphasen der Pflanze. Die Intensität der Rotfärbung zeigt an, wie stark ein Stressfaktor den Ertrag mindert: 
-          Dunkelrot markiert die größten Verluste. Die Ergebnisse werden für das Basisjahr 2020 und für das Jahr 2075 unter vier Klimaszenarien (SSP) 
+          caption  = "Diese Heatmap visualisiert die durchschnittliche prozentuale Minderung des Biomassezuwachses im Zwiebelanbau durch verschiedene 
+          Stressfaktoren in den Hauptwachstumsphasen der Pflanze. Die Intensität der Rotfärbung zeigt an, wie stark ein Stressfaktor den Biomassezuwachs 
+          mindert: Dunkelrot markiert die größten Verluste. Die Ergebnisse werden für das Basisjahr 2020 und für das Jahr 2075 unter vier Klimaszenarien (SSP) 
           dargestellt – von starkem Klimaschutz (SSP1–2.6) bis zu extremen Emissionen (SSP5–8.5).")
       #, legend = "none")
     }

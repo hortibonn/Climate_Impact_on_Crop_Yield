@@ -80,6 +80,7 @@ plot_yield_asparagus <- function(sim_results_scen)
     theme(
       legend.title = element_blank(),
       legend.position = "right",
+      legend.text = element_text(size = 16),
       strip.background = element_rect(fill = "lightgrey"),
       strip.text = element_text(size = 12, face = "bold")
     ) +

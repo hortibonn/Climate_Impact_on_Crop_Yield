@@ -190,7 +190,7 @@ no_y <- theme(axis.title.y = element_blank(),
 # -----------------------------
 
 
-comparison_plot <- (results[["today"]]$plot + no_x+ theme(legend.position = "none"))+
+comparison_plot <- (results[["today"]]$plot + no_x + theme(legend.position = "none", plot.title = element_text (hjust = 0.7) ))+
   (results[["ssp1"]]$plot + no_x + no_y+ theme(legend.position = "none"))+
   (results[["ssp2"]]$plot + no_x + no_y+ theme(legend.position = "none"))+
   (results[["ssp3"]]$plot + no_x + no_y+ theme(legend.position = "none"))+

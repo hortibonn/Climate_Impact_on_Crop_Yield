@@ -118,7 +118,7 @@ make_yield_reduction_heatmap <- function(mcSimulation_results) {
   ) +
     geom_tile(color = "white") +
     scale_fill_gradient(
-      name   = "mittlere\nErtragsminderung [%]    ",
+      name   = "Reduzierung\ndes Biomassezuwachses [%] ",
       low    = "white",
       high   = "firebrick"
     ) +

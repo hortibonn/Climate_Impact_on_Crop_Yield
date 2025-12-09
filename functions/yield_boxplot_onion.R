@@ -149,6 +149,7 @@ plot_yield_onion <- function(mcSimulation_results)
     
     theme(
       legend.title = element_blank(),
+      legend.text = element_text(size = 12),
       legend.position = "right",
       strip.background = element_rect(fill = "lightgrey"),
       strip.text = element_text(size = 12, face = "bold")
