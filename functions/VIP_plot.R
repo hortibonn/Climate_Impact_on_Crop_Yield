@@ -89,33 +89,34 @@ run_plsr_for_scenario <- function(sim_list, scenario = "today") {
   
   
   labels <- c(
+    "water_stress_damage_t" = "Schäden: durch Trockenheit",
+    "disease_damage_t" = "Schäden: durch Krankheiten",
+    "insect_damage_t" = "Schäden: durch Insekten",
+    "weather_damage_t" = "Schäden: durch Extremwetter",
+    "late_frost_damage_t" = "Schäden: durch Spätfrost",
+    "temp_fluctuation_damage_t" = "Schäden: durch Temperaturumschwung",
+    "extreme_rainfall_damage_t" = "Schäden: durch Starkregen",
+    "extreme_heat_damage_t" = "Schäden: durch Extremhitze",
+    
     "water_stress_risk" = "Risiko: Schäden durch Trockenheit",
     "insect_risk" = "Risiko: Schäden durch Insekten",
     "disease_risk" = "Risiko: Schäden durch Krankheiten",
-    "photosynthetic_active_days" = "gute Photosynthesetage",
     "weather_damage_risk" = "Risiko: Schäden durch Extremwetter",
-    "growth_start_doy" = "Start des Stangenwuchs (Tag des Jahres)",
-    "speargrowth" = "Tage bis zur ersten Enrte",
-    "chill_portions" = "Kältebedarfsdeckung über den Winter",
     "late_frost_risk" = "Risiko: Schäden durch Spätfrost",
     "temp_fluctuation_risk" = "Risiko: Schäden durch Temperaturumschwünge",
     "extreme_rainfall_risk" = "Risiko: Ernteverzögerung durch Starkregen",
     "extreme_heat_risk" = "Risiko: Ernteverzögerung durch Extremhitze",
-    "Tsoil_mean" = "Optimale durchschnittliche Bodentemperatur",
     
-    "photosynthetic_active_days_needed" = "Bedarf an guten Photosynthesetagen",
-    "water_stress_damage" = "Schäden: durch Trockenheit",
-    "disease_damage" = "Schäden: durch Krankheiten",
-    "insect_damage" = "Schäden: durch Insekten",
-    "weather_damage" = "Schäden: durch Extremwetter",
-    "chill_need" = "Kältebedarf über den Winter",
-    "expected_yield" = "optimaler Ertrag unter perfekten Bedingungen",
-    "expected_season_length" = "erwartete Saisonlänge",
-    "season_end_doy" = "Ernteende, traditionell Johannitag (175)",
-    "late_frost_damage" = "Schäden: durch Spätfrost",
-    "temp_fluctuation_damage" = "Schäden: durch Temperaturumschwung",
-    "extreme_rainfall_damage" = "Schäden: durch Starkregen",
-    "extreme_heat_damage" = "Schäden: durch Extremhitze"
+    "photosynthetic_active_days_needed_p" = "Bedarf an guten Photosynthesetagen",
+    "photosynthetic_active_days" = "gute Photosynthesetage",
+    "chill_need_p" = "Kältebedarf über den Winter",
+    "chill_portions" = "Kältebedarfsdeckung über den Winter",
+    "expected_yield_p" = "optimaler Ertrag unter perfekten Bedingungen",
+    "expected_season_length_p" = "erwartete Saisonlänge",
+    "season_end_doy_p" = "Ernteende, traditionell Johannitag (175)",
+    "growth_start_doy" = "Start des Stangenwuchs (Tag des Jahres)",
+    "speargrowth" = "Tage bis zur ersten Ernte",
+    "Tsoil_mean" = "Optimale durchschnittliche Bodentemperatur"
   )
   
   # Labels anwenden
@@ -126,14 +127,22 @@ run_plsr_for_scenario <- function(sim_list, scenario = "today") {
   #vip_tab$Variable <- factor(vip_tab$Variable, levels = unname(labels))
   order_labels <- unname(labels) 
   vip_tab$Variable <- factor(vip_tab$Variable, levels = order_labels, ordered = TRUE)
-  vip_tab$scenario <- factor(scenario)#, levels = c(today="Year 2020","Year 2075\nSSP1 2.6", "Year 2075\nSSP2 4.5", "Year 2075\nSSP3 7.0","Year 2075\nSSP5 8.5")) 
+  vip_tab$scenario <- factor(
+    vip_tab$scenario,
+    levels = c("today", "ssp1", "ssp2", "ssp3", "ssp5"),
+    labels = c("   Year 2020",
+               "Year 2075\nSSP1-2.6",
+               "Year 2075\nSSP2-4.5",
+               "Year 2075\nSSP3-7.0",
+               "Year 2075\nSSP5-8.5")
+  )  
   # Plot
-  plot <- ggplot(vip_tab, aes(x = scenario, y = Variable)) +
+    plot <- ggplot(vip_tab, aes(x = scenario, y = Variable)) +
     geom_point(aes(size = VIP, color = coef_sign), shape=16) +
     scale_size_area(max_size = 10, breaks = c(1,2,3,4), name = "VIP") +
     scale_color_manual(values = c("negative"="firebrick", "zero" = "grey70","positive"="cadetblue"), name="Coefficient")  +
     labs(
-      title = paste(scenario),
+      title = unique(as.character(vip_tab$scenario)),
       y     = "Variablen",
       x     = "Variable Importance in Projection (VIP)"
     ) +
@@ -146,47 +155,47 @@ run_plsr_for_scenario <- function(sim_list, scenario = "today") {
 
 VIP_plot<-function(sim_results)
 {
-  # -----------------------------
-  # Labels (deutsche Namen)
-  # -----------------------------
-  
-  # -----------------------------
-  # Szenarien-Liste
-  # -----------------------------
-  scenarios <- c("today", "ssp1", "ssp2", "ssp3", "ssp5")
-  #sim_results <- readRDS("asparagus/MC_results/MC_results_scenarios.RDS")
-  # Alle Szenarien laufen lassen
-  results <- lapply(scenarios, function(scen) {
-    out <- run_plsr_for_scenario(sim_results, scen)
-    out$scenario <- scen
-    return(out)
-  })
-  names(results) <- scenarios
-  
-  # # -----------------------------
-  # # Einzelplot (Beispiel ssp370)
-  # # -----------------------------
-  # results[["ssp3"]]$plot
-  # -----------------------------
-  # Theme für plots
-  # -----------------------------
-  no_x <- theme(axis.title.x = element_blank(),
-                axis.text.x  = element_blank(),
-                axis.ticks.x = element_blank())
-  no_y <- theme(axis.title.y = element_blank(),
-                axis.text.y = element_blank(),
-                axis.ticks.y = element_blank())
-  # -----------------------------
-  # Vergleichsplot (alle Szenarien nebeneinander)
-  # -----------------------------
-  
-  
-  comparison_plot <- (results[["today"]]$plot + no_x+ theme(legend.position = "none"))+
-    (results[["ssp1"]]$plot + no_x + no_y+ theme(legend.position = "none"))+
-    (results[["ssp2"]]$plot + no_x + no_y+ theme(legend.position = "none"))+
-    (results[["ssp3"]]$plot + no_x + no_y+ theme(legend.position = "none"))+
-    (results[["ssp5"]]$plot + no_x + no_y)+
-    plot_layout(ncol = 5)
-  
-  return(comparison_plot)
+# -----------------------------
+# Labels (deutsche Namen)
+# -----------------------------
+
+# -----------------------------
+# Szenarien-Liste
+# -----------------------------
+scenarios <- c("today", "ssp1", "ssp2", "ssp3", "ssp5")
+#sim_results <- readRDS("asparagus/MC_results/MC_results_scenarios.RDS")
+# Alle Szenarien laufen lassen
+results <- lapply(scenarios, function(scen) {
+  out <- run_plsr_for_scenario(sim_results, scen)
+  out$scenario <- scen
+  return(out)
+})
+names(results) <- scenarios
+
+# # -----------------------------
+# # Einzelplot (Beispiel ssp370)
+# # -----------------------------
+# results[["ssp3"]]$plot
+# -----------------------------
+# Theme für plots
+# -----------------------------
+no_x <- theme(axis.title.x = element_blank(),
+              axis.text.x  = element_blank(),
+              axis.ticks.x = element_blank())
+no_y <- theme(axis.title.y = element_blank(),
+              axis.text.y = element_blank(),
+              axis.ticks.y = element_blank())
+# -----------------------------
+# Vergleichsplot (alle Szenarien nebeneinander)
+# -----------------------------
+
+
+comparison_plot <- (results[["today"]]$plot + no_x+ theme(legend.position = "none"))+
+  (results[["ssp1"]]$plot + no_x + no_y+ theme(legend.position = "none"))+
+  (results[["ssp2"]]$plot + no_x + no_y+ theme(legend.position = "none"))+
+  (results[["ssp3"]]$plot + no_x + no_y+ theme(legend.position = "none"))+
+  (results[["ssp5"]]$plot + no_x + no_y)+
+  plot_layout(ncol = 5)
+
+return(comparison_plot)
 }

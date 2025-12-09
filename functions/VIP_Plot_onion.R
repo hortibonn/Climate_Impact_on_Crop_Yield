@@ -234,7 +234,7 @@ make_onion_vip_combined_plot <- function(mcSimulation_results,
       theme(
         plot.title         = element_text(hjust = 0.5),
         axis.text.y        = element_text(hjust = 0),
-        legend.position    = "right",
+        legend.position    = "bottom",
         legend.title.align = 0,
         legend.box         = "vertical",
         legend.key.height  = grid::unit(0.6, "cm"),
@@ -286,7 +286,7 @@ make_onion_vip_combined_plot <- function(mcSimulation_results,
         p + no_x + no_y
       } else {
         # middle: remove x & y, no legend
-        p + no_x + no_y + theme(legend.position = "none")
+        p + no_x + no_y #+ theme(legend.position = "none")
       }
     })
     

@@ -1,8 +1,7 @@
 plot_yield_asparagus <- function(sim_results_scen)
 {
   #easy yield graph
-  # sim_results_scen <-
-  #   readRDS("asparagus/MC_results/MC_results_scenarios.RDS")
+  #sim_results_scen <-readRDS("/asparagus/MC_results/MC_results_scenarios.RDS")
   
   results_marktyield_today <-
     sim_results_scen$y %>% select(ends_with("_today")) %>% rename_with( ~ str_remove(.x, "_today"))
@@ -17,10 +16,10 @@ plot_yield_asparagus <- function(sim_results_scen)
   
   #adding row for scenario identification
   results_marktyield_today$scenario <- as.character("Year 2020")
-  results_marktyield_126$scenario <- as.character("Year 2075\nSSP1 2.6")
-  results_marktyield_245$scenario <- as.character("Year 2075\nSSP2 4.5")
-  results_marktyield_370$scenario <- as.character("Year 2075\nSSP3 7.0")
-  results_marktyield_585$scenario <- as.character("Year 2075\nSSP5 8.5")
+  results_marktyield_126$scenario <- as.character("Year 2075\nSSP1-2.6")
+  results_marktyield_245$scenario <- as.character("Year 2075\nSSP2-4.5")
+  results_marktyield_370$scenario <- as.character("Year 2075\nSSP3-7.0")
+  results_marktyield_585$scenario <- as.character("Year 2075\nSSP5-8.5")
   #all together
   results_yield_all <-
     rbind(
@@ -73,7 +72,7 @@ plot_yield_asparagus <- function(sim_results_scen)
       aes(
         x = scenario,
         y = max(results_yield_all_longer$value, na.rm = TRUE) + 1,
-        label = paste0(round(percent), "%")
+        label = paste0(round(100-percent), "%")
       ),
       inherit.aes = FALSE,
       size = 4
@@ -86,18 +85,24 @@ plot_yield_asparagus <- function(sim_results_scen)
     ) +
     scale_x_discrete(name = "Klimaszenario") +
     scale_y_continuous(name = "Ertrag [dt/ha]") +
-    geom_hline(yintercept = 56.3, linetype = "dashed",) +
-    annotate(
-      geom = "text",
-      x =  -Inf,
-      y = 53,
-      label = c("56.3 dt/ha\nErtrag 2020"),
-      color = "black",
-      fontface = "plain",
-      hjust = 0,
-      vjust = 1,
-      angle = 0,
-      size = 3
+    geom_hline(
+      data = data.frame(yint = 56.3),
+      aes(yintercept = yint, linetype = "baseline"),
+      linewidth = 0.5,
+      colour = "black"
+    ) +
+    scale_linetype_manual(
+      name   = NULL,
+      values = c(baseline = "dashed"),
+      labels = c(baseline = "Durchschnittsertrag Regierungsbezirk\nKöln 56,3 dt/ha)")
+    )+
+    scale_fill_discrete(
+      name   = NULL,
+      labels = c("Potentieller Ertrag\nohne Schäden","Vermarktbarer Ertrag" )
+    )+
+    guides(
+      linetype = guide_legend(order = 1),
+      fill     = guide_legend(order = 2)
     )
   
   return(plot)

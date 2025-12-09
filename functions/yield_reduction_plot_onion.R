@@ -118,12 +118,12 @@ make_yield_reduction_heatmap <- function(mcSimulation_results) {
   ) +
     geom_tile(color = "white") +
     scale_fill_gradient(
-      name   = "mittlere\nErtragsminderung [%]",
+      name   = "mittlere\nErtragsminderung [%]    ",
       low    = "white",
       high   = "firebrick"
     ) +
     labs(
-      title = "Ertragsminderungen nach Phase und Stressfaktor",
+      #title = "Ertragsminderungen",
       x     = "Szenario",
       y     = "Stressfaktor (Phase)"
     ) +
@@ -134,11 +134,19 @@ make_yield_reduction_heatmap <- function(mcSimulation_results) {
     ) +
     theme_minimal(base_size = 12) +
     theme(
-      plot.title        = element_text(hjust = 0.5),
-      axis.text.y       = element_text(size = 9),
-      axis.text.x       = element_text(angle = 45, hjust = 1),
+      plot.title        = element_text(hjust = 0.5, size = 12),
+      axis.text.y       = element_text(size = 12),   # LEFT: labels of stressors
+      axis.title.y      = element_text(size = 14),   # LEFT: "Stressfaktor (Phase)"
+      axis.text.x       = element_text(angle = 45, hjust = 1, size = 11),
       strip.placement   = "outside",
-      strip.text.y.left = element_text(size=12 , angle = 0, face = "bold")
+      strip.text.y.left = element_text(angle = 0, face = "bold", size = 16),
+      strip.text.y.right = element_text(angle = 270,  size = 11), #face = "bold",
+      
+      panel.spacing.y    = unit(1.2, "lines"),     # space *between* phases
+      plot.margin        = margin(5.5, 40, 5.5, 5.5),  # extra room on the right
+      
+      legend.title      = element_text(size = 12),   # RIGHT: legend title
+      legend.text       = element_text(size = 10)    # RIGHT: legend tick labels
     )
   
   return(heatmap_plot)

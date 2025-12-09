@@ -347,30 +347,30 @@ ui <- fluidPage(
               conditionalPanel(
                 condition = "output.show_results",
                 uiOutput("download_ui"),
-                br(), br(),br(), br(),
+                br(), #br(),br(), br(),
                 #downloadButton("downloadImage", "Konzeptmodell herunterladen"),
                 
-                br(), br(),
+                br(), #br(),
                 div(class = "scroll-xy",
-                    plotOutput("plot1_ui", height = "550px"),
+                    plotOutput("plot1_ui", height = "700px"),
                 ),
                 br(),
                 uiOutput("plot1_dl_ui"),
-                br(), br(),br(), br(),
+                br(), #br(),br(), br(),
                 
                 div(class = "scroll-xy",
-                    plotOutput("plot2_ui", height = "550px"),
+                    plotOutput("plot2_ui", height = "900px"),
                 ),
-                br(),
-                uiOutput("plot2_dl_ui"),
                 br(), br(),br(), br(),
+                uiOutput("plot2_dl_ui"),
+                br(), #br(),br(), br(),
                 
                 div(class = "scroll-xy",
-                    plotOutput("plot3_ui", height = "700px"),
+                    plotOutput("plot3_ui", height = "900px"),
                 ),
                 br(),
                 uiOutput("plot3_dl_ui"),
-                br(), br(),br(), br(),
+                br(), #br(),br(), br(),
                 
                 # div(class = "scroll-xy",
                 #     plotOutput("plot4_ui", height = "550px"),
@@ -653,7 +653,7 @@ server <- function(input, output, session) {
     files <- list.files(dir, pattern = "\\.rds$", full.names = TRUE)
     
     if (length(files) >= 1000) {
-      showModal(modalDialog("There are too many save states on the server. Please contact the Admin if you need to save more.",
+      showModal(modalDialog("Es gibt zu viele Speicherstände auf dem Server. Bitte wenden Sie sich an den Administrator, wenn Sie weitere Speicherstände benötigen.",
                             #showModal(modalDialog("You already have several versions. Delete one first.",
                             easyClose = TRUE))
       return()
@@ -813,9 +813,22 @@ server <- function(input, output, session) {
   add_meta <- function(p, title, subtitle = NULL, caption = NULL,
                        legend = "bottom") {
     
+    # p +
+    #   labs(title = title, subtitle = subtitle, caption = caption) +
+    #   theme(
+    
     p +
-      labs(title = title, subtitle = subtitle, caption = caption) +
+      # global title / subtitle / caption for the whole patchwork
+      plot_annotation(
+        title    = title,
+        subtitle = subtitle,
+        caption  = caption
+      ) &
+      # this theme is applied to ALL subplots *and* the annotation
       theme(
+        plot.title.position   = "plot",
+        plot.caption.position = "plot",
+        
         plot.title = element_textbox_simple(
           size   = 24,
           face   = "bold",
@@ -839,8 +852,8 @@ server <- function(input, output, session) {
         ),
         axis.title = element_text(size = 18),
         axis.text = element_text(size = 16),
-        legend.text     = element_text(size = 16, hjust = 0.5),
-        legend.position = legend,
+        #legend.text     = element_text(size = 16, hjust = 0.5),
+        #legend.position = legend,
         plot.margin = margin(t = 40, r = 10, b = 40, l = 10, unit = "pt")
         
       )  }
@@ -866,20 +879,8 @@ server <- function(input, output, session) {
   observeEvent(mcSimulation_results(), {
     mc_data <- mcSimulation_results()
     # Provide correct variables for plots
-    # plot1 <-
-    #   decisionSupport::plot_distributions(mcSimulation_object = mc_data, 
-    #                      vars =c("marketable_yield_today", "marketable_yield_ssp1", "marketable_yield_ssp2", "marketable_yield_ssp3", "marketable_yield_ssp5"),
-    #                      old_names = c("marketable_yield_today", "marketable_yield_ssp1", "marketable_yield_ssp2", "marketable_yield_ssp3", "marketable_yield_ssp5"),
-    #                      new_names = c("marketable yield\n2020", "marketable yield\n2075 SSP1 scenario", "marketable yield\n2075 SSP2 scenario", "marketable yield\n2075 SSP3 scenario", "marketable yield\n2075 SSP5 scenario"),
-    #                      method = 'boxplot', 
-    #                      base_size = 20, 
-    #                      x_axis_name = "Compare of marketable yield outcomes")
-    # plot1 <- plot1 + ggplot2::coord_flip()
-    
     crop <- selected_crop()
-    # bind into the function's environment:
-    
-    
+    # bind into the function's environment
     if (crop=="Spargel"){
       #restructure output, write additional parameters that are used in the model
       #form output to input side for analysis
@@ -901,7 +902,7 @@ server <- function(input, output, session) {
       source("functions/plot_yield_asparagus.R")
       plot1<-plot_yield_asparagus(mc_data_order) |>
         add_meta(
-          title    = "Abb 1. Ertrag für *2020* und *2075* unter verschiedenen Klimaszenarien",
+          title    = "Abb 1. Ertrag für 2020 und 2075 unter verschiedenen Klimaszenarien",
           #subtitle = "Difference between agroforestry and treeless farming under identical conditions",
           caption  = "Diese Abbildung zeigt den Unterschied zwischen dem potenziellen Ertrag (ohne Stressereignisse) und 
           dem tatsächlich erreichten Ertrag (unter Berücksichtigung aller simulierten Stressfaktoren und Qualitätsverluste) 
@@ -914,22 +915,22 @@ server <- function(input, output, session) {
           über mittlere Veränderungen (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung 
           (SSP3–7.0 und SSP5–8.5).Die Darstellung ermöglicht es Landwirtinnen und Landwirten sowie Entscheidungsträgern einzuschätzen, 
           wie Klimawandel und Stressereignisse zukünftige Erträge beeinflussen können und welche Spannbreite realistischer 
-          Ernteergebnisse zu erwarten ist."
-          , legend = "none")
+          Ernteergebnisse zu erwarten ist.")
+          #, legend = "none")
       
       source("functions/VIP_plot.R") 
       plot2<-VIP_plot(mc_data_order)|>
         add_meta(
           title    = "Abb 2. Bedeutung verschiedener Faktoren für den Ertrag für 2020 und 2075 in unterschiedlichen Klimaszenarien",
-          #subtitle = "Difference between agroforestry and treeless farming under identical conditions",
+          #subtitle = ''
           caption  = "Der VIP-Plot (Variable Importance in Projection) zeigt, welche Stressfaktoren die größten Unsicherheiten bei der Berechnung des Ertrags bedeuten. 
           Jeder Punkt repräsentiert einen Faktor; die Punktgröße gibt an, wie ausschlaggebend die Varianz des Faktors im statistischen Modell 
           (PLSR) war.Je größer der Punkt, desto stärker trägt der entsprechende Stressor zur Varianz im Ertrag bei. 
             Diese Darstellung zeigt nicht die Höhe der Ertragsminderung selbst, sondern welche Faktoren für den Ertrag entscheidend sind – 
             also wo Risikomanagement, Sortenwahl oder Schutzmaßnahmen den größten Nutzen bringen können. Die SSP-Szenarien zeigen mögliche 
             zukünftige Klimaentwicklungen: von starkem Klimaschutz mit geringer Erwärmung (SSP1–2.6) über mittlere Veränderungen 
-          (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung (SSP3–7.0 und SSP5–8.5)."
-          , legend = "none")
+          (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung (SSP3–7.0 und SSP5–8.5).")
+          #, legend = "none")
       
       # No plot3 for Spargel → clear outputs
       output$plot3_ui    <- renderPlot(NULL)
@@ -941,8 +942,8 @@ server <- function(input, output, session) {
       source("functions/yield_boxplot_onion.R")
       plot1<-plot_yield_onion(mc_data) |>
         add_meta(
-          title    = "Abb 1. Ertrag für *2020* und *2075* unter verschiedenen Klimaszenarien",
-          #subtitle = "Difference between agroforestry and treeless farming under identical conditions",
+          title    = "Abb 1. Ertrag für 2020 und 2075 unter verschiedenen Klimaszenarien",
+          #subtitle = ''
           caption  = "Diese Abbildung zeigt den Unterschied zwischen dem potenziellen Ertrag (ohne Stressereignisse) und dem tatsächlich erreichten Ertrag 
           (unter Berücksichtigung aller simulierten Stressfaktoren). Für jedes Klimaszenario werden die Ertragsverteilungen aus 
           Monte-Carlo-Simulationen dargestellt. Die Prozentwerte über den Boxplots geben an, wie stark der durchschnittliche Ertrag im jeweiligen Szenario 
@@ -951,35 +952,31 @@ server <- function(input, output, session) {
           über mittlere Veränderungen (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung (SSP3–7.0 und SSP5–8.5).
           Die Darstellung ermöglicht es Landwirtinnen und Landwirten sowie Entscheidungsträgern einzuschätzen, wie Klimawandel und Stressereignisse 
           zukünftige Zwiebelerträge beeinflussen können und welche Spannbreite realistischer Ernteergebnisse zu erwarten ist.")
-          #, legend = "none")
-
+      #, legend = "none")
+      
       source("functions/VIP_Plot_onion.R")
       plot2<-make_onion_vip_combined_plot(mc_data) |>
-      add_meta(
-        title    = "Abb 2. Bedeutung verschiedener Faktoren für den Ertrag für 2020 und 2075 in unterschiedlichen Klimaszenarien",
-        #subtitle = "Difference between agroforestry and treeless farming under identical conditions",
-        br(),
-        caption  = "Der VIP-Plot (Variable Importance in Projection) zeigt, welche Stressfaktoren die größten Unsicherheiten bei der Berechnung des Ertrags bedeuten.
-          Jeder Punkt repräsentiert einen Faktor; die Punktgröße gibt an, wie ausschlaggebend die Varianz des Faktors im statistischen Modell
-          (PLSR) war.Je größer der Punkt, desto stärker trägt der entsprechende Stressor zur Varianz im Ertrag bei.
-            Diese Darstellung zeigt nicht die Höhe der Ertragsminderung selbst, sondern welche Faktoren für den Ertrag entscheidend sind –
-            also wo Risikomanagement, Sortenwahl oder Schutzmaßnahmen den größten Nutzen bringen können. Die SSP-Szenarien zeigen mögliche
-            zukünftige Klimaentwicklungen: von starkem Klimaschutz mit geringer Erwärmung (SSP1–2.6) über mittlere Veränderungen
-          (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung (SSP3–7.0 und SSP5–8.5).")
-        #, legend = "none")
+        add_meta(
+          title    = "Abb 2. Bedeutung verschiedener Faktoren für den Ertrag für 2020 und 2075 in unterschiedlichen Klimaszenarien",
+          #subtitle = '',
+          caption  = "Der VIP-Plot (Variable Importance in Projection) zeigt, welche Stressfaktoren den größten Einfluss auf den Zwiebelertrag haben. 
+        Jeder Punkt repräsentiert einen Faktor; die Punktgröße gibt an, wie wichtig der Faktor im statistischen Modell (PLSR) war.Je größer der Punkt, 
+        desto stärker trägt der entsprechende Stressor zur Varianz im Ertrag bei. Diese Darstellung zeigt nicht die Höhe der Ertragsminderung selbst, 
+        sondern welche Faktoren für den Ertrag entscheidend sind – also wo Risikomanagement, Sortenwahl oder Schutzmaßnahmen den größten Nutzen bringen 
+        können. Die SSP-Szenarien zeigen mögliche zukünftige Klimaentwicklungen: von starkem Klimaschutz mit geringer Erwärmung (SSP1–2.6) über mittlere 
+        Veränderungen (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung (SSP3–7.0 und SSP5–8.5).")
+      #, legend = "none")
       
       source("functions/yield_reduction_plot_onion.R")
       plot3<-make_yield_reduction_heatmap(mc_data) |>
         add_meta(
           title    = "Abb.3 Mittlere Ertragsminderung nach Stressfaktor und Wachstumsphase für 2020 und 2075 unter verschiedenen Klimaszenarien",
-          #subtitle = "Difference between agroforestry and treeless farming under identical conditions",
-
-          caption  = "Diese Heatmap visualisiert die durchschnittliche prozentuale Ertragsminderung landwirtschaftlicher Kulturen 
-          durch verschiedene Stressfaktoren in den Hauptwachstumsphasen der Pflanze. Die Intensität der Rotfärbung zeigt an, 
-          wie stark ein Stressfaktor den Ertrag mindert: Dunkelrot markiert die größten Verluste. Die Ergebnisse werden für das 
-          Basisjahr 2020 und für das Jahr 2075 unter vier Klimaszenarien (SSP) dargestellt – von starkem Klimaschutz (SSP1–2.6) 
-          bis zu extremen Emissionen (SSP5–8.5).")
-          #, legend = "none")
+          #subtitle = '',
+          caption  = "Diese Heatmap visualisiert die durchschnittliche prozentuale Ertragsminderung im Zwiebelanbau durch verschiedene Stressfaktoren 
+          in den Hauptwachstumsphasen der Pflanze. Die Intensität der Rotfärbung zeigt an, wie stark ein Stressfaktor den Ertrag mindert: 
+          Dunkelrot markiert die größten Verluste. Die Ergebnisse werden für das Basisjahr 2020 und für das Jahr 2075 unter vier Klimaszenarien (SSP) 
+          dargestellt – von starkem Klimaschutz (SSP1–2.6) bis zu extremen Emissionen (SSP5–8.5).")
+      #, legend = "none")
     }
     # source("functions/plot_yield_asparagus.R")
     # plot1<-plot_yield_asparagus(mc_data_order)
