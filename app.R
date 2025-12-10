@@ -432,15 +432,15 @@ ui <- fluidPage(
                 "Projekt finanziert durch",
                 tags$br(),
               ),
-              tags$img(src = "mlv-logo.png", height = "100px",
-                       style = "margin-right: auto; max-width: 100%; height: auto; cursor: pointer;"),
+              tags$img(src = "mlv-logo.png", height = "40px",
+                       style = "margin-right: auto; max-width: 60%; height: auto; cursor: pointer;"),
               # #Provide tool usage disclaimer
               tags$p(
                 tags$a("Disclaimer", href = "https://www.gartenbauwissenschaften.uni-bonn.de/imprint",
                        target = "_blank"),
                 " | ",  
                 #Provide the correct link once the app and codes are hosted in HortiBonn repo
-                tags$a("View Source", href = "https://github.com/hortibonn/Climate_Impact_on_Crop_Yield", # temp link
+                tags$a("View Source Code", href = "https://github.com/hortibonn/Climate_Impact_on_Crop_Yield", # temp link
                        target = "_blank")
               ),
               br(), br(),br(), br(),
@@ -1359,5 +1359,6 @@ server <- function(input, output, session) {
   
   # Feedback logic end ---------------------------
 }
+
 
 shinyApp(ui = ui, server = server)
