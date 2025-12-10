@@ -226,12 +226,12 @@ ui <- fluidPage(
     # Provide Title of the DA model
     tags$h2(tags$div("Auswirkungen des Klimawandels auf künftige Ernteerträge in 2075"),
             #tags$div("conventional asparagus growing in 2075"),
-            style = "text-align: center; flex-grow: 1;"),
+            style = "text-align: center; flex-grow: 1;")
     # Provide Project Logo
     # tags$a(href = "https://www.uni-bonn.de", target = "_blank",
-    tags$img(src = "mlv-logo.png", height = "100px",
-             style = "margin-right: auto; max-width: 30%; height: auto; cursor: pointer;")
-    # ),
+    # tags$img(src = "mlv-logo.png", height = "100px",
+    #          style = "margin-right: auto; max-width: 30%; height: auto; cursor: pointer;")
+    # # ),
   ),
   
   
@@ -336,11 +336,16 @@ ui <- fluidPage(
               br(), br(),
               
               ### Plots ----
+              
               conditionalPanel(
                 condition = "output.show_image",
                 #imageOutput("myImage"),
                 div(class = "scroll-xy",
                     imageOutput("myImage", height = "550px"),
+                    ),
+                tags$h6(
+                  "This is the conceptual model showing...",
+                  tags$br(),
                 ),
                 br(),
               ),
@@ -423,8 +428,12 @@ ui <- fluidPage(
               
               ### Requisites ----
               # Provide Funding declaration
-              # tags$img(src = "INRES_UniBonn.png", height = "100px",
-              #          style = "margin-right: auto; max-width: 100%; height: auto; cursor: pointer;"),
+              tags$h6(
+                "Projekt finanziert durch",
+                tags$br(),
+              ),
+              tags$img(src = "mlv-logo.png", height = "100px",
+                       style = "margin-right: auto; max-width: 100%; height: auto; cursor: pointer;"),
               # #Provide tool usage disclaimer
               tags$p(
                 tags$a("Disclaimer", href = "https://www.gartenbauwissenschaften.uni-bonn.de/imprint",
@@ -916,7 +925,7 @@ server <- function(input, output, session) {
           (SSP3–7.0 und SSP5–8.5).Die Darstellung ermöglicht es Landwirtinnen und Landwirten sowie Entscheidungsträgern einzuschätzen, 
           wie Klimawandel und Stressereignisse zukünftige Erträge beeinflussen können und welche Spannbreite realistischer 
           Ernteergebnisse zu erwarten ist.")
-          #, legend = "none")
+      #, legend = "none")
       
       source("functions/VIP_plot.R") 
       plot2<-VIP_plot(mc_data_order)|>
@@ -930,7 +939,7 @@ server <- function(input, output, session) {
             also wo Risikomanagement, Sortenwahl oder Schutzmaßnahmen den größten Nutzen bringen können. Die SSP-Szenarien zeigen mögliche 
             zukünftige Klimaentwicklungen: von starkem Klimaschutz mit geringer Erwärmung (SSP1–2.6) über mittlere Veränderungen 
           (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung (SSP3–7.0 und SSP5–8.5).")
-          #, legend = "none")
+      #, legend = "none")
       
       # No plot3 for Spargel → clear outputs
       output$plot3_ui    <- renderPlot(NULL)
