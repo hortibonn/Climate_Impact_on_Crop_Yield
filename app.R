@@ -1,8 +1,7 @@
-#backup version
-# RShiny app for UI and server; needs dynamic_helper.R function
 # Changes to be made to adapt in this script have been commented with 'Provide'
 
-# # Install + load libraries as required ----
+# Config ------------------------------------------------------
+## Install + load libraries as required  ------------------------------------------------------
 
 if (!requireNamespace("shiny", quietly = TRUE)) {
   install.packages("shiny")
@@ -143,7 +142,7 @@ if (!requireNamespace("pool", quietly = TRUE)) {
 }
 library(pool, warn.conflicts = F)
 
-# Load functins and inputs ----
+## Load functions ------------------------------------------------------
 # Provide Location of DA model script(s), dynamic-helper
 # source("functions/saveLoad-module.R")
 
@@ -166,6 +165,7 @@ source("functions/dynamic_helper_v3.R")
 # Feedback SQL helper
 source("functions/SQL_helper.R")
 
+## Load Inputs ------------------------------------------------------
 # Provide Location of excel workbook containing the input parameters (prepared for the dynamic-helper)
 file_path_vars <- "data/ASP_input_parameters_german2.xlsx"
 sheet_meta <- readxl::read_excel(file_path_vars, sheet = "sheet_names",
@@ -183,37 +183,63 @@ scenarios<-read.csv(scenario_path)
 # onion_weather<-readRDS(onion_weather_path)
 
 
-# Interface ----
+# UI ------------------------------------------------------
 ui <- fluidPage(
   
+  ## Theme ------------------------------------------------------
   theme = bs_theme(version = 5,
                    bootswatch = 'flatly',
                    base_font = font_google("Roboto")), 
   
   use_waiter(),
+  
+  ## Head ------------------------------------------------------
   # Set actual browser tab title and favicon
   tags$head(
+    ### Tab ------------------------------------------------------
     tags$title("Agriculture Decision Support Tool"),
     tags$link(rel = "shortcut icon", href = "INRES.png"),
     
-    tags$style(HTML("
-    /* Scroll wrapper: scrolls horizontally *and* vertically only when needed */
-    .scroll-xy {
-      overflow-x: auto;                 /* left–right scroll  */
-      overflow-y: auto;                 /* top–bottom scroll  */
-      -webkit-overflow-scrolling: touch;/* smooth on iOS      */
-      max-height: 80vh;                 /* optional: stop it taking more than
-                                         80 % of the viewport height       */
-  }
-  
-  /* Keep any Shiny plot inside that wrapper from shrinking */
-  .scroll-xy .shiny-plot-output {
-    min-width: 900px;                 /* choose your desktop width */
-  }
-                    ")
-    )
+    ### CSS ------------------------------------------------------
+    tags$style(HTML(
+      "
+      .flex-container {
+        display: flex;
+        justify-content: flex-start;  /* <– anchor left edge */
+        align-items: flex-start;
+        overflow: auto;               /* scroll if too big */
+        margin: 0 auto;
+      }
+      .flex-container img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+      .flex-container .shiny-plot-output {
+        min-width: 900px;  /* or whatever you designed for */
+        cursor: pointer;
+      }
+      #cm-image { cursor: pointer; }
+      "
+    )),
+    ### JS ------------------------------------------------------
+    tags$script(HTML("
+      // Click any element with class 'fullscreen-toggle' to toggle fullscreen
+      document.addEventListener('click', function(e) {
+        const box = e.target.closest('.fullscreen-toggle');
+        if (!box) return;
+        
+        if (!document.fullscreenElement) {
+          if (box.requestFullscreen) box.requestFullscreen();
+        } else {
+          if (document.exitFullscreen) document.exitFullscreen();
+        }
+      });
+      "
+    ))
   ),
-  ## Header ----
+  
+  ### Title ------------------------------------------------------
   tags$div(
     style = "display:flex; align-items:center;justify-content:space-between;
       width: 100% !important; margin: 20px; padding: 0 15px;
@@ -235,7 +261,7 @@ ui <- fluidPage(
   ),
   
   
-  ## Sidebar ----
+  ## Sidebar ------------------------------------------------------
   sidebarLayout(
     sidebarPanel(width = 4,
                  style = "height: 100%; overflow-y: auto",
@@ -250,8 +276,8 @@ ui <- fluidPage(
                                   icon = icon("play"), class = "btn-primary")
                    ),
                    br(),
-                   ### Accordions ----
-                   #### Save/Load functionality ----
+                   ### Accordions ------------------------------------------------------
+                   #### Save/Load functionality ------------------------------------------------------
                    # saveLoadUI("savemod"),
                    accordion_panel(
                      title = "Projekt speichern/laden", value="save_load", icon = icon("folder-open"), #id="sll",
@@ -270,7 +296,7 @@ ui <- fluidPage(
                        downloadButton("download_csv", label = tagList(icon("download"), "Aktuelle Eingaben herunterladen (.csv)"))
                      )
                    ),
-                   #### Crop filter ----
+                   #### Crop filter ------------------------------------------------------
                    accordion_panel(
                      title = "Pflanzenauswahl",
                      icon = icon("clipboard-question"),
@@ -287,7 +313,7 @@ ui <- fluidPage(
                      )
                    ),
                    
-                   #### Expertise filter ----
+                   #### Expertise filter ------------------------------------------------------
                    accordion_panel(
                      title = "Fachgebietskategorien",
                      icon = icon("clipboard-question"),
@@ -304,14 +330,15 @@ ui <- fluidPage(
                      )
                    ),
                    
-                   #### Dynamic elements ----
+                   #### Dynamic elements ------------------------------------------------------
                    uiOutput("dynamic_element_ui")
                  )
     ),
     
-    ## Main Panel ----
+    ## Main Panel ------------------------------------------------------
     mainPanel(width = 8,
-              ###Tool description ----
+              
+              ### App description text ------------------------------------------------------
               # Provide brief explanation of the DA model
               tags$h6(
                 "Diese App simuliert die potenziellen Erträge der ausgewählten Kulturpflanze im Jahr 2075 unter verschiedenen SSP-Klimaszenarien.",
@@ -335,81 +362,42 @@ ui <- fluidPage(
               ),
               br(), br(),
               
-              ### Plots ----
               
+              ### Conceptual Model ------------------------------------------------------
               conditionalPanel(
                 condition = "output.show_image",
-                #imageOutput("myImage"),
-                div(class = "scroll-xy",
-                    imageOutput("myImage", height = "550px"),
-                    ),
-                tags$h6(
-                  "This is the conceptual model showing...",
-                  tags$br(),
+                div(
+                  class = "flex-container fullscreen-toggle",
+                  style = "max-width: 65%;",
+                  uiOutput("concepImg")
                 ),
-                br(),
-              ),
-              conditionalPanel(
-                condition = "output.show_results",
+                br(), br(),
                 uiOutput("download_ui"),
-                br(), #br(),br(), br(),
-                #downloadButton("downloadImage", "Konzeptmodell herunterladen"),
-                
-                br(), #br(),
-                div(class = "scroll-xy",
-                    plotOutput("plot1_ui", height = "700px"),
-                ),
-                br(),
-                uiOutput("plot1_dl_ui"),
-                br(), #br(),br(), br(),
-                
-                div(class = "scroll-xy",
-                    plotOutput("plot2_ui", height = "900px"),
-                ),
-                br(), br(),br(), br(),
-                uiOutput("plot2_dl_ui"),
-                br(), #br(),br(), br(),
-                
-                div(class = "scroll-xy",
-                    plotOutput("plot3_ui", height = "900px"),
-                ),
-                br(),
-                uiOutput("plot3_dl_ui"),
-                br(), #br(),br(), br(),
-                
-                # div(class = "scroll-xy",
-                #     plotOutput("plot4_ui", height = "550px"),
-                # ),
-                # br(),
-                # uiOutput("plot4_dl_ui"),
-                # br(), br(),br(), br(),
-                # 
-                # div(class = "scroll-xy",
-                #     plotOutput("plot5_ui", height = "550px"),
-                # ),
-                # br(),
-                # uiOutput("plot5_dl_ui"),
-                # br(), br(),br(), br(),
-                
-                # div(class = "scroll-xy",
-                # plotOutput("plot6_ui", height = "550px"),
-                # ),
-                # br(),
-                # uiOutput("plot6_dl_ui"),
-                # br(), br(),br(), br(),
-                # 
-                # div(class = "scroll-xy", plotOutput("plot7_ui", height = "550px"),),
-                # br(),
-                # uiOutput("plot7_dl_ui"),
-                # br(), br(),br(), br(),
-                
-                # div(class = "scroll-xy", 
-                #     plotOutput("plot8_ui", height = "550px"),
-                # ),
-                # br(),
-                # uiOutput("plot8_dl_ui"),
+                br(), br()
               ),
               
+              ### Plots ------------------------------------------------------
+              conditionalPanel(
+                condition = "output.show_results",
+                br(),
+                
+                uiOutput("plot1_container"),
+                br(),
+                uiOutput("plot1_dl_ui"),
+                br(),
+                
+                uiOutput("plot2_container"),
+                br(),
+                uiOutput("plot2_dl_ui"),
+                br(),
+                
+                uiOutput("plot3_container"),
+                br(),
+                uiOutput("plot3_dl_ui"),
+              )
+              ,
+              
+              ### Feedback ------------------------------------------------------
               if (NOTES_ENABLED) {
                 tagList(
                   h4("Geben Sie uns Feedback"),
@@ -426,7 +414,7 @@ ui <- fluidPage(
                 NULL
               },
               
-              ### Requisites ----
+              ### Requisites ------------------------------------------------------
               # Provide Funding declaration
               tags$h6(
                 "Projekt finanziert durch",
@@ -451,11 +439,10 @@ ui <- fluidPage(
 )
 
 
-# Server ----
+# Server ------------------------------------------------------
 server <- function(input, output, session) {
   
-  ## Dynamic UI inputs ----
-  
+  ## Dynamic UI START ------------------------------------------------------
   # read in input xlsx file
   excelData <- reactive({
     sheet_number <- seq_along(sheet_names)+1
@@ -466,56 +453,6 @@ server <- function(input, output, session) {
     })
     names(all_sheets) <- sheet_names
     all_sheets
-  })
-  
-  ## Dynamic expertise-filter module ----
-  # helper that sanitises category names into safe IDs
-  sanitize_id <- function(x) gsub("[^A-Za-z0-9]", "_", x)
-  
-  # all categories across every sheet
-  categories <- reactive({
-    cats <- unique(unlist(lapply(excelData(), function(df) df$Expertise)))
-    cats <- cats[!is.na(cats) & cats != ""]
-    trimws(unique(unlist(strsplit(cats, ";"))))
-  })
-  
-  # all crop across every sheet from input excel
-  crop_categories <- reactive({
-    crop_cats <- unique(unlist(lapply(excelData(), function(df) df$Crop)))
-    crop_cats <- crop_cats[!is.na(crop_cats) & crop_cats != ""]
-    trimws(unique(unlist(strsplit(crop_cats, ";"))))
-  })
-  
-  # Expertise filter UI (unchanged)
-  output$category_filter_ui <- renderUI({
-    if (length(categories()) == 0) return(NULL)
-    tagList(lapply(categories(), function(cat){
-      checkboxInput(paste0("cat_", sanitize_id(cat)), cat, value = FALSE)
-    }))
-  })
-  
-  # Crop filter UI (prefix -> crop_)
-  output$crop_filter_ui <- renderUI({
-    crops <- crop_categories()
-    if (!length(crops)) return(NULL)
-    
-    tagList(
-      # group them in a container so we can scope the JS
-      tags$div(class = "crop-filter",
-               lapply(crops, function(crop_cat){
-                 checkboxInput(paste0("crop_", sanitize_id(crop_cat)), crop_cat, value = FALSE)
-               })
-      ),
-      # JS: when one crop box is checked, uncheck all others in the same container
-      tags$script(HTML("
-      $(document).on('change', '.crop-filter input[type=checkbox]', function(){
-        var $box = $(this);
-        if ($box.is(':checked')) {
-          $('.crop-filter input[type=checkbox]').not($box).prop('checked', false).trigger('change');
-        }
-      });
-    "))
-    )
   })
   
   # util: turns a category vector into a JS condition 
@@ -579,8 +516,67 @@ server <- function(input, output, session) {
     tagList(panels)   # render the list
   })
   
+  ## Dynamic UI inputs END
   
-  ## Save, Load and Delete module
+  
+  
+  ## Dynamic expertise-filter module START ------------------------------------------------------
+  # helper that sanitises category names into safe IDs
+  sanitize_id <- function(x) gsub("[^A-Za-z0-9]", "_", x)
+  
+  # all categories across every sheet
+  categories <- reactive({
+    cats <- unique(unlist(lapply(excelData(), function(df) df$Expertise)))
+    cats <- cats[!is.na(cats) & cats != ""]
+    trimws(unique(unlist(strsplit(cats, ";"))))
+  })
+  
+  # all crop across every sheet from input excel
+  crop_categories <- reactive({
+    crop_cats <- unique(unlist(lapply(excelData(), function(df) df$Crop)))
+    crop_cats <- crop_cats[!is.na(crop_cats) & crop_cats != ""]
+    trimws(unique(unlist(strsplit(crop_cats, ";"))))
+  })
+  
+  # Expertise filter UI (unchanged)
+  output$category_filter_ui <- renderUI({
+    if (length(categories()) == 0) return(NULL)
+    tagList(lapply(categories(), function(cat){
+      checkboxInput(paste0("cat_", sanitize_id(cat)), cat, value = FALSE)
+    }))
+  })
+  
+  # Crop filter UI (prefix -> crop_)
+  output$crop_filter_ui <- renderUI({
+    crops <- crop_categories()
+    if (!length(crops)) return(NULL)
+    
+    tagList(
+      # group them in a container so we can scope the JS
+      tags$div(class = "crop-filter",
+               lapply(crops, function(crop_cat){
+                 checkboxInput(paste0("crop_", sanitize_id(crop_cat)), crop_cat, value = FALSE)
+               })
+      ),
+      # JS: when one crop box is checked, uncheck all others in the same container
+      tags$script(HTML("
+                           $(document).on('change', '.crop-filter input[type=checkbox]', function(){
+                             var $box = $(this);
+                             if ($box.is(':checked')) {
+                               $('.crop-filter input[type=checkbox]').not($box).prop('checked', false).trigger('change');
+                             }
+                           });
+                       "
+      ))
+    )
+  })
+  
+  ## Dynamic expertise-filter module END
+  
+  
+  
+  ## Save/Load functionality START ------------------------------------------------------
+  # Save, Load and Delete module
   all_inputs <- reactive({
     names(input)[grepl("(_c$|_p$|_t$|_n$|_cond$)", names(input))]
   })
@@ -633,7 +629,6 @@ server <- function(input, output, session) {
     input_file
   })
   
-  ## Save/Load functionality ----
   # saveLoadServer("savemod", current_input_table)
   # Provide Folder name instead of the current 'Germany' to store user saves
   get_base_dir <- function() {
@@ -729,9 +724,78 @@ server <- function(input, output, session) {
     if (length(checked) == 0) return(NULL)
     sub("^crop_", "", checked[1])
   })
+  ## Save/Load functionality END
   
   
-  ## Monte Carlo Simulation ----
+  
+  
+  # Conceptual Model image when Crop selected START ------------------------------------------------------
+  # image flag
+  output$show_image <- reactive({
+    !is.null(selected_crop())
+  })
+  outputOptions(output, "show_image", suspendWhenHidden = FALSE)
+  
+  # image info
+  img_info <- eventReactive(selected_crop(), {
+    crop <- selected_crop()
+    validate(need(!is.null(crop), "Bitte zuerst eine Nutzpflanze auswählen."))
+    
+    crop_lower <- tolower(crop)
+    
+    file <- if (crop_lower == "spargel") {
+      "Spargel_CM.png"
+    } else if (crop_lower == "zwiebel") {
+      "Zwiebel_CM.jpeg"
+    } else {
+      NULL
+    }
+    
+    list(
+      crop = crop,
+      file = file
+    )
+  })
+  
+  output$concepImg <- renderUI({
+    info <- img_info()
+    req(info$file)
+    
+    tags$img(
+      src = info$file,
+      alt = paste("Image for", info$crop),
+      id  = "cm-image"
+    )
+  })
+  
+  output$download_ui <- renderUI({
+    req(img_info())
+    div(
+      style = "text-align: center;",
+      downloadButton("downloadImage", "Bild herunterladen")
+    )
+  })
+  
+  output$downloadImage <- downloadHandler(
+    filename = function() {
+      info <- img_info()
+      req(info)
+      paste0(tolower(info$crop), ".png")
+    },
+    content = function(file) {
+      info <- img_info()
+      req(info)
+      from <- file.path("www", info$file)
+      file.copy(from = from, to = file, overwrite = TRUE)
+    }
+  )
+  
+  # Conceptual Model image when Crop selected END 
+  
+  
+  
+  ## Monte Carlo Simulation AND Plotting START ------------------------------------------------------
+  ### Monte Carlo Simulation START ------------------------------------------------------
   mcSimulation_results <- eventReactive(input$run_simulation, {
     input_file <- current_input_table()
     crop <- selected_crop()
@@ -817,10 +881,13 @@ server <- function(input, output, session) {
     
   })
   
-  ## Generating plots ----
+  ### Monte Carlo Simulation END
+  
+  
+  
+  ### Generating plots START ------------------------------------------------------
   # helper to add title subtile caption etc
-  add_meta <- function(p, title, subtitle = NULL, caption = NULL,
-                       legend = "bottom") {
+  add_meta <- function(p, title, subtitle = NULL, caption = NULL, legend = "bottom") {
     
     # p +
     #   labs(title = title, subtitle = subtitle, caption = caption) +
@@ -940,10 +1007,6 @@ server <- function(input, output, session) {
             zukünftige Klimaentwicklungen: von starkem Klimaschutz mit geringer Erwärmung (SSP1–2.6) über mittlere Veränderungen 
           (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung (SSP3–7.0 und SSP5–8.5).")
       #, legend = "none")
-      
-      # No plot3 for Spargel → clear outputs
-      output$plot3_ui    <- renderPlot(NULL)
-      output$plot3_dl_ui <- renderUI(NULL)
     }
     
     else if (crop=="Zwiebel"){
@@ -984,142 +1047,68 @@ server <- function(input, output, session) {
         Klimaschutz (SSP1–2.6) bis hin zu sehr hohen Emissionen (SSP5–8.5).")
       #, legend = "none")
     }
-    # source("functions/plot_yield_asparagus.R")
-    # plot1<-plot_yield_asparagus(mc_data_order)
-    # 
-    # source("functions/VIP_plot.R")
-    # plot2<-VIP_plot(mc_data_order)
-    #     plot2 <- decisionSupport::plot_distributions(
-    #       mc_data, "NPV_decis_AF_ES3",
-    #       method     = "smooth_simple_overlay",
-    #       old_names  = "NPV_decis_AF_ES3",
-    #       new_names  = "Agroforestry – Treeless",
-    #       x_axis_name= "NPV (€)",
-    #       y_axis_name= "Probability") |>
-    #       add_meta(
-    #         title    = "Figure 2. Distribution of the *incremental* NPV",
-    #         subtitle = "Difference between agroforestry and treeless farming under identical conditions",
-    #         caption  = "Figure 2 shows the NPV distributions of the decision to establish the apple alley cropping system
-    #                 as compared to the decision to continue with monoculture for the specified time (i.e., NPV agroforestry - NPV monoculture under identical conditions).
-    #                 The x-axis displays NPV values (i.e., the sum of discounted annual cash flows) and y-axis displays the probability of each NPV amount to occur (i.e., higer y-values indicate higher probability)"
-    #         , legend = "none")
-    #     
-    #     plot3 <- decisionSupport::plot_distributions(
-    #       mc_data,
-    #       vars      = c("NPV_decis_no_fund", "NPV_decis_AF_ES3", "NPV_decis_DeFAF"),
-    #       method    = "boxplot",
-    #       old_names = c("NPV_decis_no_fund", "NPV_decis_AF_ES3", "NPV_decis_DeFAF"),
-    #       new_names = c("Agroforestry without\nfunding - Treeless", "Agroforestry with\ncurrent funding - Treeless", "Agroforestry with\nDeFAF-suggested funding - Treeless"),
-    #       x_axis_name = "NPV (€)",
-    #       y_axis_name = "Funding Options") |>
-    #       add_meta(
-    #         title    = "Figure 3. Net Present Value (NPV) Outcomes Across Funding Schemes for Apple Alley Cropping",
-    #         subtitle = "Agroforestry intervention with, without and DeFAF-suggested funding",
-    #         caption  = 'Figure 3 shows the comparison of net present value (NPV) outcomes for the decision of different agroforestry funding schemes. The x-axis displays NPV values (i.e., the sum of discounted annual cash flows); each colored boxplot represents a funding scheme, showing the range and distribution of simulation results from the probabilistic model.
-    #         The higher and wider the box, the greater the potential return and variability in outcomes under that funding.
-    # Scenarios involving funding (like DeFAF-suggested or EcoScheme3 and regional) generally show higher NPV ranges than the No funding, however it not necessarily better suggesting the current financial support is insufficient to sustain agroforestry.'
-    #       )
-    #     
-    #     plot4 <- decisionSupport::plot_cashflow(
-    #       mc_data, "AF_CF",
-    #       x_axis_name = "",
-    #       y_axis_name = "Annual cash-flow from Agroforestry (€)",
-    #       color_25_75 = "navajowhite",
-    #       color_5_95 = "green4",
-    #       color_median = "darkblue",
-    #       facet_labels = "") |>
-    #       add_meta(
-    #         title   = "Figure 4. Annual cash-flow of the agroforestry intervention", 
-    #         subtitle = "Projected yearly cash-flow variability for an agroforestry system over time",
-    #         caption = 'Figure 4 shows how annual cash-flow from an agroforestry intervention is expected to evolve, based on a probabilistic simulation. The shaded areas represent uncertainty ranges (from lower to upper quantiles), while the blue line shows the median outcome (expressed in €). While early years may involve negative cash flow, profitability tends to improve over time, with increasing stability. The graph highlights the long-term financial potential and risk spread of adopting agroforestry practices.'
-    #       )
-    #     
-    #     plot5 <- decisionSupport::plot_cashflow(
-    #       mc_data, "AF_CCF_ES3",
-    #       x_axis_name = "",
-    #       y_axis_name = "Cumulative cash-flow from Agroforestry (€)",
-    #       color_25_75 = "navajowhite",
-    #       color_5_95 = "green4",
-    #       color_median = "darkblue",
-    #       facet_labels = "") |>
-    #       add_meta(
-    #         title   = "Figure 5. Cumulative cash-flow of the agroforestry intervention", 
-    #         subtitle = "Long-term cumulative cash-flow projection for an agroforestry system",
-    #         caption = "Figure 5  illustrates how total cash-flow (expressed in €) accumulates over time from an agroforestry intervention, based on a range of simulated outcomes. The shaded areas represent uncertainty (spread of possible results), and the blue line indicates the median trajectory. Cumulative returns grow steadily over time, showing the long-term profitability potential of agroforestry. Despite initial variability, the system trends positively, reinforcing the case for agroforestry as a viable financial investment over the long run."
-    #       )
-    #     
-    # plot6 <- decisionSupport::plot_cashflow(
-    #   mc_data, "Cashflow_AF1_decision",
-    #   x_axis_name = "",
-    #   y_axis_name = "Annual cash-flow (€)",
-    #   facet_labels = "") |>
-    #   add_meta(
-    #     title   = "Figure 6. Incremental annual cash-flow",
-    #     subtitle= "Agroforestry minus baseline farming",
-    #     caption = "Figure 6 shows the difference (expressed in €) between the annual balance of alley-cropping and continue farming without planting trees under identical real-world scenarios.")
-    # 
-    # plot7 <- decisionSupport::plot_cashflow(
-    #   mc_data, "Cum_Cashflow_AF1_decision",
-    #   x_axis_name = "",
-    #   y_axis_name = "Cumulative cash-flow (€)",
-    #   facet_labels = "") |>
-    #   add_meta(
-    #     title   = "Figure 7. Incremental cumulative cash-flow",
-    #     subtitle= "Agroforestry minus baseline farming",
-    #     caption = 'Figure 7 shows the cumulative difference (expressed in €) between the annual balance of alley-cropping and continue farming without planting trees under identical real-world scenarios.')
-    # 
+    
+    
     
     # Send plots to UI
-    
-    
-    
     output$plot1_ui <- renderPlot({ plot1 })
-    make_download("download_plot1", plot1, "Figure1_marketable_yield.png")
-    output$plot1_dl_ui <- renderUI({
-      downloadButton("download_plot1", "Abbildung herunterladen")
-    })
-    
     output$plot2_ui <- renderPlot({ plot2 })
-    make_download("download_plot2", plot2, "Figure2_VIP_compare.png")
-    output$plot2_dl_ui <- renderUI({
-      downloadButton("download_plot2", "Abbildung herunterladen")
-    })
-    
-    crop <- selected_crop()
     if (crop == "Zwiebel") {
       output$plot3_ui <- renderPlot({ plot3 })
+    }
+    
+    output$plot1_container <- renderUI({
+      div(
+        class = "flex-container fullscreen-toggle",
+        style = "max-width: 100%;",
+        plotOutput("plot1_ui", height = "700px")
+      )
+    })
+    make_download("download_plot1", plot1, "Figure1_marketable_yield.png")
+    output$plot1_dl_ui <- renderUI({
+      div(
+        style = "text-align: center;",
+        downloadButton("download_plot1", "Abbildung herunterladen")
+      )
+    })
+    
+    output$plot2_container <- renderUI({
+      div(
+        class = "flex-container fullscreen-toggle",
+        style = "max-width: 100%;",
+        plotOutput("plot2_ui", height = "900px")
+      )
+    })
+    make_download("download_plot2", plot2, "Figure2_VIP_compare.png")
+    output$plot2_dl_ui <- renderUI({
+      div(
+        style = "text-align: center;",
+        downloadButton("download_plot2", "Abbildung herunterladen")
+      )
+    })
+    
+    if (crop == "Zwiebel") {
+      output$plot3_container <- renderUI({
+        div(
+          class = "flex-container fullscreen-toggle",
+          style = "max-width: 100%;",
+          plotOutput("plot3_ui", height = "900px")
+        )
+      })
       make_download("download_plot3", plot3, "Figure3_Yield_Reduction.png")
       output$plot3_dl_ui <- renderUI({
-        downloadButton("download_plot3", "Abbildung herunterladen")
+        div(
+          style = "text-align: center;",
+          downloadButton("download_plot3", "Abbildung herunterladen")
+        )
       })
+    } else {
+      # no plot 3 → no container → no whitespace
+      output$plot3_container <- renderUI(NULL)
+      output$plot3_dl_ui     <- renderUI(NULL)
     }
-    # 
-    # output$plot4_ui <- renderPlot({ plot4 })
-    # make_download("download_plot4", plot4, "Figure4_Annual_Cashflow.png")
-    # output$plot4_dl_ui <- renderUI({
-    #   downloadButton("download_plot4", "Abbildung herunterladen")
-    # })
-    # 
-    # output$plot5_ui <- renderPlot({ plot5 })
-    # make_download("download_plot5", plot5, "Figure5_Cumulative_Cashflow.png")
-    # output$plot5_dl_ui <- renderUI({
-    #   downloadButton("download_plot5", "Download Figure 5")
-    # })
+    ### Generating plots END
     
-    # output$plot6_ui <- renderPlot({ plot6 })
-    # make_download("download_plot6", plot6, "Figure6_Incremental_Annual_CF.png")
-    # output$plot6_dl_ui <- renderUI({
-    #   downloadButton("download_plot6", "Download Figure 6")
-    # })
-    # 
-    # output$plot7_ui <- renderPlot({ plot7 })
-    # make_download("download_plot7", plot7, "Figure7_Incremental_Cumulative_CF.png")
-    # output$plot7_dl_ui <- renderUI({
-    #   downloadButton("download_plot7", "Download Figure 7")
-    # })
-    
-    
-    # Ask user whether to run EVPI (takes time!)
     showModal(
       modalDialog( title = "Kurze Erinnerung", "Wenn Sie mit den von Ihnen angegebenen Schätzungen zufrieden sind, speichern Sie bitte das Projekt, damit wir Ihre Eingaben überprüfen können.", 
                    footer = tagList( actionButton("open_saveload", "Okay – Akkordeon-Panel „Speichern/Laden“ öffnen."), 
@@ -1133,120 +1122,14 @@ server <- function(input, output, session) {
       removeModal()
     })
     
-    # Handle user confirmation to run EVPI
-    # observeEvent(input$confirm_evpi, {
-    #   
-    #   removeModal()  # remove popup
-    #   
-    #   # Try running EVPI only if it can return meaningful values
-    #   tryCatch({
-    #     evpi_input <- as.data.frame(cbind(
-    #       mc_data$x,
-    #       #Provide correct variable
-    #       NPV_decision_AF1 = mc_data$y$NPV_decis_AF_ES3
-    #     ))
-    #     # Provide the NPV_decision variable to calculate EVPI
-    #     evpi_result <- decisionSupport::multi_EVPI(evpi_input, "NPV_decis_AF_ES3")
-    #     
-    #     # saveRDS(evpi_input, "evpi_input_test.rds")
-    #     # evpi_input <- readRDS("evpi_input_test.rds")
-    #     
-    #     # saveRDS(evpi_result, "evpi_result_test.rds")
-    #     # evpi_result <- readRDS("evpi_result_test.rds")
-    #     
-    #     var_lookup <- bind_rows(excelData()) %>%
-    #       filter(!is.na(variable), !is.na(name)) %>%
-    #       distinct(variable, name) %>%
-    #       deframe()
-    #     #Provide correct variable
-    #     plot8 <- plot_evpi(evpi_result, decision_vars = "NPV_decis_AF_ES3",
-    #                        new_names = "") +
-    #       scale_y_discrete(labels = var_lookup)
-    #     
-    #     plot8 <- plot8 |>
-    #       add_meta(title = "Figure 8. EVPI for Each Variable",
-    #                subtitle = "Maximum amount worth paying for perfect information on each variable."
-    #       )
-    #     
-    #     output$plot8_ui <- renderPlot({ plot8 })
-    #     
-    #     make_download("download_plot8", plot8, "Figure8_EVPI.png")
-    #     
-    #     output$plot8_dl_ui <- renderUI({
-    #       downloadButton("download_plot8", "Download Figure 8")
-    #     })
-    #     
-    #   }, error = function(e) {
-    #     warning("EVPI plot skipped due to error: ", e$message)
-    #     output$plot8_ui <- renderPlot({
-    #       plot.new()
-    #       text(0.5, 0.5, "There are no variables with a positive EVPI.\nGetting better information will \nnot reduce the level of uncertainty of the decision.", cex = 1.2)
-    #     })
-    #   })
-    # })
-    
   })
   
-  
-  # image flag
-  output$show_image <- reactive({
-    !is.null(selected_crop())
-  })
-  outputOptions(output, "show_image", suspendWhenHidden = FALSE)
-  
-  # display of conceptual model image from www folder
-  img_info <- eventReactive(selected_crop(), {
-    crop <- selected_crop()
-    validate(need(!is.null(crop), "Bitte zuerst eine Nutzpflanze auswählen."))
-    
-    crop_lower <- tolower(crop)
-    
-    path <- if (crop_lower == "spargel") {
-      file.path("www", "Spargel_CM.png")
-    } else if (crop_lower == "zwiebel") {
-      file.path("www", "Zwiebel_CM.jpeg")
-    } else {
-      NULL
-    }
-    
-    list(
-      crop = crop,
-      path = path
-    )
-  })
-  
-  output$myImage <- renderImage({
-    info <- img_info()        
-    req(info)
-    
-    list(
-      src         = normalizePath(info$path),
-      contentType = "image/png",
-      width       = "auto",
-      height      = 1050,
-      alt         = paste("Image for", info$crop)
-    )
-  }, deleteFile = FALSE)
-  
-  output$download_ui <- renderUI({
-    req(img_info())
-    downloadButton("downloadImage", "Bild herunterladen")
-  })
+  ## Monte Carlo Simulation END
   
   
-  output$downloadImage <- downloadHandler(
-    filename = function() {
-      info <- img_info()
-      req(info)
-      paste0(tolower(info$crop), ".png")
-    },
-    content = function(file) {
-      info <- img_info()
-      req(info)
-      file.copy(from = info$path, to = file, overwrite = TRUE)
-    }
-  )
-  # Feedback logic ---------------------------
+  
+  
+  ## Feedback logic START ------------------------------------------------------
   # Auth: current user + can_view flag
   user <- reactiveVal(NA_character_)
   observe({ user(current_user(session)) })
@@ -1354,7 +1237,7 @@ server <- function(input, output, session) {
     sprintf("Total number of Feedbacks in database: %d", n)
   })
   
-  # Feedback logic end ---------------------------
+  # Feedback logic END
 }
 
 

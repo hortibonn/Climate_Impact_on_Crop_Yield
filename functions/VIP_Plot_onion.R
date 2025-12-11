@@ -1,6 +1,6 @@
 ## Main function: build combined VIP plot for all scenarios -----------
 
-make_onion_vip_combined_plot <- function(mcSimulation_results,
+make_onion_vip_combined_plot <- function(onion_mc_simulation,
                                          scenarios = c("historical",
                                                        "ssp126",
                                                        "ssp245",
@@ -14,7 +14,6 @@ make_onion_vip_combined_plot <- function(mcSimulation_results,
     "tidyr",
     "data.table",
     "decisionSupport",
-    "patchwork",
     "stringr",
     "assertthat",
     "tibble"
@@ -24,7 +23,6 @@ make_onion_vip_combined_plot <- function(mcSimulation_results,
   ## 1) Common Definitions
   ############################################################
   
-  # allow user to choose subset and/or order
   scenario_order_codes <- scenarios
   
   scenario_labels <- c(
@@ -69,14 +67,13 @@ make_onion_vip_combined_plot <- function(mcSimulation_results,
   )
   
   phase_order  <- c("Keimphase", "Vegetative Phase", "Zwiebelbildung", "Reifephase")
-  order_labels <- unname(stress_labels)
+  order_labels <- unname(stress_labels)   # Reihenfolge der y-Achse
   
   ############################################################
   ## 2) Multipliers -> Damage (0 = no damage)
   ############################################################
   
-  # work on a copy of the provided simulation
-  onion_mc_sim_damage <- mcSimulation_results
+  onion_mc_sim_damage <- onion_mc_simulation
   
   stress_cols <- grep("\\.m_", names(onion_mc_sim_damage$y), value = TRUE)
   if (length(stress_cols) > 0) {
@@ -102,8 +99,8 @@ make_onion_vip_combined_plot <- function(mcSimulation_results,
                          y_axis_name = NULL, legend_name = "Coefficient", 
                          legend_labels = c("Positive", "Negative"), 
                          pos_color = "cadetblue", neg_color = "firebrick", 
-                         base_size = 11, ...) 
-  {
+                         base_size = 11, ...) {
+    
     assertthat::assert_that(inherits(plsrResults, "mvr"),
                             msg = "plsrResults ist nicht Klasse 'mvr'.")
     
@@ -114,13 +111,15 @@ make_onion_vip_combined_plot <- function(mcSimulation_results,
         stop("Only for single-response models")
       SS <- c(object$Yloadings)^2 * colSums(object$scores^2)
       Wnorm2 <- colSums(object$loading.weights^2)
-      SSW <- sweep(object$loading.weights^2, 2, SS/Wnorm2, "*")
-      sqrt(nrow(SSW) * apply(SSW, 1, cumsum)/cumsum(SS))
+      SSW <- sweep(object$loading.weights^2, 2, SS / Wnorm2, "*")
+      sqrt(nrow(SSW) * apply(SSW, 1, cumsum) / cumsum(SS))
     }
     
-    if (plsrResults$ncomp == 1) 
+    if (plsrResults$ncomp == 1) {
       vipResult <- VIP(plsrResults)
-    else vipResult <- VIP(plsrResults)["Comp 1", ]
+    } else {
+      vipResult <- VIP(plsrResults)["Comp 1", ]
+    }
     
     coef <- plsrResults$coefficients[, , 1]
     pls_outputs <- data.frame(
@@ -138,23 +137,25 @@ make_onion_vip_combined_plot <- function(mcSimulation_results,
       combined_table <- pls_outputs
     }
     
-    dplyr::filter(combined_table, VIP > threshold) |>
-      list(VIP_table_results = _)
+    filtered <- dplyr::filter(combined_table, VIP > threshold)
+    list(VIP_table_results = filtered)
   }
   
   ############################################################
-  ## 5) PLSR + VIP plot for a single scenario
+  ## 5) PLSR für ein Szenario (VIP-Tabelle)
   ############################################################
   
   run_plsr_for_scenario_onion <- function(sim_list_damage, scen_code,
                                           min_nonzero = 5) {
     
+    # response: irrigated final yield
     y_col <- paste0(scen_code, ".final_yield_per_ha_irrigated")
     if (!y_col %in% names(sim_list_damage$y))
-      stop("Spalte ", y_col, " nicht in sim_list$y gefunden.")
+      stop("Spalte ", y_col, " nicht in sim_list_damage$y gefunden.")
     
     y <- data.frame(yield = sim_list_damage$y[[y_col]])
     
+    # predictors: all stress multiplier -> damage columns
     stress_base <- names(stress_labels)
     stress_cols_scen <- paste0(scen_code, ".", stress_base)
     stress_cols_scen <- stress_cols_scen[stress_cols_scen %in% names(sim_list_damage$y)]
@@ -166,11 +167,13 @@ make_onion_vip_combined_plot <- function(mcSimulation_results,
            " gibt es keine Stressvariablen mit ausreichender Variation.")
     }
     
+    # Szenario-Prefix aus Spaltennamen entfernen
     names(x) <- sub(paste0("^", scen_code, "\\."), "", names(x))
     
     sim_obj <- list(y = y, x = x)
     class(sim_obj) <- c("mcSimulation", "list")
     
+    # PLSR
     pls_res <- plsr.mcSimulation(
       object      = sim_obj,
       resultName  = "yield",
@@ -178,6 +181,7 @@ make_onion_vip_combined_plot <- function(mcSimulation_results,
       ncomp       = 1
     )
     
+    # VIP table + extra info
     vip_tab <- VIP_table(pls_res, threshold = 0.8)$VIP_table_results |>
       as_tibble() |>
       mutate(
@@ -190,116 +194,98 @@ make_onion_vip_combined_plot <- function(mcSimulation_results,
           Coefficient <  0 ~ "negative",
           TRUE             ~ "zero"
         ),
-        scenario   = factor(scen_code, levels = scenario_order_codes)
+        scenario   = scen_code
       )
     
+    # ordered factor für y-Achse
     vip_tab$stress_lab <- factor(
       vip_tab$stress_lab,
       levels  = order_labels,
       ordered = TRUE
     )
     
-    vip_range  <- range(vip_tab$VIP, na.rm = TRUE)
-    vip_breaks <- pretty(vip_range, n = 3)
-    vip_breaks <- vip_breaks[vip_breaks >= vip_range[1] & vip_breaks <= vip_range[2]]
-    if (length(vip_breaks) == 0) vip_breaks <- vip_range
-    
-    p <- ggplot(vip_tab, aes(x = scenario, y = stress_lab)) +
-      geom_point(aes(size = VIP, color = coef_sign), shape = 16) +
-      scale_size_continuous(
-        range  = c(3, 10),
-        breaks = vip_breaks,
-        labels = round(vip_breaks, 2),
-        name   = "VIP\n(Variable Importance in Projection)"
-      ) +
-      scale_color_manual(
-        values = c(
-          negative = "firebrick",
-          zero     = "grey70",
-          positive = "cadetblue"
-        ),
-        guide = "none"
-      ) +
-      scale_y_discrete(
-        limits = rev(order_labels),
-        drop   = FALSE,
-        expand = expansion(mult = c(0.02, 0.06))
-      ) +
-      labs(
-        title = scenario_labels[scen_code],
-        x     = "Szenario",
-        y     = "Stressfaktor (Phase)"
-      ) +
-      theme_minimal(base_size = 12) +
-      theme(
-        plot.title         = element_text(hjust = 0.5),
-        axis.text.y        = element_text(hjust = 0),
-        legend.position    = "bottom",
-        legend.title.align = 0,
-        legend.box         = "vertical",
-        legend.key.height  = grid::unit(0.6, "cm"),
-        legend.key.width   = grid::unit(0.6, "cm"),
-        legend.text        = element_text(size = 9)
-      ) +
-      guides(
-        size = guide_legend(
-          override.aes  = list(color = "firebrick", fill = "firebrick"),
-          order         = 1,
-          title.position = "top"
-        )
-      )
-    
-    list(result = pls_res, plot = p)
+    return(vip_tab)
   }
   
   ############################################################
-  ## 6) VIP comparison plot for all scenarios
+  ## 6) Combined VIP plot (alle Szenarien)
   ############################################################
   
   VIP_plot_onion <- function(sim_results, min_nonzero = 5) {
     scen_codes <- scenario_order_codes
     
-    results <- lapply(scen_codes, function(sc) 
-      run_plsr_for_scenario_onion(sim_results, sc, min_nonzero = min_nonzero)
+    # Alle Szenarien laufen lassen und kombinieren
+    vip_list <- lapply(
+      scen_codes,
+      function(sc) run_plsr_for_scenario_onion(sim_results, sc, min_nonzero = min_nonzero)
     )
-    names(results) <- scen_codes
+    names(vip_list) <- scen_codes
     
-    no_x <- theme(
-      axis.title.x = element_blank(),
-      axis.text.x  = element_blank(),
-      axis.ticks.x = element_blank()
-    )
-    no_y <- theme(
-      axis.title.y = element_blank(),
-      axis.text.y  = element_blank(),
-      axis.ticks.y = element_blank()
+    vip_combined <- dplyr::bind_rows(vip_list)
+    
+    # Szenario als ordered factor
+    vip_combined$scenario <- factor(
+      vip_combined$scenario,
+      levels = scenario_order_codes,
+      ordered = TRUE
     )
     
-    # build list of modified plots for arbitrary number of scenarios
-    plots <- lapply(seq_along(scen_codes), function(i) {
-      p <- results[[i]]$plot
-      if (i == 1L) {
-        # first: keep y, remove x, no legend
-        p + no_x + theme(legend.position = "none")
-      } else if (i == length(scen_codes)) {
-        # last: remove x and y, keep legend
-        p + no_x + no_y
-      } else {
-        # middle: remove x & y, no legend
-        p + no_x + no_y #+ theme(legend.position = "none")
-      }
-    })
+    # Labels für Facets
+    vip_combined$scenario_label <- scenario_labels[as.character(vip_combined$scenario)]
+    vip_combined$scenario_label <- factor(
+      vip_combined$scenario_label,
+      levels = unname(scenario_labels[scenario_order_codes]),
+      ordered = TRUE
+    )
     
-    patchwork::wrap_plots(plots, ncol = length(scen_codes)) +
-      patchwork::plot_layout(guides = "collect") &
-      theme(legend.position = "bottom")
+    # WICHTIG: x ist jetzt eine Konstante -> eine Spalte Bubbles pro Facet, mittig
+    p <- ggplot(vip_combined, aes(x = "VIP", y = stress_lab)) +
+      geom_point(aes(size = VIP), shape = 16, color = "firebrick") +
+      
+      facet_wrap(~ scenario_label, nrow = 1, scales = "fixed") +
+      
+      scale_size_continuous(
+        range  = c(4, 14),
+        limits = c(0.8, 4),
+        breaks = c(1, 2, 3, 4),
+        name   = "VIP"
+      ) +
+      
+      scale_y_discrete(
+        limits = rev(order_labels),
+        drop   = FALSE,
+        expand = expansion(add = c(0.7, 0.7))  # mehr vertikaler Abstand
+      ) +
+      
+      labs(
+        x = NULL,
+        y = "Stressfaktor (Phase)"
+      ) +
+      
+      theme_minimal(base_size = 12) +
+      theme(
+        strip.text         = element_text(hjust = 0.5, size = 12),
+        axis.text.y        = element_text(hjust = 0, vjust = 0.5),
+        axis.text.x        = element_blank(),
+        axis.ticks.x       = element_blank(),
+        axis.title.x       = element_blank(),
+        legend.position    = "bottom",
+        legend.title       = element_text(hjust = 0),
+        legend.key.height  = grid::unit(0.6, "cm"),
+        legend.key.width   = grid::unit(0.6, "cm"),
+        legend.text        = element_text(size = 9),
+        panel.spacing      = unit(0.5, "lines")
+      )
+    
+    
+    return(p)
   }
   
-  # return combined comparison plot
-  return(VIP_plot_onion(onion_mc_sim_damage))
+  # *** RETURN VALUE OF MAIN FUNCTION ***
+  VIP_plot_onion(onion_mc_sim_damage)
 }
+
+## Example usage -----------------------------------------------------
 
 # p_vip <- make_onion_vip_combined_plot(onion_mc_simulation)
 # p_vip
-
-
