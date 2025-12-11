@@ -951,16 +951,14 @@ server <- function(input, output, session) {
       source("functions/yield_boxplot_onion.R")
       plot1<-plot_yield_onion(mc_data) |>
         add_meta(
-          title    = "Abb 1. Ertrag für 2020 und 2075 unter verschiedenen Klimaszenarien",
+          title    = "2020 vs. 2075: Wie Klimaszenarien die Zukunft der Ernte bestimmen",
           #subtitle = ''
-          caption  = "Diese Abbildung zeigt den Unterschied zwischen dem potenziellen Ertrag (ohne Stressereignisse) und dem tatsächlich erreichten Ertrag 
-          (unter Berücksichtigung aller simulierten Stressfaktoren). Für jedes Klimaszenario werden die Ertragsverteilungen aus 
-          Monte-Carlo-Simulationen dargestellt. Die Prozentwerte über den Boxplots geben an, wie stark der durchschnittliche Ertrag im jeweiligen Szenario 
-          durch Stress reduziert wurde. Die gestrichelte Linie markiert einen regionaltypischen Zwiebel-Referenzertrag des Regierungsbezirks Köln und dient 
-          als Orientierungshilfe. Die SSP-Szenarien zeigen mögliche zukünftige Klimaentwicklungen: von starkem Klimaschutz mit geringer Erwärmung (SSP1–2.6) 
-          über mittlere Veränderungen (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung (SSP3–7.0 und SSP5–8.5).
-          Die Darstellung ermöglicht es Landwirtinnen und Landwirten sowie Entscheidungsträgern einzuschätzen, wie Klimawandel und Stressereignisse 
-          zukünftige Zwiebelerträge beeinflussen können und welche Spannbreite realistischer Ernteergebnisse zu erwarten ist.")
+          caption  = "Diese Abbildung zeigt den Unterschied zwischen dem potenziellen Ertrag ohne Stressereignisse und dem tatsächlichen Ertrag, 
+        bei dem alle simulierten Stressfaktoren berücksichtigt wurden. Die Boxplots stellen für jedes Klimaszenario die Ergebnisse der Monte-Carlo-Simulationen dar. 
+        Die Prozentwerte darüber zeigen, wie stark der durchschnittliche Ertrag durch Stress reduziert wurde. Die gestrichelte Linie markiert einen typischen 
+        Zwiebel-Ertrag im Regierungsbezirk Köln und dient als Orientierung. Die SSP-Szenarien stehen für mögliche zukünftige Klimaentwicklungen – von geringerer 
+        Erwärmung (SSP1–2.6) bis hin zu hohen und sehr hohen Emissionen (SSP3–7.0 und SSP5–8.5). So lässt sich einschätzen, wie Klimawandel und Stressereignisse       
+        zukünftige Zwiebelerträge beeinflussen könnten und welche Ertragsspannen realistisch sind.")
       #, legend = "none")
       
       source("functions/VIP_Plot_onion.R")
@@ -1362,3 +1360,4 @@ server <- function(input, output, session) {
 
 
 shinyApp(ui = ui, server = server)
+
