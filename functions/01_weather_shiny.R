@@ -10,32 +10,6 @@
 #   - Splits the data into a nested list:
 #       result[[scenario]][[id_season]] -> data.table of daily weather
 
-# Load required packages ----
-
-load_if_needed <- function(pkgs) {
-  for (pkg in pkgs) { 
-    
-    # Install package if it is not available
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      install.packages(pkg, dependencies = TRUE)
-    }
-    
-    # Attach package, suppressing startup messages
-    suppressPackageStartupMessages(
-      library(pkg, character.only = TRUE)
-    )
-  }
-}
-
-load_if_needed(c(
-  "zoo",          # time series tools (often used with weather data)
-  "RcppRoll",     # fast rolling operations (alternate to data.table tools)
-  "decisionSupport", # Monte Carlo / decision tools (used elsewhere in project)
-  "compiler",     # byte-code compilation for speed (used in other scripts)
-  "data.table"    # fast data manipulation and rolling functions
-))
-
-
 # Process weather data function ----
 
 process_weather_data <- function(

@@ -5,21 +5,7 @@ plot_yield_onion <- function(mcSimulation_results)
   ## Input: mcSimulation_results (like onion_mc_simulation)
   ############################################################
   
-  ## 0) Pakete laden
-  load_if_needed <- function(pkgs) {
-    for (pkg in pkgs) {
-      if (!requireNamespace(pkg, quietly = TRUE)) {
-        install.packages(pkg, dependencies = TRUE)
-      }
-      suppressPackageStartupMessages(library(pkg, character.only = TRUE))
-    }
-  }
-  
-  load_if_needed(c(
-    "ggplot2",
-    "dplyr",
-    "tidyr"
-  ))
+
   
   ############################################################
   ## 1) Gemeinsame Definitionen

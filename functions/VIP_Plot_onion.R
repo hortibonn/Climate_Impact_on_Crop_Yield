@@ -7,17 +7,6 @@ make_onion_vip_combined_plot <- function(onion_mc_simulation,
                                                        "ssp370",
                                                        "ssp585")) {
   
-  # 1) Load packages --------------------------------------------------
-  load_if_needed(c(
-    "ggplot2",
-    "dplyr",
-    "tidyr",
-    "data.table",
-    "decisionSupport",
-    "stringr",
-    "assertthat",
-    "tibble"
-  )) 
   
   ############################################################
   ## 1) Common Definitions

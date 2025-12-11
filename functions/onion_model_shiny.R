@@ -20,27 +20,6 @@
 # 6. Runs Monte Carlo simulation.
 
 
-# Load required packages ----
-
-load_if_needed <- function(pkgs) {
-  for (pkg in pkgs) {
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      install.packages(pkg, dependencies = TRUE)
-    }
-    suppressPackageStartupMessages(
-      library(pkg, character.only = TRUE)
-    )
-  }
-}
-
-load_if_needed(c(
-  "zoo",
-  "RcppRoll",
-  "decisionSupport",
-  "compiler",
-  "data.table"
-))
-
 # Enable just-in-time compilation for extra speed (level 3 = aggressive)
 compiler::enableJIT(3)
 

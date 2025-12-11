@@ -1,5 +1,3 @@
-library(decisionSupport)
-
 #Harvest Season####
 #This function estimates the yield of asparagus over the season
 #the total yield that comes from the field is determined by:

@@ -1,6 +1,3 @@
-library(dplyr)
-library(ggplot2)
-library(patchwork)
 
 # -----------------------------
 # Funktion: VIP_table

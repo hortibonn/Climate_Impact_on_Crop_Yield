@@ -1,13 +1,7 @@
 ## Main function: yield reduction heatmap by phase & stressor ----
 
 make_yield_reduction_heatmap <- function(mcSimulation_results) {
-  
-  # 1) Load packages ----------------------------------------
-  load_if_needed(c(
-    "dplyr",
-    "tidyr",
-    "ggplot2"
-  ))
+
   
   ############################################################
   ## 1) Definitions

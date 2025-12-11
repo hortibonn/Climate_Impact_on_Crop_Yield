@@ -1,28 +1,4 @@
 ############################################################
-## Pakete laden
-############################################################
-load_if_needed <- function(pkgs) {
-  for (pkg in pkgs) {
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      install.packages(pkg, dependencies = TRUE)
-    }
-    suppressPackageStartupMessages(library(pkg, character.only = TRUE))
-  }
-}
-
-load_if_needed(c(
-  "ggplot2",
-  "dplyr",
-  "tidyr",
-  "data.table",
-  "decisionSupport",
-  "patchwork",
-  "stringr",
-  "assertthat",
-  "tibble"
-))
-
-############################################################
 ## Gemeinsame Definitionen
 ############################################################
 

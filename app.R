@@ -2,145 +2,8 @@
 
 # Config ------------------------------------------------------
 ## Install + load libraries as required  ------------------------------------------------------
+source("functions/libraries.R")
 
-if (!requireNamespace("shiny", quietly = TRUE)) {
-  install.packages("shiny")
-}
-library(shiny, warn.conflicts = F)
-
-if (!requireNamespace("waiter", quietly = TRUE)) {
-  install.packages("waiter")
-}
-library(waiter, warn.conflicts = F)
-
-if (!requireNamespace("readxl", quietly = TRUE)) {
-  install.packages("readxl")
-}
-library(readxl, warn.conflicts = F)
-
-if (!requireNamespace("bslib", quietly = TRUE)) {
-  install.packages("bslib")
-}
-library(bslib, warn.conflicts = F)
-
-if (!requireNamespace("shinythemes", quietly = TRUE)) {
-  install.packages("shinythemes")
-}
-library(shinythemes, warn.conflicts = F)
-
-if (!requireNamespace("shinyWidgets", quietly = TRUE)) {
-  install.packages("shinyWidgets")
-}
-library(shinyWidgets, warn.conflicts = F)
-
-if (!requireNamespace("decisionSupport", quietly = TRUE)) {
-  install.packages("decisionSupport")
-}
-library(decisionSupport, warn.conflicts = F)
-
-if (!requireNamespace("tidyverse", quietly = TRUE)) {
-  install.packages("tidyverse")
-}
-library(tidyverse, warn.conflicts = F)
-
-if (!requireNamespace("readr", quietly = TRUE)) {
-  install.packages("readr")
-}
-library(readr, warn.conflicts = F)  # For reading and writing CSV files
-
-if (!requireNamespace("ggridges", quietly = TRUE)) {
-  install.packages("ggridges")
-}
-library(ggridges, warn.conflicts = F)
-
-if (!requireNamespace("ggplot2", quietly = TRUE)) {
-  install.packages("ggplot2")
-}
-library(ggplot2, warn.conflicts = F)
-
-if (!requireNamespace("dplyr", quietly = TRUE)) {
-  install.packages("dplyr")
-}
-library(dplyr, warn.conflicts = F)
-
-if (!requireNamespace("here", quietly = TRUE)) {
-  install.packages("here")
-}
-library(here, warn.conflicts = F)
-
-if (!requireNamespace("ggtext", quietly = TRUE)) {
-  install.packages("ggtext")
-}
-library(ggtext, warn.conflicts = F)
-
-if (!requireNamespace("ggh4x", quietly = TRUE)) {
-  install.packages("ggh4x")
-}
-library(ggh4x, warn.conflicts = F)
-# Provide specific packages you have used other than the ones mentioned above
-if (!requireNamespace("ggtext", quietly = TRUE)) {
-  install.packages("ggtext")
-}
-library(ggtext, warn.conflicts = F)
-
-if (!requireNamespace("png", quietly = TRUE)) {
-  install.packages("png")
-}
-library(png, warn.conflicts = F)
-
-if (!requireNamespace("grid", quietly = TRUE)) {
-  install.packages("grid")
-}
-library(grid, warn.conflicts = F)
-
-if (!requireNamespace("patchwork", quietly = TRUE)) {
-  install.packages("patchwork")
-}
-library(patchwork, warn.conflicts = F)
-
-if (!requireNamespace("lubridate", quietly = TRUE)) {
-  install.packages("lubridate")
-}
-library(lubridate, warn.conflicts = F)
-
-if (!requireNamespace("zoo", quietly = TRUE)) {
-  install.packages("zoo")
-}
-library(zoo, warn.conflicts = F)
-
-if (!requireNamespace("RcppRoll", quietly = TRUE)) {
-  install.packages("RcppRoll")
-}
-library(RcppRoll, warn.conflicts = F)
-
-if (!requireNamespace("compiler", quietly = TRUE)) {
-  install.packages("compiler")
-}
-library(compiler, warn.conflicts = F)
-
-if (!requireNamespace("data.table", quietly = TRUE)) {
-  install.packages("data.table")
-}
-library(data.table, warn.conflicts = F)
-if (!requireNamespace("DT", quietly = TRUE)) {
-  install.packages("DT")
-}
-library(DT, warn.conflicts = F)
-
-if (!requireNamespace("DBI", quietly = TRUE)) {
-  install.packages("DBI")
-}
-library(DBI, warn.conflicts = F)
-
-if (!requireNamespace("RSQLite", quietly = TRUE)) {
-  install.packages("RSQLite")
-}
-library(RSQLite, warn.conflicts = F)
-
-if (!requireNamespace("pool", quietly = TRUE)) {
-  install.packages("pool")
-}
-library(pool, warn.conflicts = F)
 
 ## Load functions ------------------------------------------------------
 # Provide Location of DA model script(s), dynamic-helper
@@ -416,6 +279,7 @@ ui <- fluidPage(
               
               ### Requisites ------------------------------------------------------
               # Provide Funding declaration
+              br(),
               tags$h6(
                 "Projekt finanziert durch",
                 tags$br(),
