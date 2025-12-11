@@ -964,25 +964,24 @@ server <- function(input, output, session) {
       source("functions/VIP_Plot_onion.R")
       plot2<-make_onion_vip_combined_plot(mc_data) |>
         add_meta(
-          title    = "Abb 2. Bedeutung verschiedener Faktoren für den Ertrag für 2020 und 2075 in unterschiedlichen Klimaszenarien",
+          title    = "Wichtige Einflussfaktoren auf den Ertrag in 2020 und 2075 unter verschiedenen Klimaszenarien",
           #subtitle = '',
-          caption  = "Der VIP-Plot (Variable Importance in Projection) zeigt, welche Stressfaktoren den größten Einfluss auf den Zwiebelertrag haben. 
-        Jeder Punkt repräsentiert einen Faktor; die Punktgröße gibt an, wie wichtig der Faktor im statistischen Modell (PLSR) war.Je größer der Punkt, 
-        desto stärker trägt der entsprechende Stressor zur Varianz im Ertrag bei. Diese Darstellung zeigt nicht die Höhe der Ertragsminderung selbst, 
-        sondern welche Faktoren für den Ertrag entscheidend sind – also wo Risikomanagement, Sortenwahl oder Schutzmaßnahmen den größten Nutzen bringen 
-        können. Die SSP-Szenarien zeigen mögliche zukünftige Klimaentwicklungen: von starkem Klimaschutz mit geringer Erwärmung (SSP1–2.6) über mittlere 
-        Veränderungen (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung (SSP3–7.0 und SSP5–8.5)."
+          caption  = "Das VIP-Schaubild ((Variable Importance in Projection – Variablenwichtigkeit in der Projektion)  zeigt, welche Stressfaktoren den Zwiebelertrag
+        am stärksten beeinflussen. Jeder Punkt steht für einen Faktor. Je größer der Punkt, desto wichtiger ist dieser Faktor dafür, warum sich die Erträge unterscheiden.
+        Das Schaubild zeigt nicht, wie groß der Ertragsverlust durch einen einzelnen Stressor ist. Es zeigt, welche Faktoren insgesamt besonders wichtig für den Ertrag sind.
+        Darauf können Entscheidungen zu Risikomanagement, Sortenwahl oder Schutzmaßnahmen aufbauen. Die SSP-Szenarien stehen für mögliche Klimaentwicklungen: 
+        von wenig Erwärmung (SSP1–2.6) bis zu sehr hohen Emissionen und starker Erwärmung (SSP5–8.5)."
           , legend = "bottom")
       
       source("functions/yield_reduction_plot_onion.R")
       plot3<-make_yield_reduction_heatmap(mc_data) |>
         add_meta(
-          title    = "Abb.3 Mittlere Minderung des Biomassezuwachses nach Stressfaktor und Wachstumsphase für 2020 und 2075 unter verschiedenen Klimaszenarien",
+          title    = "Stressfaktoren im Vergleich: Wie Klimaeinflüsse den Biomassezuwachs prägen",
           #subtitle = '',
-          caption  = "Diese Heatmap visualisiert die durchschnittliche prozentuale Minderung des Biomassezuwachses im Zwiebelanbau durch verschiedene 
-          Stressfaktoren in den Hauptwachstumsphasen der Pflanze. Die Intensität der Rotfärbung zeigt an, wie stark ein Stressfaktor den Biomassezuwachs 
-          mindert: Dunkelrot markiert die größten Verluste. Die Ergebnisse werden für das Basisjahr 2020 und für das Jahr 2075 unter vier Klimaszenarien (SSP) 
-          dargestellt – von starkem Klimaschutz (SSP1–2.6) bis zu extremen Emissionen (SSP5–8.5).")
+          caption  = "Diese Heatmap zeigt, wie stark verschiedene Stressfaktoren den Biomassezuwachs der Zwiebel in den wichtigsten Wachstumsphasen beeinflussen.   
+        Die Farbintensität gibt die durchschnittliche prozentuale Minderung an: Je dunkler das Rot, desto stärker wird das Pflanzenwachstum eingeschränkt.
+        Dargestellt sind sowohl die Ergebnisse für das Basisjahr 2020 als auch für das Jahr 2075 unter vier möglichen Klimaszenarien (SSP) – von starkem 
+        Klimaschutz (SSP1–2.6) bis hin zu sehr hohen Emissionen (SSP5–8.5).")
       #, legend = "none")
     }
     # source("functions/plot_yield_asparagus.R")
@@ -1360,4 +1359,5 @@ server <- function(input, output, session) {
 
 
 shinyApp(ui = ui, server = server)
+
 
