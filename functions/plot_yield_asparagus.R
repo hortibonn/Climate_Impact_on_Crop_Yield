@@ -70,11 +70,11 @@ plot_yield_asparagus <- function(sim_results_scen) {
   
   # --- Plot direkt mit y_lab nutzen ---
   plot <- ggplot(results_yield_all_longer,
-                 aes(x = scenario, y = value*10, fill = name)) +
+                 aes(x = scenario, y = value, fill = name)) +
     geom_boxplot(position = position_dodge(width = 0.8), outlier.shape = NA) +
     geom_text(
       data = label_df2,
-      aes(x = scenario, y = y_lab*10, label = paste0(round(100 - percent), "%"),colour = "Prozent-Label"),
+      aes(x = scenario, y = y_lab, label = paste0(round(100 - percent), "%"),colour = "Prozent-Label"),
       vjust = -0.3, size = 4, inherit.aes = FALSE
     )+
     geom_hline(
