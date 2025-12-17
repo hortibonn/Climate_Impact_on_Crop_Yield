@@ -44,7 +44,7 @@ plot_yield_asparagus <- function(sim_results_scen) {
     tidyr::pivot_wider(names_from = name, values_from = mean_value) %>%
     dplyr::mutate(
       percent  = (`vermarktbarer_Ertrag` / `Ertrag`) * 100,
-      year_grp = if_else(scenario == "Historisch", "Jahr 2020", "Jahr 2075")
+      year_grp = if_else(scenario == "Historisch", "Historisch", "Jahr 2075")
     )
   
   # --- top vom boxplot rausfinden ---
