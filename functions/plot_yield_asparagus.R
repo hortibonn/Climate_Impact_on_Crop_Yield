@@ -83,7 +83,7 @@ plot_yield_asparagus <- function(sim_results_scen) {
     scale_x_discrete(name = "Klimaszenario") +
     scale_fill_manual(
       name   = NULL,
-      values = c("Ertrag" = "#377eb8", "vermarktbarer_Ertrag" = "#4daf4a"),
+      values = c("Ertrag" = "cadetblue", "vermarktbarer_Ertrag" = "firebrick"),
       labels = c("Ertrag" = "Potentieller Ertrag\nohne Schäden",
                  "vermarktbarer_Ertrag" = "Vermarktbarer Ertrag")
     ) +
@@ -99,7 +99,7 @@ plot_yield_asparagus <- function(sim_results_scen) {
     ) +
     theme_minimal(base_size = 12) +
     theme(
-      legend.position  = "right",
+      legend.position  = "bottom",
       legend.text      = element_text(size = 16),
       strip.placement  = "outside",
       strip.background = element_rect(fill = "lightgrey", colour = NA),
