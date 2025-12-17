@@ -31,7 +31,7 @@ plot_yield_asparagus <- function(sim_results_scen) {
       # gewünschte Reihenfolge auf der x-Achse (Labels unten)
       scenario = factor(
         scenario,
-        levels = c("Historisch", "SSP1-2.6", "SSP2-4.5", "SSP3-7.0", "SSP5-8.5")
+        levels = c("2020", "SSP1-2.6", "SSP2-4.5", "SSP3-7.0", "SSP5-8.5")
       ),
       # Legendenlabels erst im Scale setzen; hier nur Reihenfolge der beiden Reihen
       name = factor(name, levels = c("Ertrag", "vermarktbarer_Ertrag"))
@@ -44,7 +44,7 @@ plot_yield_asparagus <- function(sim_results_scen) {
     tidyr::pivot_wider(names_from = name, values_from = mean_value) %>%
     dplyr::mutate(
       percent  = (`vermarktbarer_Ertrag` / `Ertrag`) * 100,
-      year_grp = if_else(scenario == "Historisch", "Historisch", "Jahr 2075")
+      year_grp = if_else(scenario == "Historisch", "Jahr 2020", "Jahr 2075")
     )
   
   # --- top vom boxplot rausfinden ---

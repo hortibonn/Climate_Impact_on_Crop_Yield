@@ -842,34 +842,26 @@ server <- function(input, output, session) {
       source("functions/plot_yield_asparagus.R")
       plot1<-plot_yield_asparagus(mc_data_order) |>
         add_meta(
-          title    = "Abb 1. Ertrag für 2020 und 2075 unter verschiedenen Klimaszenarien",
-          #subtitle = "Difference between agroforestry and treeless farming under identical conditions",
-          caption  = "Diese Abbildung zeigt den Unterschied zwischen dem potenziellen Ertrag (ohne Stressereignisse) und 
-          dem tatsächlich erreichten Ertrag (unter Berücksichtigung aller simulierten Stressfaktoren und Qualitätsverluste) 
-          beziehungsweise dem vermarktbaren Ertrag. Für jedes Klimaszenario werden die Ertragsverteilungen aus 
-          Monte-Carlo-Simulationen dargestellt. Die Prozentwerte über den Boxplots geben an, 
-          wie stark der durchschnittliche Ertrag im jeweiligen Szenario durch Stress reduziert wurde. 
-          Die gestrichelte Linie markiert einen regionaltypischen Referenzertrag des Regierungsbezirks Köln 
-          (nach Daten der Landesdatenbank NRW) und dient als Orientierungshilfe. 
-          Die SSP-Szenarien zeigen mögliche zukünftige Klimaentwicklungen: von starkem Klimaschutz mit geringer Erwärmung (SSP1–2.6) 
-          über mittlere Veränderungen (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung 
-          (SSP3–7.0 und SSP5–8.5).Die Darstellung ermöglicht es Landwirtinnen und Landwirten sowie Entscheidungsträgern einzuschätzen, 
-          wie Klimawandel und Stressereignisse zukünftige Erträge beeinflussen können und welche Spannbreite realistischer 
-          Ernteergebnisse zu erwarten ist.")
+          title    = "2020 vs. 2075: Wie Klimaszenarien die Zukunft der Ernte bestimmen",
+          #subtitle = "",
+          caption  = "Diese Abbildung zeigt den Unterschied zwischen dem simulierten Ertrag unter den Wetterbedingungen des Jahr 2020 und dem simulierten Ertrag für Wettervorhersagen des Jahr 2075.
+          Die Boxplots stellen für jedes Klimaszenario die Ergebnissverteilungen der Monte-Carlo-Simulationen dar. 
+        Die Prozentwerte darüber zeigen, wie stark der durchschnittliche Ertrag reduziert wurde. Die gestrichelte Linie markiert den 
+        Spargel-Ertrag im Regierungsbezirk Köln im Jahr 2020 und dient als Orientierung. Die SSP-Szenarien stehen für mögliche zukünftige Klimaentwicklungen – von geringerer 
+        Erwärmung (SSP1–2.6) bis hin zu hohen und sehr hohen Emissionen (SSP3–7.0 und SSP5–8.5). So lässt sich einschätzen, wie Klimawandel und Stressereignisse       
+        zukünftige Spargelerträge beeinflussen könnten und welche Ertragsspannen realistisch sind.")
       #, legend = "none")
       
       source("functions/VIP_plot.R") 
       plot2<-VIP_plot(mc_data_order)|>
         add_meta(
-          title    = "Abb 2. Bedeutung verschiedener Faktoren für den Ertrag für 2020 und 2075 in unterschiedlichen Klimaszenarien",
+          title    = "Wichtige Einflussfaktoren auf den Ertrag in 2020 und 2075 unter verschiedenen Klimaszenarien",
           #subtitle = ''
-          caption  = "Der VIP-Plot (Variable Importance in Projection) zeigt, welche Stressfaktoren die größten Unsicherheiten bei der Berechnung des Ertrags bedeuten. 
-          Jeder Punkt repräsentiert einen Faktor; die Punktgröße gibt an, wie ausschlaggebend die Varianz des Faktors im statistischen Modell 
-          (PLSR) war.Je größer der Punkt, desto stärker trägt der entsprechende Stressor zur Varianz im Ertrag bei. 
-            Diese Darstellung zeigt nicht die Höhe der Ertragsminderung selbst, sondern welche Faktoren für den Ertrag entscheidend sind – 
-            also wo Risikomanagement, Sortenwahl oder Schutzmaßnahmen den größten Nutzen bringen können. Die SSP-Szenarien zeigen mögliche 
-            zukünftige Klimaentwicklungen: von starkem Klimaschutz mit geringer Erwärmung (SSP1–2.6) über mittlere Veränderungen 
-          (SSP2–4.5) bis hin zu Szenarien mit hohen bis extremen Emissionen und deutlicher Erwärmung (SSP3–7.0 und SSP5–8.5).")
+          caption  = "Das VIP-Schaubild ((Variable Importance in Projection – Variablenwichtigkeit in der Projektion)  zeigt, welche Stressfaktoren den Spargelertrag
+        am stärksten beeinflussen. Jeder Punkt steht für einen Faktor. Je größer der Punkt, desto wichtiger ist dieser Faktor dafür, warum sich die Erträge unterscheiden.
+        Das Schaubild zeigt nicht, wie groß der Ertragsverlust durch einen einzelnen Stressor ist. Es zeigt, welche Faktoren insgesamt besonders wichtig für den Ertrag sind.
+        Darauf können Entscheidungen zu Risikomanagement, Sortenwahl oder Schutzmaßnahmen aufbauen. Die SSP-Szenarien stehen für mögliche Klimaentwicklungen: 
+        von wenig Erwärmung (SSP1–2.6) bis zu sehr hohen Emissionen und starker Erwärmung (SSP5–8.5).")
       #, legend = "none")
     }
     
