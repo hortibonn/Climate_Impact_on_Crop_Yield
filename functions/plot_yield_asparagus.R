@@ -1,8 +1,3 @@
-
-library(dplyr)
-library(stringr)
-library(ggplot2)
-
 #plot_yield_asparagus(MC_results_scenarios)
 
 plot_yield_asparagus <- function(sim_results_scen) {
