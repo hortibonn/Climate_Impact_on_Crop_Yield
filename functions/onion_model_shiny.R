@@ -32,14 +32,14 @@ precompute_phase_data <- compiler::cmpfun(function(df, sow,
                                                    GDD_vegetative_required_p,
                                                    GDD_bulbing_required_p,
                                                    GDD_maturation_required_p) {
-  n <- nrow(df)
-  if (n == 0L) return(NULL)
+  n <- base::nrow(df)
+  if (n == 0L) base::return(NULL)
   
   # Initialize cumulative GDD
   df[, GDD_cum := 0]
   # Only accumulate after sowing
   after_sow <- df$yday >= sow
-  df$GDD_cum[after_sow] <- cumsum(df$GDD_daily[after_sow])
+  df$GDD_cum[after_sow] <- base::cumsum(df$GDD_daily[after_sow])
   
   # Phase thresholds (GDD-based)
   em_idx <- after_sow & df$GDD_cum <= GDD_field_emergence_required_p
@@ -50,30 +50,27 @@ precompute_phase_data <- compiler::cmpfun(function(df, sow,
   mt_idx <- after_sow & df$GDD_cum > GDD_bulbing_required_p &
     df$GDD_cum <= GDD_maturation_required_p
   
-  list(
-    em = list(idx = em_idx, range = which(em_idx)),
-    vg = list(idx = vg_idx, range = which(vg_idx)),
-    bl = list(idx = bl_idx, range = which(bl_idx)),
-    mt = list(idx = mt_idx, range = which(mt_idx))
+  base::list(
+    em = base::list(idx = em_idx, range = base::which(em_idx)),
+    vg = base::list(idx = vg_idx, range = base::which(vg_idx)),
+    bl = base::list(idx = bl_idx, range = base::which(bl_idx)),
+    mt = base::list(idx = mt_idx, range = base::which(mt_idx))
   )
 })
 
 
 # Batch risk computation per phase ----
-
-# Compute all stress risks per phase (em, vg, bl, mt) in one go.
-# Uses phase means (T, RH, soil T, rain) and maximum wet/dry streaks
 compute_all_risks <- compiler::cmpfun(function(phase_data, df, params) {
   
-  stats_for <- function(idx) list(
-    T        = mean(df$Tavg[idx],    na.rm = TRUE),
-    Tmin     = mean(df$Tmin[idx],    na.rm = TRUE),   # nighttime temp proxy
-    RHmean   = mean(df$RH_mean[idx], na.rm = TRUE),
-    RHmax    = mean(df$RH_max[idx],  na.rm = TRUE),   # nighttime humidity proxy
-    Ts       = mean(df$Ts_5cm[idx],  na.rm = TRUE),
-    wet      = if (any(idx, na.rm = TRUE)) max(df$day_consec_wet[idx]) else 0,
-    dry      = if (any(idx, na.rm = TRUE)) max(df$day_consec_dry[idx]) else 0,
-    hot      = if (any(idx, na.rm = TRUE)) max(df$day_consec_hot[idx]) else 0
+  stats_for <- function(idx) base::list(
+    T        = base::mean(df$Tavg[idx],    na.rm = TRUE),
+    Tmin     = base::mean(df$Tmin[idx],    na.rm = TRUE),
+    RHmean   = base::mean(df$RH_mean[idx], na.rm = TRUE),
+    RHmax    = base::mean(df$RH_max[idx],  na.rm = TRUE),
+    Ts       = base::mean(df$Ts_5cm[idx],  na.rm = TRUE),
+    wet      = if (base::any(idx, na.rm = TRUE)) base::max(df$day_consec_wet[idx]) else 0,
+    dry      = if (base::any(idx, na.rm = TRUE)) base::max(df$day_consec_dry[idx]) else 0,
+    hot      = if (base::any(idx, na.rm = TRUE)) base::max(df$day_consec_hot[idx]) else 0
   )
   
   ems <- stats_for(phase_data$em$idx)
@@ -82,7 +79,7 @@ compute_all_risks <- compiler::cmpfun(function(phase_data, df, params) {
   mts <- stats_for(phase_data$mt$idx)
   
   # --- EMERGENCE phase risks ---
-  risks_em <- c(
+  risks_em <- base::c(
     exrain = get_extreme_rain_stress(
       df$Prec[phase_data$em$idx],
       params$prec_extreme_rain_medium_p,
@@ -105,7 +102,7 @@ compute_all_risks <- compiler::cmpfun(function(phase_data, df, params) {
   )
   
   # --- VEGETATIVE phase risks ---
-  risks_vg <- c(
+  risks_vg <- base::c(
     exrain = get_extreme_rain_stress(
       df$Prec[phase_data$vg$idx],
       params$prec_extreme_rain_medium_p,
@@ -141,9 +138,8 @@ compute_all_risks <- compiler::cmpfun(function(phase_data, df, params) {
       params$Tsopt_fusarium_p,
       params$Tswidth_fusarium_p
     ),
-    # heat risk (vg)
     heat = get_heat_stress(
-      mean(df$Tmax[phase_data$vg$idx], na.rm = TRUE),
+      base::mean(df$Tmax[phase_data$vg$idx], na.rm = TRUE),
       vgs$hot,
       params$Tmax_heat_threshold_p,
       params$impact_temp_heat_t,
@@ -152,7 +148,7 @@ compute_all_risks <- compiler::cmpfun(function(phase_data, df, params) {
   )
   
   # --- BULBING phase risks ---
-  risks_bl <- c(
+  risks_bl <- base::c(
     exrain = get_extreme_rain_stress(
       df$Prec[phase_data$bl$idx],
       params$prec_extreme_rain_medium_p,
@@ -189,7 +185,7 @@ compute_all_risks <- compiler::cmpfun(function(phase_data, df, params) {
       params$Tswidth_fusarium_p
     ),
     heat = get_heat_stress(
-      mean(df$Tmax[phase_data$bl$idx], na.rm = TRUE),
+      base::mean(df$Tmax[phase_data$bl$idx], na.rm = TRUE),
       bls$hot,
       params$Tmax_heat_threshold_p,
       params$impact_temp_heat_t,
@@ -206,7 +202,7 @@ compute_all_risks <- compiler::cmpfun(function(phase_data, df, params) {
   )
   
   # --- MATURATION phase risks ---
-  risks_mt <- c(
+  risks_mt <- base::c(
     exrain = get_extreme_rain_stress(
       df$Prec[phase_data$mt$idx],
       params$prec_extreme_rain_medium_p,
@@ -243,7 +239,7 @@ compute_all_risks <- compiler::cmpfun(function(phase_data, df, params) {
       params$Twidth_mildew_p
     ),
     heat = get_heat_stress(
-      mean(df$Tmax[phase_data$mt$idx], na.rm = TRUE),
+      base::mean(df$Tmax[phase_data$mt$idx], na.rm = TRUE),
       mts$hot,
       params$Tmax_heat_threshold_p,
       params$impact_temp_heat_t,
@@ -259,21 +255,19 @@ compute_all_risks <- compiler::cmpfun(function(phase_data, df, params) {
     )
   )
   
-  list(em = risks_em, vg = risks_vg, bl = risks_bl, mt = risks_mt)
+  base::list(em = risks_em, vg = risks_vg, bl = risks_bl, mt = risks_mt)
 })
 
-# Load compiled helper functions (stress + biomass + sowing) ----
 
-# This assumes you've sourced the helper script where helper_function() is defined.
+# Load compiled helper functions (stress + biomass + sowing) ----
 helper_function(attach_to_global = TRUE)
 
-# Irrigation scheduling (Geisenheim-style, phase-based) ----
-# Uses a simple root-zone water balance:
-#   Dr(t) = Dr(t-1) + ETc - P_eff - Irrig
-# with ETc = kc * ET0 and Dr constrained between 0 and TAW.
+
+# FIXED Irrigation scheduling (Geisenheim-style, phase-based) ----
 compute_irrigation_geisenheim <- compiler::cmpfun(function(df, sow_yday, params, phase_data) {
-  n <- nrow(df)
-  irrig <- numeric(n)
+  n <- base::nrow(df)
+  irrig     <- numeric(n)
+  theta_rel <- rep(NA_real_, n)
   
   # map each day to a numeric phase: 1=em, 2=vg, 3=bl, 4=mt
   phase_id <- integer(n)
@@ -283,10 +277,10 @@ compute_irrigation_geisenheim <- compiler::cmpfun(function(df, sow_yday, params,
   phase_id[phase_data$mt$idx] <- 4L
   
   # per-phase kc and rooting depth (cm)
-  kc_phase   <- c(params$kc_em, params$kc_vg, params$kc_bl, params$kc_mt)
-  root_phase <- c(params$root_em_cm, params$root_vg_cm, params$root_bl_cm, params$root_mt_cm)
+  kc_phase   <- base::c(params$kc_em, params$kc_vg, params$kc_bl, params$kc_mt)
+  root_phase <- base::c(params$root_em_cm, params$root_vg_cm, params$root_bl_cm, params$root_mt_cm)
   
-  # soil parameters (canonical local names)
+  # soil parameters
   nFK_mm_per_cm      <- params$nFK_mm_per_cm
   fc_init_frac       <- params$fc_init_frac
   fc_target_frac     <- params$fc_target_frac
@@ -297,7 +291,7 @@ compute_irrigation_geisenheim <- compiler::cmpfun(function(df, sow_yday, params,
   Dr       <- NA_real_     # soil water depletion (mm)
   prev_TAW <- NA_real_     # previous total available water (mm)
   
-  for (i in seq_len(n)) {
+  for (i in base::seq_len(n)) {
     # before sowing: skip
     if (df$yday[i] < sow_yday) next
     
@@ -307,61 +301,69 @@ compute_irrigation_geisenheim <- compiler::cmpfun(function(df, sow_yday, params,
     kc   <- kc_phase[pid]
     root <- root_phase[pid]
     
-    if (is.na(kc) || is.na(root) || kc <= 0 || root <= 0) next
+    if (base::is.na(kc) || base::is.na(root) || kc <= 0 || root <= 0) next
     
     # total available water (TAW) in current root zone
     TAW <- root * nFK_mm_per_cm
     
-    # initialize depletion at (1 - fc_init_frac)*TAW (e.g. 10% depleted)
-    if (is.na(Dr)) {
+    # initialize depletion at (1 - fc_init_frac)*TAW
+    if (base::is.na(Dr)) {
       Dr <- (1 - fc_init_frac) * TAW
-    } else if (!is.na(prev_TAW) && prev_TAW > 0 && TAW > 0 && !isTRUE(all.equal(TAW, prev_TAW))) {
+    } else if (!base::is.na(prev_TAW) && prev_TAW > 0 && TAW > 0 && !base::isTRUE(all.equal(TAW, prev_TAW))) {
       # rescale depletion if rooting depth changed
       Dr <- Dr * (TAW / prev_TAW)
     }
     prev_TAW <- TAW
     
-    # crop evapotranspiration and effective precipitation
-    ETc  <- df$ET0_mm[i] * kc
-    Peff <- df$Prec[i]   # you can later add an efficiency factor here
-    
-    # update depletion
-    Dr <- Dr + ETc - Peff
-    if (Dr < 0)   Dr <- 0
-    if (Dr > TAW) Dr <- TAW
-    
-    # irrigation trigger (RAW threshold)
+    # ===== FIX 1: Determine irrigation amount BEFORE water balance update =====
+    irrigation_today <- 0
     if (Dr >= deplete_trigger_fr * TAW) {
       target_D <- (1 - fc_target_frac) * TAW
       gift     <- Dr - target_D
-      if (gift < 0) gift <- 0
-      if (gift > max_irrig_mm) gift <- max_irrig_mm
-      
       if (gift > 0) {
-        irrig[i] <- gift
-        Dr <- Dr - gift
+        if (gift > max_irrig_mm) gift <- max_irrig_mm
+        irrigation_today <- gift
       }
+    }
+    irrig[i] <- irrigation_today
+    
+    # ===== FIX 2: Update water balance with ET, precipitation AND irrigation =====
+    ETc  <- df$ET0_mm[i] * kc
+    Peff <- df$Prec[i]
+    if (base::is.na(Peff)) Peff <- 0  # Handle NA precipitation
+    
+    # Water balance: depletion increases by ET, decreases by rain and irrigation
+    Dr <- Dr + ETc - Peff - irrigation_today
+    
+    # ===== FIX 3: Constrain depletion to valid range =====
+    # If Dr < 0, soil is above field capacity (excess water drains)
+    if (Dr < 0)   Dr <- 0
+    # If Dr > TAW, soil is completely depleted
+    if (Dr > TAW) Dr <- TAW
+    
+    # ===== FIX 4: Calculate theta_rel AFTER all water movements =====
+    if (!base::is.na(TAW) && TAW > 0) {
+      theta_rel[i] <- 1 - Dr / TAW
     }
   }
   
-  irrig
+  base::list(irrig_mm = irrig, theta_rel = theta_rel)
 })
+
 
 # MAIN MODEL FUNCTION ----------------------------------------------------
 
 onion_climate_impact <- compiler::cmpfun(function() {
   
   # 1) For each scenario, randomly sample one season (one id_season) ----
-  weather_scenario_list <- lapply(weather_precomputed, function(list_per_scenario) {
+  weather_scenario_list <- base::lapply(weather_precomputed, function(list_per_scenario) {
     sample(list_per_scenario, 1)[[1]]
   })
   
   # 2) Bundle parameters into a single list for passing around ----
-  #    We map from your input variable names (*_p, *_c, *_t) to
-  #    internal canonical names used by the functions.
-  params <- list(
+  params <- base::list(
     # irrigation (soil water & kc / root by phase)
-    nFK_mm_per_cm      = nfk_mm_per_cm_t,   # from input_table
+    nFK_mm_per_cm      = nfk_mm_per_cm_t,
     fc_init_frac       = fc_init_frac_t,
     fc_target_frac     = fc_target_frac_t,
     deplete_trigger_fr = deplete_trigger_fr_t,
@@ -376,6 +378,33 @@ onion_climate_impact <- compiler::cmpfun(function() {
     kc_vg              = kc_vg_p,
     kc_bl              = kc_bl_p,
     kc_mt              = kc_mt_p,
+    
+    # LAI calculation (removed _p suffix as requested)
+    LAI_emergence  = (leaf_area_em_per_plant_p * onions_per_ha_p) / 100000000,
+    LAI_veg        = (leaf_area_veg_per_plant_p * onions_per_ha_p) / 100000000,
+    LAI_bulbing    = (leaf_area_bl_per_plant_p * onions_per_ha_p) / 100000000,
+    LAI_maturation = (leaf_area_mt_per_plant_p * onions_per_ha_p) / 100000000,
+    
+    # Phase-specific LUE values
+    LUE_em_p           = LUE_em_p,
+    LUE_vg_p           = LUE_vg_p,
+    LUE_bl_p           = LUE_bl_p,
+    LUE_mt_p           = LUE_mt_p,
+    
+    # Temperature response
+    f_T_1_lower_p   = f_T_1_lower_p,
+    f_T_1_upper_p   = f_T_1_upper_p,
+    f_T_0_lower_p   = f_T_0_lower_p,
+    f_T_0_upper_p   = f_T_0_upper_p,
+    
+    # Water response
+    f_W_1_lower_t   = f_W_1_lower_t,
+    f_W_1_upper_t   = f_W_1_upper_t,
+    f_W_0_5_t       = f_W_0_5_t,
+    
+    lec_k_c            = lec_k_c,
+    onions_per_ha_p    = onions_per_ha_p,
+    HI_onions_t        = HI_onions_t,
     
     # extreme rain
     prec_extreme_rain_medium_p = prec_extreme_rain_medium_p,
@@ -427,49 +456,31 @@ onion_climate_impact <- compiler::cmpfun(function() {
     yield_reduction_botrytis_t     = yield_reduction_botrytis_t,
     yield_reduction_downy_mildew_t = yield_reduction_downy_mildew_t,
     yield_reduction_thrips_t       = yield_reduction_thrips_t,
-    yield_reduction_heat_t         = yield_reduction_heat_t,
-    
-    # biomass / radiation use
-    LAI_emergence_p  = (leaf_area_em_per_plant_p / 10000) * (onions_per_ha_p / 10000),
-    LAI_veg_p        = (leaf_area_veg_per_plant_p / 10000) * (onions_per_ha_p / 10000),
-    LAI_bulbing_p    = (leaf_area_bl_per_plant_p / 10000) * (onions_per_ha_p / 10000),
-    LAI_maturation_p = (leaf_area_mt_per_plant_p / 10000) * (onions_per_ha_p / 10000),
-    
-    f_T_1_lower_p   = f_T_1_lower_p,
-    f_T_1_upper_p   = f_T_1_upper_p,
-    f_T_0_lower_p   = f_T_0_lower_p,
-    f_T_0_upper_p   = f_T_0_upper_p,
-    f_W_1_lower_p   = f_W_1_lower_t,
-    f_W_1_upper_p   = f_W_1_upper_t,
-    f_W_0.5_p       = f_W_0_5_t,
-    
-    LUE_onion_p        = LUE_onion_p,
-    lec_k_c            = lec_k_c,
-    onions_per_ha_p    = onions_per_ha_p,
-    HI_onions_t        = HI_onions_t
+    yield_reduction_heat_t         = yield_reduction_heat_t
   )
   
-  results <- vector("list", length(weather_scenario_list))
-  names(results) <- names(weather_scenario_list)
+  results <- vector("list", base::length(weather_scenario_list))
+  base::names(results) <- base::names(weather_scenario_list)
   
   # 4) Loop over scenarios ----
-  for (sc in names(weather_scenario_list)) {
+  scenario_count <- 0
+  for (sc in base::names(weather_scenario_list)) {
+    
+    scenario_count <- scenario_count + 1
     
     df <- weather_scenario_list[[sc]]
-    setDT(df)
+    data.table::setDT(df)
     
-    # Derived streak variables (wet / dry days) – based on precipitation only
-    df$day_consec_wet <- consec_counter(!is.na(df$Prec) & df$Prec > 0)
-    df$day_consec_dry <- consec_counter(is.na(df$Prec) | df$Prec == 0)
-    
-    # HEAT STREAKS ---------------------------------------------------
+    # Derived streak variables
+    df$day_consec_wet <- consec_counter(!base::is.na(df$Prec) & df$Prec > 0)
+    df$day_consec_dry <- consec_counter(base::is.na(df$Prec) | df$Prec == 0)
     df$hot_day        <- df$Tmax >= params$Tmax_heat_threshold_p
     df$day_consec_hot <- consec_counter(df$hot_day)
     
-    # Sowing date (fixed parameter)
-    sow <- round(sowing_day_p)
+    # Sowing date
+    sow <- pmax(base::round(sowing_day_p), 45)
     
-    # Phase data (em, vg, bl, mt) based on cumulative GDD
+    # Phase data
     phase_data <- precompute_phase_data(
       df, sow,
       GDD_field_emergence_required_p,
@@ -478,34 +489,37 @@ onion_climate_impact <- compiler::cmpfun(function() {
       GDD_maturation_required_p
     )
     
-    # Irrigation schedule (mm/day)
-    df$Irrig_mm <- compute_irrigation_geisenheim(df, sow, params, phase_data)
+    # Water balance: RAINFED
+    params_rf <- params
+    params_rf$max_irrig_mm <- 0
+    res_rf <- compute_irrigation_geisenheim(df, sow, params_rf, phase_data)
+    df$theta_rel_rf <- res_rf$theta_rel
     
-    # Phase-wise risk scores (stresses do NOT depend on irrigation here)
+    # Water balance: IRRIGATED
+    res_ir <- compute_irrigation_geisenheim(df, sow, params, phase_data)
+    df$Irrig_mm    <- res_ir$irrig_mm
+    df$theta_rel_ir <- res_ir$theta_rel
+    
+    # Phase-wise risk scores
     all_risks <- compute_all_risks(phase_data, df, params)
     
-    # 5) Convert risks into random multipliers (event may or may not occur) ----
-    
-    # Emergence phase multipliers
-    em_multipliers <- c(
+    # Convert risks into multipliers
+    em_multipliers <- base::c(
       fast_chance_event(all_risks$em["exrain"],   params$yield_reduction_extreme_rain_t),
       fast_chance_event(all_risks$em["hail"],     params$yield_reduction_hail_t),
       fast_chance_event(all_risks$em["fusarium"], params$yield_reduction_fusarium_t)
     )
     
-    # Vegetative phase multipliers
-    vg_multipliers <- c(
+    vg_multipliers <- base::c(
       fast_chance_event(all_risks$vg["heat"],     params$yield_reduction_heat_t),
       fast_chance_event(all_risks$vg["exrain"],   params$yield_reduction_extreme_rain_t),
       fast_chance_event(all_risks$vg["hail"],     params$yield_reduction_hail_t),
       fast_chance_event(all_risks$vg["fusarium"], params$yield_reduction_fusarium_t),
       fast_chance_event(all_risks$vg["mildew"],   params$yield_reduction_downy_mildew_t),
       fast_chance_event(all_risks$vg["thrips"],   params$yield_reduction_thrips_t)
-      
     )
     
-    # Bulbing phase multipliers
-    bl_multipliers <- c(
+    bl_multipliers <- base::c(
       fast_chance_event(all_risks$bl["heat"],     params$yield_reduction_heat_t),
       fast_chance_event(all_risks$bl["exrain"],   params$yield_reduction_extreme_rain_t),
       fast_chance_event(all_risks$bl["hail"],     params$yield_reduction_hail_t),
@@ -515,8 +529,7 @@ onion_climate_impact <- compiler::cmpfun(function() {
       fast_chance_event(all_risks$bl["thrips"],   params$yield_reduction_thrips_t)
     )
     
-    # Maturation phase multipliers
-    mt_multipliers <- c(
+    mt_multipliers <- base::c(
       fast_chance_event(all_risks$mt["heat"],     params$yield_reduction_heat_t),
       fast_chance_event(all_risks$mt["exrain"],   params$yield_reduction_extreme_rain_t),
       fast_chance_event(all_risks$mt["hail"],     params$yield_reduction_hail_t),
@@ -526,53 +539,48 @@ onion_climate_impact <- compiler::cmpfun(function() {
       fast_chance_event(all_risks$mt["thrips"],   params$yield_reduction_thrips_t)
     )
     
-    # Phase-wise biomass multipliers (product of individual stress effects)
     em_bio_multiplier <- prod(em_multipliers)
     vg_bio_multiplier <- prod(vg_multipliers)
     bl_bio_multiplier <- prod(bl_multipliers)
     mt_bio_multiplier <- prod(mt_multipliers)
     
+    # RAINFED biomass calculation
+    water_rf <- df$theta_rel_rf
     
-    # -----------------------------------------------------------------
-    # 6A) RAINFED biomass and yield (no irrigation) -------------------
-    # -----------------------------------------------------------------
-    
-    water_rf <- df$Prec  # only rainfall
-    
-    biomass_em_pot_rf <- sum(calc_bio_vectorized(
-      df$PAR[phase_data$em$idx], params$LAI_emergence_p,
+    biomass_em_pot_rf <- base::sum(calc_bio_vectorized(
+      df$PAR[phase_data$em$idx], params$LAI_emergence,
       df$Tavg[phase_data$em$idx], water_rf[phase_data$em$idx],
       params$f_T_1_lower_p, params$f_T_1_upper_p,
       params$f_T_0_lower_p, params$f_T_0_upper_p,
-      params$f_W_1_lower_p, params$f_W_1_upper_p,
-      params$f_W_0.5_p, params$LUE_onion_p, params$lec_k_c
+      params$f_W_1_lower_t, params$f_W_1_upper_t,
+      params$f_W_0_5_t, params$LUE_em_p, params$lec_k_c
     ))
     
-    biomass_vg_pot_rf <- sum(calc_bio_vectorized(
-      df$PAR[phase_data$vg$idx], params$LAI_veg_p,
+    biomass_vg_pot_rf <- base::sum(calc_bio_vectorized(
+      df$PAR[phase_data$vg$idx], params$LAI_veg,
       df$Tavg[phase_data$vg$idx], water_rf[phase_data$vg$idx],
       params$f_T_1_lower_p, params$f_T_1_upper_p,
       params$f_T_0_lower_p, params$f_T_0_upper_p,
-      params$f_W_1_lower_p, params$f_W_1_upper_p,
-      params$f_W_0.5_p, params$LUE_onion_p, params$lec_k_c
+      params$f_W_1_lower_t, params$f_W_1_upper_t,
+      params$f_W_0_5_t, params$LUE_vg_p, params$lec_k_c
     ))
     
-    biomass_bl_pot_rf <- sum(calc_bio_vectorized(
-      df$PAR[phase_data$bl$idx], params$LAI_bulbing_p,
+    biomass_bl_pot_rf <- base::sum(calc_bio_vectorized(
+      df$PAR[phase_data$bl$idx], params$LAI_bulbing,
       df$Tavg[phase_data$bl$idx], water_rf[phase_data$bl$idx],
       params$f_T_1_lower_p, params$f_T_1_upper_p,
       params$f_T_0_lower_p, params$f_T_0_upper_p,
-      params$f_W_1_lower_p, params$f_W_1_upper_p,
-      params$f_W_0.5_p, params$LUE_onion_p, params$lec_k_c
+      params$f_W_1_lower_t, params$f_W_1_upper_t,
+      params$f_W_0_5_t, params$LUE_bl_p, params$lec_k_c
     ))
     
-    biomass_mt_pot_rf <- sum(calc_bio_vectorized(
-      df$PAR[phase_data$mt$idx], params$LAI_maturation_p,
+    biomass_mt_pot_rf <- base::sum(calc_bio_vectorized(
+      df$PAR[phase_data$mt$idx], params$LAI_maturation,
       df$Tavg[phase_data$mt$idx], water_rf[phase_data$mt$idx],
       params$f_T_1_lower_p, params$f_T_1_upper_p,
       params$f_T_0_lower_p, params$f_T_0_upper_p,
-      params$f_W_1_lower_p, params$f_W_1_upper_p,
-      params$f_W_0.5_p, params$LUE_onion_p, params$lec_k_c
+      params$f_W_1_lower_t, params$f_W_1_upper_t,
+      params$f_W_0_5_t, params$LUE_mt_p, params$lec_k_c
     ))
     
     biomass_em_rf <- biomass_em_pot_rf * em_bio_multiplier
@@ -585,53 +593,50 @@ onion_climate_impact <- compiler::cmpfun(function() {
     realized_biomass_g_m2_rf  <- biomass_em_rf + biomass_vg_rf +
       biomass_bl_rf + biomass_mt_rf
     
+    
     potential_biomass_t_ha_rf <- potential_biomass_g_m2_rf * 0.01
     realized_biomass_t_ha_rf  <- realized_biomass_g_m2_rf  * 0.01
     
     potential_yield_DM_t_ha_rf <- potential_biomass_t_ha_rf * params$HI_onions_t
     final_yield_DM_t_ha_rf     <- realized_biomass_t_ha_rf  * params$HI_onions_t
     
+    # IRRIGATED biomass calculation
+    water_ir <- df$theta_rel_ir
     
-    # -----------------------------------------------------------------
-    # 6B) IRRIGATED biomass and yield (Prec + Irrig_mm) ---------------
-    # -----------------------------------------------------------------
-    
-    water_ir <- df$Prec + df$Irrig_mm  # rainfall + irrigation
-    
-    biomass_em_pot_ir <- sum(calc_bio_vectorized(
-      df$PAR[phase_data$em$idx], params$LAI_emergence_p,
+    biomass_em_pot_ir <- base::sum(calc_bio_vectorized(
+      df$PAR[phase_data$em$idx], params$LAI_emergence,
       df$Tavg[phase_data$em$idx], water_ir[phase_data$em$idx],
       params$f_T_1_lower_p, params$f_T_1_upper_p,
       params$f_T_0_lower_p, params$f_T_0_upper_p,
-      params$f_W_1_lower_p, params$f_W_1_upper_p,
-      params$f_W_0.5_p, params$LUE_onion_p, params$lec_k_c
+      params$f_W_1_lower_t, params$f_W_1_upper_t,
+      params$f_W_0_5_t, params$LUE_em_p, params$lec_k_c
     ))
     
-    biomass_vg_pot_ir <- sum(calc_bio_vectorized(
-      df$PAR[phase_data$vg$idx], params$LAI_veg_p,
+    biomass_vg_pot_ir <- base::sum(calc_bio_vectorized(
+      df$PAR[phase_data$vg$idx], params$LAI_veg,
       df$Tavg[phase_data$vg$idx], water_ir[phase_data$vg$idx],
       params$f_T_1_lower_p, params$f_T_1_upper_p,
       params$f_T_0_lower_p, params$f_T_0_upper_p,
-      params$f_W_1_lower_p, params$f_W_1_upper_p,
-      params$f_W_0.5_p, params$LUE_onion_p, params$lec_k_c
+      params$f_W_1_lower_t, params$f_W_1_upper_t,
+      params$f_W_0_5_t, params$LUE_vg_p, params$lec_k_c
     ))
     
-    biomass_bl_pot_ir <- sum(calc_bio_vectorized(
-      df$PAR[phase_data$bl$idx], params$LAI_bulbing_p,
+    biomass_bl_pot_ir <- base::sum(calc_bio_vectorized(
+      df$PAR[phase_data$bl$idx], params$LAI_bulbing,
       df$Tavg[phase_data$bl$idx], water_ir[phase_data$bl$idx],
       params$f_T_1_lower_p, params$f_T_1_upper_p,
       params$f_T_0_lower_p, params$f_T_0_upper_p,
-      params$f_W_1_lower_p, params$f_W_1_upper_p,
-      params$f_W_0.5_p, params$LUE_onion_p, params$lec_k_c
+      params$f_W_1_lower_t, params$f_W_1_upper_t,
+      params$f_W_0_5_t, params$LUE_bl_p, params$lec_k_c
     ))
     
-    biomass_mt_pot_ir <- sum(calc_bio_vectorized(
-      df$PAR[phase_data$mt$idx], params$LAI_maturation_p,
+    biomass_mt_pot_ir <- base::sum(calc_bio_vectorized(
+      df$PAR[phase_data$mt$idx], params$LAI_maturation,
       df$Tavg[phase_data$mt$idx], water_ir[phase_data$mt$idx],
       params$f_T_1_lower_p, params$f_T_1_upper_p,
       params$f_T_0_lower_p, params$f_T_0_upper_p,
-      params$f_W_1_lower_p, params$f_W_1_upper_p,
-      params$f_W_0.5_p, params$LUE_onion_p, params$lec_k_c
+      params$f_W_1_lower_t, params$f_W_1_upper_t,
+      params$f_W_0_5_t, params$LUE_mt_p, params$lec_k_c
     ))
     
     biomass_em_ir <- biomass_em_pot_ir * em_bio_multiplier
@@ -650,36 +655,31 @@ onion_climate_impact <- compiler::cmpfun(function() {
     potential_yield_DM_t_ha_ir <- potential_biomass_t_ha_ir * params$HI_onions_t
     final_yield_DM_t_ha_ir     <- realized_biomass_t_ha_ir  * params$HI_onions_t
     
-    
-    # HARVEST DAY ------------------------------------------------------
-    
+
+    # Harvest day
     after_sow_idx <- df$yday >= sow
-    harvest_yday <- if (any(phase_data$mt$idx)) {
-      max(df$yday[phase_data$mt$idx])
+    harvest_yday <- if (base::any(phase_data$mt$idx)) {
+      base::max(df$yday[phase_data$mt$idx])
     } else {
-      max(df$yday[after_sow_idx], na.rm = TRUE)
+      base::max(df$yday[after_sow_idx], na.rm = TRUE)
     }
     
-    # 8) Store scenario results ----
-    results[[sc]] <- list(
+    # Store results
+    results[[sc]] <- base::list(
       sowing_yday  = sow,
       harvest_yday = harvest_yday,
       
-      # rainfed yields
-      raw_yield_per_ha_rainfed   = potential_yield_DM_t_ha_rf,
-      final_yield_per_ha_rainfed = final_yield_DM_t_ha_rf,
+      raw_yield_per_ha_rainfed   = potential_yield_DM_t_ha_rf/dry_matter_content_t,
+      final_yield_per_ha_rainfed = final_yield_DM_t_ha_rf/dry_matter_content_t,
       
-      # irrigated yields
-      raw_yield_per_ha_irrigated   = potential_yield_DM_t_ha_ir,
-      final_yield_per_ha_irrigated = final_yield_DM_t_ha_ir,
+      raw_yield_per_ha_irrigated   = potential_yield_DM_t_ha_ir/dry_matter_content_t,
+      final_yield_per_ha_irrigated = final_yield_DM_t_ha_ir/dry_matter_content_t,
       
-      # biomass multipliers
       em_bio_multiplier  = em_bio_multiplier,
       vg_bio_multiplier  = vg_bio_multiplier,
       bl_bio_multiplier  = bl_bio_multiplier,
       mt_bio_multiplier  = mt_bio_multiplier,
       
-      # stress multipliers
       m_exrain_em  = em_multipliers[1],
       m_hail_em    = em_multipliers[2],
       m_fus_em     = em_multipliers[3],
@@ -703,16 +703,15 @@ onion_climate_impact <- compiler::cmpfun(function() {
       m_exrain_mt  = mt_multipliers[2],
       m_hail_mt    = mt_multipliers[3],
       m_fus_mt     = mt_multipliers[4],
-      m_mildew_mt     = mt_multipliers[5],
+      m_mildew_mt  = mt_multipliers[5],
       m_botrytis_mt  = mt_multipliers[6],
       m_thrips_mt    = mt_multipliers[7],
       
-      # irrigation summary
-      total_irrigation_mm = sum(df$Irrig_mm, na.rm = TRUE)
+      total_irrigation_mm = base::sum(df$Irrig_mm, na.rm = TRUE)
     )
   }
   
-  return(results)
+  base::return(results)
 })
 
 
@@ -726,6 +725,7 @@ onion_climate_impact <- compiler::cmpfun(function() {
 #   numberOfModelRuns = 100,
 #   functionSyntax  = "plainNames"
 # )
+
 
 
 
