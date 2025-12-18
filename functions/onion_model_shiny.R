@@ -441,7 +441,7 @@ onion_climate_impact <- compiler::cmpfun(function() {
     f_T_0_upper_p   = f_T_0_upper_p,
     f_W_1_lower_p   = f_W_1_lower_t,
     f_W_1_upper_p   = f_W_1_upper_t,
-    f_W_0.5_p       = f_W_0.5_t,
+    f_W_0.5_p       = f_W_0_5_t,
     
     LUE_onion_p        = LUE_onion_p,
     lec_k_c            = lec_k_c,
@@ -726,5 +726,6 @@ onion_climate_impact <- compiler::cmpfun(function() {
 #   numberOfModelRuns = 100,
 #   functionSyntax  = "plainNames"
 # )
+
 
 
