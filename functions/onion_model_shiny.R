@@ -362,8 +362,8 @@ onion_climate_impact <- compiler::cmpfun(function() {
   params <- list(
     # irrigation (soil water & kc / root by phase)
     nFK_mm_per_cm      = nfk_mm_per_cm_t,   # from input_table
-    fc_init_frac       = fc_init_frac_c,
-    fc_target_frac     = fc_target_frac_c,
+    fc_init_frac       = fc_init_frac_t,
+    fc_target_frac     = fc_target_frac_t,
     deplete_trigger_fr = deplete_trigger_fr_t,
     max_irrig_mm       = max_irrig_mm_p,
     
@@ -726,3 +726,4 @@ onion_climate_impact <- compiler::cmpfun(function() {
 #   numberOfModelRuns = 100,
 #   functionSyntax  = "plainNames"
 # )
+
