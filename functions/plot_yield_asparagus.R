@@ -12,7 +12,7 @@ plot_yield_asparagus <- function(sim_results_scen) {
   }
   
   results_yield_all <- dplyr::bind_rows(
-    mk("_today", "Historisch"),                # vorher: "Year 2020"
+    mk("_today", "2020"),                # vorher: "Year 2020"
     mk("_ssp1",  "SSP1-2.6"),
     mk("_ssp2",  "SSP2-4.5"),
     mk("_ssp3",  "SSP3-7.0"),
@@ -27,7 +27,7 @@ plot_yield_asparagus <- function(sim_results_scen) {
     tidyr::pivot_longer(cols = c(Ertrag, vermarktbarer_Ertrag)) %>%
     mutate(
       # Facet-Gruppe (Überschrift oben)
-      year_grp = if_else(scenario == "Historisch", "Historisch", "Jahr 2075"),
+      year_grp = if_else(scenario == "2020", "2020", "Jahr 2075"),
       # gewünschte Reihenfolge auf der x-Achse (Labels unten)
       scenario = factor(
         scenario,
@@ -44,7 +44,7 @@ plot_yield_asparagus <- function(sim_results_scen) {
     tidyr::pivot_wider(names_from = name, values_from = mean_value) %>%
     dplyr::mutate(
       percent  = (`vermarktbarer_Ertrag` / `Ertrag`) * 100,
-      year_grp = if_else(scenario == "Historisch", "Historisch", "Jahr 2075")
+      year_grp = if_else(scenario == "2020", "2020", "Jahr 2075")
     )
   
   # --- top vom boxplot rausfinden ---
