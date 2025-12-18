@@ -256,16 +256,20 @@ helper_function <- function(attach_to_global = FALSE) {
     
     f_T <- base::pmin(base::pmax(f_T, 0.2), 1.0)
     
-    f_W <- base::ifelse(
-      Windex >= f_W_1_lower & Windex <= f_W_1_upper,
+     f_W <- base::ifelse(
+      Windex >= 0.70,
       1.0,
       base::ifelse(
-        Windex < f_W_0_5,
-        0.5,
-        0.5 + 0.5 * (Windex - f_W_0_5) / (f_W_1_lower - f_W_0_5)
+        Windex >= 0.40,
+        0.5 + 0.5 * (Windex - 0.40) / 0.30,
+        base::ifelse(
+          Windex >= 0.20,
+          0.2 + 0.3 * (Windex - 0.20) / 0.20,
+          base::pmax(0.1, 0.2 * Windex / 0.20)
+        )
       )
     )
-    f_W <- base::pmin(base::pmax(f_W, 0), 1)
+    f_W <- base::pmin(base::pmax(f_W, 0.1), 1.0)
     
     LUE_onion * PAR * (1 - base::exp(-lec_k * LAI)) * f_T * f_W
   })
@@ -301,3 +305,4 @@ helper_function <- function(attach_to_global = FALSE) {
 # Attach helpers for interactive use ----
 
 helper_function(attach_to_global = TRUE)
+
