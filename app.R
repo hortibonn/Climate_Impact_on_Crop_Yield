@@ -204,27 +204,82 @@ ui <- fluidPage(
               ### App description text ------------------------------------------------------
               # Provide brief explanation of the DA model
               tags$h6(
-                "Diese App simuliert die potenziellen Erträge der ausgewählten Kulturpflanze im Jahr 2075 unter verschiedenen SSP-Klimaszenarien.",
-                tags$br(),
-                tags$br(),
-                "Verwenden Sie die Register auf der linken Seite, um die Variablenbereiche entsprechend Ihren örtlichen Gegebenheiten anzupassen.",
-                tags$br(),
-                tags$br(),
-                "Klicken Sie auf „Modell ausführen“, um eine Monte-Carlo-Simulation mit zufälligen Kombinationen aus den von Ihnen definierten Bereichen durchzuführen. Sie können Eingaben speichern/laden. Sobald das Modell ausgeführt wird, werden die Ergebnisse unten angezeigt und Sie können diese Zahlen speichern.",
-                tags$br(),
-                tags$br(),
-                "Über Rückmeldungen würden wir uns sehr freuen. Bitte kontaktieren Sie:",
-                tags$br(),
-                tags$ul(
-                  tags$li(tags$a(href = "mailto:jbsl@uni-bonn.de", "Jan-Bernd Schulze Lutum"), "für die Spargel- und Erdbeermodelle,"),
-                  #tags$br(),
-                  tags$li(tags$a(href = "mailto:s7padaib@uni-bonn.de", "Paul Daiber"), "für das Zwiebelmodell,"),
-                  #tags$br(),
-                  tags$li(tags$a(href = "mailto:pkasargo@uni-bonn.de", "Prajna Kasargodu Anebagilu"), "oder", tags$a(href = "mailto:afuelle1@uni-bonn.de", "Adrian Fülle."), "für Fragen die dieses Tool betreffen."),
-                )
+                tags$h4(
+                style = "color: #2c3e50; font-weight: bold; margin-bottom: 15px;",
+                "Wir brauchen ihre Hilfe"
+                  ),
+  
+              tags$h5(
+              style = "color: #e74c3c; font-weight: bold; margin-top: 20px; margin-bottom: 10px;",
+              "Ihre Expertise hilft uns dabei unser Model zu verbessern!"
               ),
-              br(), br(),
-              
+  
+ 
+  
+              tags$br(),
+  
+              tags$p(
+              style = "font-size: 14px; line-height: 1.6;",
+              "Diese App ermöglicht Ihnen, die Zukunft Ihrer Kulturpflanzen unter verschiedenen Klimaszenarien zu erkunden. Doch wahre Präzision entsteht erst durch ",
+              tags$strong("Ihr Know-how:"),
+              "Ihre Beobachtungen aus der Praxis, Ihre Erfahrungswerte, Ihre fundierte Einschätzung – sie alle machen den Unterschied."
+              ),
+  
+              tags$br(),
+  
+              tags$h5(
+                style = "color: #27ae60; font-weight: bold; margin-top: 20px; margin-bottom: 15px;",
+                "So einfach geht's:"
+                ),
+  
+              tags$p(
+              style = "font-size: 14px; line-height: 1.8;",
+              tags$strong("1. Wählen Sie Ihre Pflanze"),
+              " und definieren Sie Ihr Fachgebiet",
+              tags$br(),
+              tags$br(),
+              tags$strong("2. Kalibrieren Sie das Modell"),
+              " – Verwenden Sie die Register auf der linken Seite, um die Variablenbereiche entsprechend Ihren örtlichen Gegebenheiten anzupassen.",
+              tags$br(),
+              tags$span(
+              style = "color: #3498db; font-style: italic;",
+              "💡 Tipp: Fahren Sie mit der Maus über Parameter für detaillierte Erklärungen"
+              ),
+              tags$br(),
+              tags$br(),
+              tags$strong("3. Starten Sie die Simulation"),
+              " – Klicken Sie auf Modell ausführen, um eine Monte-Carlo-Simulation mit zufälligen Kombinationen aus den von Ihnen definierten Bereichen durchzuführen.",
+              tags$br(),
+              tags$br(),
+              tags$strong("4. Speichern & Analysieren"),
+              " – Sie können Eingaben speichern/laden. Sobald das Modell ausgeführt wird, werden die Ergebnisse unten angezeigt und Sie können diese Zahlen speichern."
+              ),
+  
+            tags$br(),
+  
+            tags$h5(
+              style = "color: #8e44ad; font-weight: bold; margin-top: 20px; margin-bottom: 15px;",
+              "Warum Sie wichtig sind:"
+            ),
+            
+            tags$p(
+              style = "font-size: 14px; line-height: 1.6;",
+              "Jede Ihrer Eingaben verfeinert das Modell. Gemeinsam schaffen wir ein Werkzeug, das Landwirten, Forschenden und Entscheidungsträgern hilft, vorausschauend zu planen und die Herausforderungen des Klimawandels zu meistern."
+            ),
+            
+            tags$br(),
+            tags$br(),
+            
+            "Über Rückmeldungen würden wir uns sehr freuen. Bitte kontaktieren Sie:",
+            tags$br(),
+            tags$ul(
+              tags$li(tags$a(href = "mailto:jbsl@uni-bonn.de", "Jan-Bernd Schulze Lutum"), " für die Spargel- und Erdbeermodelle,"),
+              tags$li(tags$a(href = "mailto:s7padaib@uni-bonn.de", "Paul Daiber"), " für das Zwiebelmodell,"),
+              tags$li(tags$a(href = "mailto:pkasargo@uni-bonn.de", "Prajna Kasargodu Anebagilu"), " oder ", tags$a(href = "mailto:afuelle1@uni-bonn.de", "Adrian Fülle"), " für Fragen die dieses Tool betreffen.")
+            )
+          ),
+          br(), br(),
+                        
               
               ### Conceptual Model ------------------------------------------------------
               conditionalPanel(
@@ -1098,5 +1153,6 @@ server <- function(input, output, session) {
 
 
 shinyApp(ui = ui, server = server)
+
 
 
