@@ -226,7 +226,7 @@ ui <- fluidPage(
                             style = "font-size: 16px; line-height: 1.7; color: #4a5568; margin: 0;",
                             "Diese App ermöglicht Ihnen, die Zukunft des Anbaus von Spargel, Zwiebeln und bald Erdbeeren unter verschiedenen Klimaszenarien zu erkunden. Doch wahre Präzision entsteht erst durch ",
                             tags$strong(style = "color: #667eea;", "Ihr Know-how"),
-                            ":Ihre Beobachtungen und Erfahrungswerte aus der Praxis machen unsere Simulationen realistischer"
+                            ":Ihre Beobachtungen und Erfahrungswerte aus der Praxis machen unsere Simulationen realistischer."
                           )
                         ),
                         
@@ -262,7 +262,7 @@ ui <- fluidPage(
                             tags$div(
                               style = "flex: 1;",
                               tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Kalibrieren Sie das Modell"),
-                              tags$p(style = "margin: 0 0 8px 0; color: #718096; font-size: 15px; line-height: 1.6;", "Verwenden Sie die Register auf der linken Seite, um Wertebereiche nach Ihrem besten Wissen anzupassen. Sie müssen nicht genau sein, geben Sie einfach realistische Spannen an (z.B. min-max). Genau diese Unsicherheit macht unsere Analyse robust und aussagekräftig."),
+                              tags$p(style = "margin: 0 0 8px 0; color: #718096; font-size: 15px; line-height: 1.6;", "Passen Sie in den Registern links die Wertebereiche nach bestem Wissen an. Exakte Zahlen sind nicht nötig – realistische Spannen (z.B. Minimum bis Maximum) reichen völlig aus. Gerade diese Unsicherheit macht unsere Analyse robust und aussagekräftig."),
                               tags$div(
                                 style = "background: #edf2f7; padding: 10px 15px; border-radius: 8px; margin-top: 10px;",
                                 tags$span(style = "color: #4299e1; font-size: 14px;", "💡 "),
@@ -1238,6 +1238,7 @@ server <- function(input, output, session) {
 
 
 shinyApp(ui = ui, server = server)
+
 
 
 
