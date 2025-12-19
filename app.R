@@ -280,9 +280,9 @@ ui <- fluidPage(
                       style = "background: white; padding: 25px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-left: 5px solid #667eea;",
                       tags$p(
                         style = "font-size: 16px; line-height: 1.7; color: #4a5568; margin: 0;",
-                        "Diese App ermöglicht Ihnen, die Zukunft Ihrer Kulturpflanzen unter verschiedenen Klimaszenarien zu erkunden. Doch wahre Präzision entsteht erst durch ",
+                        "Diese App ermöglicht Ihnen, die Zukunft des Anbaus von Spargel, Zwiebeln und bald Erdbeeren unter verschiedenen Klimaszenarien zu erkunden. Doch wahre Präzision entsteht erst durch ",
                         tags$strong(style = "color: #667eea;", "Ihr Know-how"),
-                        ": Ihre Beobachtungen aus der Praxis, Ihre Erfahrungswerte, Ihre fundierte Einschätzung - sie alle machen den Unterschied."
+                        ":Ihre Beobachtungen und Erfahrungswerte aus der Praxis machen unsere Simulationen realistischer."
                       )
                     ),
                     
@@ -303,7 +303,7 @@ ui <- fluidPage(
                         ),
                         tags$div(
                           style = "flex: 1;",
-                          tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Wählen Sie Ihre Pflanze"),
+                          tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Wählen Sie Ihre Kulturpflanze"),
                           tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "und definieren Sie Ihr Fachgebiet")
                         )
                       ),
@@ -318,7 +318,7 @@ ui <- fluidPage(
                         tags$div(
                           style = "flex: 1;",
                           tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Kalibrieren Sie das Modell"),
-                          tags$p(style = "margin: 0 0 8px 0; color: #718096; font-size: 15px; line-height: 1.6;", "Verwenden Sie die Register auf der linken Seite, um die Variablenbereiche entsprechend Ihren örtlichen Gegebenheiten anzupassen."),
+                          tags$p(style = "margin: 0 0 8px 0; color: #718096; font-size: 15px; line-height: 1.6;", "Passen Sie in den Registern links die Wertebereiche nach bestem Wissen an. Exakte Zahlen sind nicht nötig – realistische Spannen (z.B. Minimum bis Maximum) reichen völlig aus. Gerade diese Unsicherheit macht unsere Analyse robust und aussagekräftig."),
                           tags$div(
                             style = "background: #edf2f7; padding: 10px 15px; border-radius: 8px; margin-top: 10px;",
                             tags$span(style = "color: #4299e1; font-size: 14px;", "💡 "),
@@ -365,7 +365,7 @@ ui <- fluidPage(
                       ),
                       tags$p(
                         style = "font-size: 16px; line-height: 1.7; margin: 0 0 15px 0; text-align: center;",
-                        "Jede Ihrer Eingaben verfeinert das Modell. Gemeinsam schaffen wir ein Werkzeug, das Landwirten, Forschenden und Entscheidungsträgern hilft, vorausschauend zu planen und die Herausforderungen des Klimawandels zu meistern."
+                        "Mit jeder Ihrer Eingaben wird unser Modell präziser. Unser Ziel ist es, ein Werkzeug zu entwickeln, das zukünftige Probleme im Anbau rechtzeitig identifiziert – Informationen, die dann direkt an politische Entscheidungsträger fließen. Sollten Sie sich fragen: 'Was machen die schon wieder für einen Quatsch an der Uni, haben die nicht wieder den wichtigen Punkt XY übersehen?' – genau dann brauchen wir Ihr Feedback! Sagen Sie uns, welche Aspekte aus Ihrer täglichen Praxis unbedingt berücksichtigt werden müssen."
                       ),
                       tags$p(
                         style = "font-size: 18px; font-weight: 600; margin: 0; text-align: center; letter-spacing: 0.5px;",
