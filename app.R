@@ -226,7 +226,7 @@ ui <- fluidPage(
                             style = "font-size: 16px; line-height: 1.7; color: #4a5568; margin: 0;",
                             "Diese App ermöglicht Ihnen, die Zukunft des Anbaus von Spargel, Zwiebeln und bald Erdbeeren unter verschiedenen Klimaszenarien zu erkunden. Doch wahre Präzision entsteht erst durch ",
                             tags$strong(style = "color: #667eea;", "Ihr Know-how"),
-                            ": Ihre Beobachtungen aus der Praxis, Ihre Erfahrungswerte, Ihre fundierte Einschätzung - sie alle machen den Unterschied."
+                            ":Ihre Beobachtungen und Erfahrungswerte aus der Praxis machen unsere Simulationen realistischer"
                           )
                         ),
                         
@@ -247,7 +247,7 @@ ui <- fluidPage(
                             ),
                             tags$div(
                               style = "flex: 1;",
-                              tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Wählen Sie Ihre Pflanze"),
+                              tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Wählen Sie Ihre Kulturpflanze"),
                               tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "und definieren Sie Ihr Fachgebiet")
                             )
                           ),
@@ -1238,6 +1238,7 @@ server <- function(input, output, session) {
 
 
 shinyApp(ui = ui, server = server)
+
 
 
 
