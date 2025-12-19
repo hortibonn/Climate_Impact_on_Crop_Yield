@@ -64,8 +64,7 @@ ui <- fluidPage(
     tags$link(rel = "shortcut icon", href = "INRES.png"),
     
     ### CSS ------------------------------------------------------
-    tags$style(HTML(
-      "
+    tags$style(HTML("
       .flex-container {
         display: flex;
         justify-content: flex-start;  /* <– anchor left edge */
@@ -83,6 +82,51 @@ ui <- fluidPage(
         cursor: pointer;
       }
       #cm-image { cursor: pointer; }
+      
+      
+          /* Center the tab navigation */
+    .nav-tabs {
+      display: flex;
+      justify-content: center;
+      border-bottom: none;
+      margin-bottom: 25px;
+    }
+
+    /* Base tab style */
+    .nav-tabs > li > a {
+      background: #f1f5f9;
+      color: #4a5568;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 22px;
+      margin: 0 6px;
+      font-weight: 600;
+      font-size: 18px;
+      transition: all 0.25s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    /* Hover state */
+    .nav-tabs > li > a:hover {
+      background: #e2e8f0;
+      color: #2d3748;
+    }
+
+    /* Active tab */
+    .nav-tabs > li.active > a,
+    .nav-tabs > li.active > a:hover,
+    .nav-tabs > li.active > a:focus {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 6px 15px rgba(102, 126, 234, 0.35);
+      border: none;
+    }
+
+    /* Remove default underline indicator */
+    .nav-tabs > li > a:after {
+      display: none;
+    }
+    
       "
     )),
     ### JS ------------------------------------------------------
@@ -201,229 +245,252 @@ ui <- fluidPage(
     ## Main Panel ------------------------------------------------------
     mainPanel(width = 8,
               
-                              ### App description text ------------------------------------------------------
-                              # Provide brief explanation of the DA model
-                       tags$div(
-                        style = "max-width: 900px; margin: 0 auto; padding: 30px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);",
-                        
-                        # Header Section with Icon
+              tabsetPanel(
+                id = "main_tabs",
+                selected = "Intro",
+                
+                tabPanel(
+                  title = "📋 Beschreibung",
+                  value = "Intro",
+                  
+                  ### App description text ------------------------------------------------------
+                  # Provide brief explanation of the DA model
+                  tags$div(
+                    style = "max-width: 100%; margin: 0 auto; padding: 30px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);",
+                    
+                    # Header Section with Icon
+                    tags$div(
+                      style = "text-align: center; margin-bottom: 40px;",
+                      tags$div(
+                        style = "display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 50%; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);",
+                        tags$span(style = "font-size: 48px;", "🌱")
+                      ),
+                      tags$h2(
+                        style = "color: #2d3748; font-weight: 700; font-size: 32px; margin: 15px 0 10px 0; letter-spacing: -0.5px;",
+                        "Ihre Expertise formt die Zukunft der Landwirtschaft"
+                      ),
+                      tags$p(
+                        style = "color: #e53e3e; font-size: 18px; font-weight: 600; margin: 0;",
+                        "Wir brauchen Ihre Hilfe!"
+                      )
+                    ),
+                    
+                    # Intro Box
+                    tags$div(
+                      style = "background: white; padding: 25px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-left: 5px solid #667eea;",
+                      tags$p(
+                        style = "font-size: 16px; line-height: 1.7; color: #4a5568; margin: 0;",
+                        "Diese App ermöglicht Ihnen, die Zukunft Ihrer Kulturpflanzen unter verschiedenen Klimaszenarien zu erkunden. Doch wahre Präzision entsteht erst durch ",
+                        tags$strong(style = "color: #667eea;", "Ihr Know-how"),
+                        ": Ihre Beobachtungen aus der Praxis, Ihre Erfahrungswerte, Ihre fundierte Einschätzung - sie alle machen den Unterschied."
+                      )
+                    ),
+                    
+                    # Steps Section
+                    tags$div(
+                      style = "margin-bottom: 30px;",
+                      tags$h3(
+                        style = "color: #2d3748; font-weight: 600; font-size: 24px; margin-bottom: 25px; text-align: center;",
+                        "So einfach geht's"
+                      ),
+                      
+                      # Step 1
+                      tags$div(
+                        style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); transition: transform 0.2s;",
                         tags$div(
-                          style = "text-align: center; margin-bottom: 40px;",
-                          tags$div(
-                            style = "display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 50%; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);",
-                            tags$span(style = "font-size: 48px;", "🌱")
-                          ),
-                          tags$h2(
-                            style = "color: #2d3748; font-weight: 700; font-size: 32px; margin: 15px 0 10px 0; letter-spacing: -0.5px;",
-                            "Ihre Expertise formt die Zukunft der Landwirtschaft"
-                          ),
-                          tags$p(
-                            style = "color: #e53e3e; font-size: 18px; font-weight: 600; margin: 0;",
-                            "Wir brauchen Ihre Hilfe!"
-                          )
+                          style = "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
+                          "1"
                         ),
-                        
-                        # Intro Box
                         tags$div(
-                          style = "background: white; padding: 25px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-left: 5px solid #667eea;",
-                          tags$p(
-                            style = "font-size: 16px; line-height: 1.7; color: #4a5568; margin: 0;",
-                            "Diese App ermöglicht Ihnen, die Zukunft Ihrer Kulturpflanzen unter verschiedenen Klimaszenarien zu erkunden. Doch wahre Präzision entsteht erst durch ",
-                            tags$strong(style = "color: #667eea;", "Ihr Know-how"),
-                            ": Ihre Beobachtungen aus der Praxis, Ihre Erfahrungswerte, Ihre fundierte Einschätzung - sie alle machen den Unterschied."
-                          )
+                          style = "flex: 1;",
+                          tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Wählen Sie Ihre Pflanze"),
+                          tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "und definieren Sie Ihr Fachgebiet")
+                        )
+                      ),
+                      
+                      # Step 2
+                      tags$div(
+                        style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06);",
+                        tags$div(
+                          style = "background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
+                          "2"
                         ),
-                        
-                        # Steps Section
                         tags$div(
-                          style = "margin-bottom: 30px;",
-                          tags$h3(
-                            style = "color: #2d3748; font-weight: 600; font-size: 24px; margin-bottom: 25px; text-align: center;",
-                            "So einfach geht's"
-                          ),
-                          
-                          # Step 1
+                          style = "flex: 1;",
+                          tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Kalibrieren Sie das Modell"),
+                          tags$p(style = "margin: 0 0 8px 0; color: #718096; font-size: 15px; line-height: 1.6;", "Verwenden Sie die Register auf der linken Seite, um die Variablenbereiche entsprechend Ihren örtlichen Gegebenheiten anzupassen."),
                           tags$div(
-                            style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); transition: transform 0.2s;",
-                            tags$div(
-                              style = "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
-                              "1"
-                            ),
-                            tags$div(
-                              style = "flex: 1;",
-                              tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Wählen Sie Ihre Pflanze"),
-                              tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "und definieren Sie Ihr Fachgebiet")
-                            )
-                          ),
-                          
-                          # Step 2
-                          tags$div(
-                            style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06);",
-                            tags$div(
-                              style = "background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
-                              "2"
-                            ),
-                            tags$div(
-                              style = "flex: 1;",
-                              tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Kalibrieren Sie das Modell"),
-                              tags$p(style = "margin: 0 0 8px 0; color: #718096; font-size: 15px; line-height: 1.6;", "Verwenden Sie die Register auf der linken Seite, um die Variablenbereiche entsprechend Ihren örtlichen Gegebenheiten anzupassen."),
-                              tags$div(
-                                style = "background: #edf2f7; padding: 10px 15px; border-radius: 8px; margin-top: 10px;",
-                                tags$span(style = "color: #4299e1; font-size: 14px;", "💡 "),
-                                tags$em(style = "color: #4a5568; font-size: 14px;", "Tipp: Fahren Sie mit der Maus über Parameter für detaillierte Erklärungen")
-                              )
-                            )
-                          ),
-                          
-                          # Step 3
-                          tags$div(
-                            style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06);",
-                            tags$div(
-                              style = "background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
-                              "3"
-                            ),
-                            tags$div(
-                              style = "flex: 1;",
-                              tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Starten Sie die Simulation"),
-                              tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "Klicken Sie auf 'Modell ausführen', um eine Monte-Carlo-Simulation mit zufälligen Kombinationen aus den von Ihnen definierten Bereichen durchzuführen.")
-                            )
-                          ),
-                          
-                          # Step 4
-                          tags$div(
-                            style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.06);",
-                            tags$div(
-                              style = "background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
-                              "4"
-                            ),
-                            tags$div(
-                              style = "flex: 1;",
-                              tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Speichern & Analysieren"),
-                              tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "Sie können Eingaben speichern/laden. Sobald das Modell ausgeführt wird, werden die Ergebnisse unten angezeigt und Sie können diese Zahlen speichern.")
-                            )
-                          )
-                        ),
-                        
-                        # Why You Matter Section
-                        tags$div(
-                          style = "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);",
-                          tags$h3(
-                            style = "color: white; font-weight: 600; font-size: 22px; margin: 0 0 15px 0; text-align: center;",
-                            HTML("&#10024; Warum Sie wichtig sind")
-                          ),
-                          tags$p(
-                            style = "font-size: 16px; line-height: 1.7; margin: 0 0 15px 0; text-align: center;",
-                            "Jede Ihrer Eingaben verfeinert das Modell. Gemeinsam schaffen wir ein Werkzeug, das Landwirten, Forschenden und Entscheidungsträgern hilft, vorausschauend zu planen und die Herausforderungen des Klimawandels zu meistern."
-                          ),
-                          tags$p(
-                            style = "font-size: 18px; font-weight: 600; margin: 0; text-align: center; letter-spacing: 0.5px;",
-                            HTML("&#127806; Ihre Erfahrung von heute gestaltet die Ernten von morgen")
-                          )
-                        ),
-                        
-                        # Contact Section
-                        tags$div(
-                          style = "background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);",
-                          tags$h4(
-                            style = "color: #2d3748; font-weight: 600; font-size: 18px; margin: 0 0 20px 0;",
-                            HTML("&#128236; Geben Sie uns Feedback")
-                          ),
-                          tags$p(
-                            style = "color: #4a5568; font-size: 15px; margin: 0 0 15px 0;",
-                            "Über Rückmeldungen würden wir uns sehr freuen. Bitte kontaktieren Sie:"
-                          ),
-                          tags$div(
-                            style = "display: grid; gap: 12px;",
-                            tags$div(
-                              style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #667eea;",
-                              tags$a(
-                                href = "mailto:jbsl@uni-bonn.de",
-                                style = "color: #667eea; font-weight: 600; text-decoration: none; font-size: 15px;",
-                                "Jan-Bernd Schulze Lutum"
-                              ),
-                              tags$span(style = "color: #718096; font-size: 14px;", " - für die Spargel- und Erdbeermodelle")
-                            ),
-                            tags$div(
-                              style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #f093fb;",
-                              tags$a(
-                                href = "mailto:s7padaib@uni-bonn.de",
-                                style = "color: #f093fb; font-weight: 600; text-decoration: none; font-size: 15px;",
-                                "Paul Daiber"
-                              ),
-                              tags$span(style = "color: #718096; font-size: 14px;", " - für das Zwiebelmodell")
-                            ),
-                            tags$div(
-                              style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #4facfe;",
-                              tags$a(
-                                href = "mailto:pkasargo@uni-bonn.de",
-                                style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
-                                "Prajna Kasargodu Anebagilu"
-                              ),
-                              tags$span(style = "color: #718096; font-size: 14px;", " oder "),
-                              tags$a(
-                                href = "mailto:afuelle1@uni-bonn.de",
-                                style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
-                                "Adrian Fülle"
-                              ),
-                              tags$span(style = "color: #718096; font-size: 14px;", " - für Fragen die dieses Tool betreffen")
-                            )
+                            style = "background: #edf2f7; padding: 10px 15px; border-radius: 8px; margin-top: 10px;",
+                            tags$span(style = "color: #4299e1; font-size: 14px;", "💡 "),
+                            tags$em(style = "color: #4a5568; font-size: 14px;", "Tipp: Fahren Sie mit der Maus über Parameter für detaillierte Erklärungen")
                           )
                         )
-                      ),  
-                      br(),
-
-
-              
-              ### Conceptual Model ------------------------------------------------------
-              conditionalPanel(
-                condition = "output.show_image",
-                div(
-                  class = "flex-container fullscreen-toggle",
-                  style = "max-width: 65%;",
-                  uiOutput("concepImg")
-                ),
-                br(), br(),
-                uiOutput("download_ui"),
-                br(), br()
-              ),
-              
-              ### Plots ------------------------------------------------------
-              conditionalPanel(
-                condition = "output.show_results",
-                br(),
-                
-                uiOutput("plot1_container"),
-                br(),
-                uiOutput("plot1_dl_ui"),
-                br(),
-                
-                uiOutput("plot2_container"),
-                br(),
-                uiOutput("plot2_dl_ui"),
-                br(),
-                
-                uiOutput("plot3_container"),
-                br(),
-                uiOutput("plot3_dl_ui"),
-              )
-              ,
-              
-              ### Feedback ------------------------------------------------------
-              if (NOTES_ENABLED) {
-                tagList(
-                  h4("Geben Sie uns Feedback"),
-                  textInput("email", label = NULL, placeholder = "Ihre@E-Mail.Adresse (optional)*", width = "100%"),
-                  textAreaInput("note", label = NULL, placeholder = "Ihr Feedback…", width = "100%", height = "200px"),
-                  actionButton("submit", "Feedback absenden", class = "btn btn-primary"),
-                  br(),br(),
-                  p(style = "color: grey; font-style: italic; font-size: 0.9em;",
-                    "* Die Angabe Ihrer E-Mail-Adresse ist optional und wird ausschließlich verwendet, um Sie bezüglich Ihres Feedbacks zu kontaktieren. Gespeicherte personenbezogene Daten werden mit Ende des Projekts oder nach einem Jahr gelöscht."),
+                      ),
+                      
+                      # Step 3
+                      tags$div(
+                        style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06);",
+                        tags$div(
+                          style = "background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
+                          "3"
+                        ),
+                        tags$div(
+                          style = "flex: 1;",
+                          tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Starten Sie die Simulation"),
+                          tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "Klicken Sie auf 'Modell ausführen', um eine Monte-Carlo-Simulation mit zufälligen Kombinationen aus den von Ihnen definierten Bereichen durchzuführen.")
+                        )
+                      ),
+                      
+                      # Step 4
+                      tags$div(
+                        style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.06);",
+                        tags$div(
+                          style = "background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
+                          "4"
+                        ),
+                        tags$div(
+                          style = "flex: 1;",
+                          tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Speichern & Analysieren"),
+                          tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "Sie können Eingaben speichern/laden. Sobald das Modell ausgeführt wird, werden die Ergebnisse unten angezeigt und Sie können diese Zahlen speichern.")
+                        )
+                      )
+                    ),
+                    
+                    # Why You Matter Section
+                    tags$div(
+                      style = "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);",
+                      tags$h3(
+                        style = "color: white; font-weight: 600; font-size: 22px; margin: 0 0 15px 0; text-align: center;",
+                        HTML("&#10024; Warum Sie wichtig sind")
+                      ),
+                      tags$p(
+                        style = "font-size: 16px; line-height: 1.7; margin: 0 0 15px 0; text-align: center;",
+                        "Jede Ihrer Eingaben verfeinert das Modell. Gemeinsam schaffen wir ein Werkzeug, das Landwirten, Forschenden und Entscheidungsträgern hilft, vorausschauend zu planen und die Herausforderungen des Klimawandels zu meistern."
+                      ),
+                      tags$p(
+                        style = "font-size: 18px; font-weight: 600; margin: 0; text-align: center; letter-spacing: 0.5px;",
+                        HTML("&#127806; Ihre Erfahrung von heute gestaltet die Ernten von morgen")
+                      )
+                    ),
+                    
+                    # Contact Section
+                    tags$div(
+                      style = "background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);",
+                      tags$h4(
+                        style = "color: #2d3748; font-weight: 600; font-size: 18px; margin: 0 0 20px 0;",
+                        HTML("&#128236; Geben Sie uns Feedback")
+                      ),
+                      tags$p(
+                        style = "color: #4a5568; font-size: 15px; margin: 0 0 15px 0;",
+                        "Über Rückmeldungen würden wir uns sehr freuen. Bitte kontaktieren Sie:"
+                      ),
+                      tags$div(
+                        style = "display: grid; gap: 12px;",
+                        tags$div(
+                          style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #667eea;",
+                          tags$a(
+                            href = "mailto:jbsl@uni-bonn.de",
+                            style = "color: #667eea; font-weight: 600; text-decoration: none; font-size: 15px;",
+                            "Jan-Bernd Schulze Lutum"
+                          ),
+                          tags$span(style = "color: #718096; font-size: 14px;", " - für die Spargel- und Erdbeermodelle")
+                        ),
+                        tags$div(
+                          style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #f093fb;",
+                          tags$a(
+                            href = "mailto:s7padaib@uni-bonn.de",
+                            style = "color: #f093fb; font-weight: 600; text-decoration: none; font-size: 15px;",
+                            "Paul Daiber"
+                          ),
+                          tags$span(style = "color: #718096; font-size: 14px;", " - für das Zwiebelmodell")
+                        ),
+                        tags$div(
+                          style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #4facfe;",
+                          tags$a(
+                            href = "mailto:pkasargo@uni-bonn.de",
+                            style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
+                            "Prajna Kasargodu Anebagilu"
+                          ),
+                          tags$span(style = "color: #718096; font-size: 14px;", " oder "),
+                          tags$a(
+                            href = "mailto:afuelle1@uni-bonn.de",
+                            style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
+                            "Adrian Fülle"
+                          ),
+                          tags$span(style = "color: #718096; font-size: 14px;", " - für Fragen die dieses Tool betreffen")
+                        )
+                      )
+                    )
+                  ),  
                   br(),
-                  uiOutput("viewer_panel"),
-                )
-              } else {
-                NULL
-              },
+                  
+                ),
+                
+                tabPanel(
+                  title = "🧩 Konzeptmodell",
+                  value = "ConcModel",
+                  
+                  ### Conceptual Model ------------------------------------------------------
+                  conditionalPanel(
+                    condition = "output.show_image",
+                    div(
+                      class = "flex-container fullscreen-toggle",
+                      style = "max-width: 65%;",
+                      uiOutput("concepImg")
+                    ),
+                    br(), br(),
+                    uiOutput("download_ui"),
+                    br(), br()
+                  ),
+                ),
+                
+                
+                tabPanel(
+                  title = "📊 Simulations Ergebnisse",
+                  value = "SimRes",
+                  
+                  ### Plots ------------------------------------------------------
+                  conditionalPanel(
+                    condition = "output.show_results",
+                    br(),
+                    
+                    uiOutput("plot1_container"),
+                    br(),
+                    uiOutput("plot1_dl_ui"),
+                    br(),
+                    
+                    uiOutput("plot2_container"),
+                    br(),
+                    uiOutput("plot2_dl_ui"),
+                    br(),
+                    
+                    uiOutput("plot3_container"),
+                    br(),
+                    uiOutput("plot3_dl_ui"),
+                    
+                    uiOutput("plot4_container"),
+                    br(),
+                    uiOutput("plot4_dl_ui"),
+                  ),
+                  
+                  ### Feedback ------------------------------------------------------
+                  if (NOTES_ENABLED) {
+                    tagList(
+                      h4("Geben Sie uns Feedback"),
+                      textInput("email", label = NULL, placeholder = "Ihre@E-Mail.Adresse (optional)*", width = "100%"),
+                      textAreaInput("note", label = NULL, placeholder = "Ihr Feedback…", width = "100%", height = "200px"),
+                      actionButton("submit", "Feedback absenden", class = "btn btn-primary"),
+                      br(),br(),
+                      p(style = "color: grey; font-style: italic; font-size: 0.9em;",
+                        "* Die Angabe Ihrer E-Mail-Adresse ist optional und wird ausschließlich verwendet, um Sie bezüglich Ihres Feedbacks zu kontaktieren. Gespeicherte personenbezogene Daten werden mit Ende des Projekts oder nach einem Jahr gelöscht."),
+                      br(),
+                      uiOutput("viewer_panel"),
+                    )
+                  } else {
+                    NULL
+                  },
+                  
+                )),
               
               ### Requisites ------------------------------------------------------
               # Provide Funding declaration
@@ -432,8 +499,8 @@ ui <- fluidPage(
                 "Projekt finanziert durch",
                 tags$br(),
               ),
-              tags$img(src = "mlv-logo.png", height = "40px",
-                       style = "margin-right: auto; max-width: 60%; height: auto; cursor: pointer;"),
+              tags$img(src = "mlv-logo.png",
+                       style = "margin-right: auto; max-width: 30%; height: auto; cursor: pointer;"),
               # #Provide tool usage disclaimer
               tags$p(
                 tags$a("Disclaimer", href = "https://www.gartenbauwissenschaften.uni-bonn.de/imprint",
@@ -444,6 +511,7 @@ ui <- fluidPage(
                        target = "_blank")
               ),
               br(), br(),br(), br(),
+              
               
     )
   )
@@ -738,8 +806,22 @@ server <- function(input, output, session) {
   })
   ## Save/Load functionality END
   
+  # Switch to Simulation tab as soon as a crop is selected
+  last_crop <- reactiveVal(NULL)
   
-  
+  observeEvent(selected_crop(), {
+    req(selected_crop())
+    new <- selected_crop()
+    old <- last_crop()
+    last_crop(new)
+    
+    if (!is.null(old) && new != old) {
+      nav_locked(FALSE)  # allow auto-jump again for a new crop
+    }
+    
+    if (isTRUE(nav_locked())) return()
+    updateTabsetPanel(session, "main_tabs", selected = "ConcModel")
+  }, ignoreInit = TRUE)
   
   # Conceptual Model image when Crop selected START ------------------------------------------------------
   # image flag
@@ -807,91 +889,81 @@ server <- function(input, output, session) {
   
   
   ## Monte Carlo Simulation AND Plotting START ------------------------------------------------------
+  
   ### Monte Carlo Simulation START ------------------------------------------------------
-  mcSimulation_results <- eventReactive(input$run_simulation, {
+  nav_locked <- reactiveVal(FALSE)  
+  
+  mcSimulation_results <- reactiveVal(NULL)
+  
+  observeEvent(input$run_simulation, {
     input_file <- current_input_table()
     crop <- selected_crop()
-    #print(crop)
-    # bind into the function's environment:
     
     if (is.null(crop) || !nzchar(crop)) {
-      showModal(
-        modalDialog(
-          title = "Keine Kulturpflanze ausgewählt",
-          "Bitte wählen Sie eine Kulturpflanze aus, bevor Sie die Simulation starten.",
-          easyClose = TRUE,
-          footer = modalButton("OK")
+      showModal(modalDialog(
+        title = "Keine Kulturpflanze ausgewählt",
+        "Bitte wählen Sie eine Kulturpflanze aus, bevor Sie die Simulation starten.",
+        easyClose = TRUE,
+        footer = modalButton("OK")
+      ))
+      return()
+    }
+    
+    input_file <- isolate(current_input_table())      # important
+    n_runs     <- isolate(input$num_simulations_c)    # important
+    
+    # If your model depends on other input values indirectly, capture them too
+    # (example placeholders — include whatever your app uses)
+    # expected_yield_p <- isolate(input$expected_yield_p)
+    # some_slider      <- isolate(input$some_slider)
+    
+    # 1) Switch tab immediately
+    nav_locked(TRUE) # so it does not switch back to conceptual model after flushing
+    updateTabsetPanel(session, "main_tabs", selected = "SimRes")
+    
+    # 2) Let the UI flush (so the tab change actually renders),
+    #    then run the expensive simulation
+    session$onFlushed(function() {
+      
+      waiter_show(
+        html = tagList(spin_fading_circles(), "Modell ausführen und Abbildungen erstellen ..."),
+        color = "rgba(0, 0, 0, 0.8)"
+      )
+      
+      on.exit(waiter_hide(), add = TRUE)
+      
+      res <- if (crop == "Spargel") {
+        environment(asparagus_sim_scen)$scenarios <- scenarios
+        environment(asparagus_sim_scen)$risk_df <- risk_df
+        
+        decisionSupport::mcSimulation(
+          estimate          = decisionSupport::as.estimate(input_file),
+          model_function    = asparagus_sim_scen,
+          numberOfModelRuns = n_runs,
+          functionSyntax    = "plainNames"
         )
-      )
-      return(NULL)  # do not continue
-    }
+        
+      } else if (crop == "Zwiebel") {
+        
+        decisionSupport::mcSimulation(
+          estimate          = decisionSupport::as.estimate(input_file),
+          model_function    = onion_climate_impact,
+          numberOfModelRuns = n_runs,
+          functionSyntax    = "plainNames"
+        )
+        
+      } else {
+        showNotification("Unbekannte Nutzpflanze ausgewählt", type = "error")
+        NULL
+      }
+      
+      mcSimulation_results(res)
+      
+    }, once = TRUE)
     
-    else if (crop=="Spargel"){
-      environment(asparagus_sim_scen)$scenarios <- scenarios
-      environment(asparagus_sim_scen)$risk_df <- risk_df
-      # loading animation
-      waiter_show(
-        html = tagList(
-          spin_fading_circles(),
-          "Modell ausführen und Abbildungen erstellen ..."
-        ),
-        color = "rgba(0, 0, 0, 0.8)"
-      )
-      
-      # If something throws, hide the waiter so users aren't stuck
-      ok <- FALSE
-      on.exit({
-        if (!ok) waiter_hide()
-      }, add = TRUE)
-      # end of loading animation
-      decisionSupport::mcSimulation(
-        estimate          = decisionSupport::as.estimate(input_file),
-        model_function    = asparagus_sim_scen,
-        numberOfModelRuns = input$num_simulations_c,
-        functionSyntax    = "plainNames"
-      )
-      # #part of loading animation
-      # session$onFlushed(function() waiter_hide(), once = TRUE)
-      # ok <- TRUE
-      
-    }
-    else if (crop=="Zwiebel"){
-      
-      #environment(process_weather_data)$onion_weather <- onion_weather # get weather file
-      # loading animation
-      waiter_show(
-        html = tagList(
-          spin_fading_circles(),
-          "Modell ausführen und Abbildungen erstellen ..."
-        ),
-        color = "rgba(0, 0, 0, 0.8)"
-      )
-      
-      # If something throws, hide the waiter so users aren't stuck
-      ok <- FALSE
-      on.exit({
-        if (!ok) waiter_hide()
-      }, add = TRUE)
-      # end of loading animation
-      
-      decisionSupport::mcSimulation(
-        estimate = decisionSupport::as.estimate(input_file),
-        model_function = onion_climate_impact,
-        numberOfModelRuns = input$num_simulations_c,
-        functionSyntax = "plainNames"
-      )
-      # #part of loading animation
-      # session$onFlushed(function() waiter_hide(), once = TRUE)
-      # ok <- TRUE
-      # 
-    }
-    else{
-      shiny::showNotification(
-        "keine Nutzpflanze ausgewählt",
-        type = "message"
-      )}
-    
-  })
+  }, ignoreInit = TRUE)
+
+  
   
   ### Monte Carlo Simulation END
   
@@ -1049,7 +1121,14 @@ server <- function(input, output, session) {
         Die Farbintensität gibt die durchschnittliche prozentuale Minderung an: Je dunkler das Rot, desto stärker wird das Pflanzenwachstum eingeschränkt.
         Dargestellt sind sowohl die Ergebnisse für das Basisjahr 2020 als auch für das Jahr 2075 unter vier möglichen Klimaszenarien (SSP) – von starkem 
         Klimaschutz (SSP1–2.6) bis hin zu sehr hohen Emissionen (SSP5–8.5).")
-      #, legend = "none")
+
+      source("functions/yield_boxplot_irrig_rainfed.R")
+      plot4<-plot_onion_irrigated_vs_rainfed(mc_data) |>
+        add_meta(
+          title    = "Placeholder",
+          # subtitle = '',
+          # legend = "none",
+          caption  = "Placeholder")
     }
     
     
@@ -1059,6 +1138,7 @@ server <- function(input, output, session) {
     output$plot2_ui <- renderPlot({ plot2 })
     if (crop == "Zwiebel") {
       output$plot3_ui <- renderPlot({ plot3 })
+      output$plot4_ui <- renderPlot({ plot4 })
     }
     
     output$plot1_container <- renderUI({
@@ -1106,10 +1186,27 @@ server <- function(input, output, session) {
           downloadButton("download_plot3", "Abbildung herunterladen")
         )
       })
+      
+      output$plot4_container <- renderUI({
+        div(
+          class = "flex-container fullscreen-toggle",
+          style = "max-width: 100%;",
+          plotOutput("plot4_ui", height = "900px")
+        )
+      })
+      make_download("download_plot4", plot4, "Figure4_irrigation-vs-rainfall.png")
+      output$plot4_dl_ui <- renderUI({
+        div(
+          style = "text-align: center;",
+          downloadButton("download_plot4", "Abbildung herunterladen")
+        )
+      })
     } else {
       # no plot 3 → no container → no whitespace
       output$plot3_container <- renderUI(NULL)
       output$plot3_dl_ui     <- renderUI(NULL)
+      output$plot4_container <- renderUI(NULL)
+      output$plot4_dl_ui     <- renderUI(NULL)
     }
     ### Generating plots END
     
