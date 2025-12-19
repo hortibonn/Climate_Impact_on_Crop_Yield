@@ -201,9 +201,9 @@ ui <- fluidPage(
     ## Main Panel ------------------------------------------------------
     mainPanel(width = 8,
               
-              ### App description text ------------------------------------------------------
-              # Provide brief explanation of the DA model
-                              tags$div(
+                              ### App description text ------------------------------------------------------
+                              # Provide brief explanation of the DA model
+                                tags$div(
                   style = "max-width: 900px; margin: 0 auto; padding: 30px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);",
                   
                   # Header Section with Icon
@@ -230,7 +230,7 @@ ui <- fluidPage(
                       style = "font-size: 16px; line-height: 1.7; color: #4a5568; margin: 0;",
                       "Diese App ermöglicht Ihnen, die Zukunft Ihrer Kulturpflanzen unter verschiedenen Klimaszenarien zu erkunden. Doch wahre Präzision entsteht erst durch ",
                       tags$strong(style = "color: #667eea;", "Ihr Know-how"),
-                      ": Ihre Beobachtungen aus der Praxis, Ihre Erfahrungswerte, Ihre fundierte Einschätzung – sie alle machen den Unterschied."
+                      ": Ihre Beobachtungen aus der Praxis, Ihre Erfahrungswerte, Ihre fundierte Einschätzung - sie alle machen den Unterschied."
                     )
                   ),
                   
@@ -285,7 +285,7 @@ ui <- fluidPage(
                       tags$div(
                         style = "flex: 1;",
                         tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Starten Sie die Simulation"),
-                        tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "Klicken Sie auf „Modell ausführen", um eine Monte-Carlo-Simulation mit zufälligen Kombinationen aus den von Ihnen definierten Bereichen durchzuführen.")
+                        tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "Klicken Sie auf 'Modell ausführen', um eine Monte-Carlo-Simulation mit zufälligen Kombinationen aus den von Ihnen definierten Bereichen durchzuführen.")
                       )
                     ),
                     
@@ -309,7 +309,7 @@ ui <- fluidPage(
                     style = "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);",
                     tags$h3(
                       style = "color: white; font-weight: 600; font-size: 22px; margin: 0 0 15px 0; text-align: center;",
-                      "✨ Warum Sie wichtig sind"
+                      HTML("&#10024; Warum Sie wichtig sind")
                     ),
                     tags$p(
                       style = "font-size: 16px; line-height: 1.7; margin: 0 0 15px 0; text-align: center;",
@@ -317,7 +317,7 @@ ui <- fluidPage(
                     ),
                     tags$p(
                       style = "font-size: 18px; font-weight: 600; margin: 0; text-align: center; letter-spacing: 0.5px;",
-                      "🌾 Ihre Erfahrung von heute gestaltet die Ernten von morgen"
+                      HTML("&#127806; Ihre Erfahrung von heute gestaltet die Ernten von morgen")
                     )
                   ),
                   
@@ -326,7 +326,7 @@ ui <- fluidPage(
                     style = "background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);",
                     tags$h4(
                       style = "color: #2d3748; font-weight: 600; font-size: 18px; margin: 0 0 20px 0;",
-                      "📬 Geben Sie uns Feedback"
+                      HTML("&#128236; Geben Sie uns Feedback")
                     ),
                     tags$p(
                       style = "color: #4a5568; font-size: 15px; margin: 0 0 15px 0;",
@@ -341,7 +341,7 @@ ui <- fluidPage(
                           style = "color: #667eea; font-weight: 600; text-decoration: none; font-size: 15px;",
                           "Jan-Bernd Schulze Lutum"
                         ),
-                        tags$span(style = "color: #718096; font-size: 14px;", " – für die Spargel- und Erdbeermodelle")
+                        tags$span(style = "color: #718096; font-size: 14px;", " - für die Spargel- und Erdbeermodelle")
                       ),
                       tags$div(
                         style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #f093fb;",
@@ -350,7 +350,7 @@ ui <- fluidPage(
                           style = "color: #f093fb; font-weight: 600; text-decoration: none; font-size: 15px;",
                           "Paul Daiber"
                         ),
-                        tags$span(style = "color: #718096; font-size: 14px;", " – für das Zwiebelmodell")
+                        tags$span(style = "color: #718096; font-size: 14px;", " - für das Zwiebelmodell")
                       ),
                       tags$div(
                         style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #4facfe;",
@@ -365,7 +365,7 @@ ui <- fluidPage(
                           style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
                           "Adrian Fülle"
                         ),
-                        tags$span(style = "color: #718096; font-size: 14px;", " – für Fragen die dieses Tool betreffen")
+                        tags$span(style = "color: #718096; font-size: 14px;", " - für Fragen die dieses Tool betreffen")
                       )
                     )
                   )
@@ -1245,6 +1245,7 @@ server <- function(input, output, session) {
 
 
 shinyApp(ui = ui, server = server)
+
 
 
 
