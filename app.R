@@ -203,175 +203,176 @@ ui <- fluidPage(
               
                               ### App description text ------------------------------------------------------
                               # Provide brief explanation of the DA model
-                                tags$div(
-                  style = "max-width: 900px; margin: 0 auto; padding: 30px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);",
-                  
-                  # Header Section with Icon
-                  tags$div(
-                    style = "text-align: center; margin-bottom: 40px;",
-                    tags$div(
-                      style = "display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 50%; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);",
-                      tags$span(style = "font-size: 48px;", "🌱")
-                    ),
-                    tags$h2(
-                      style = "color: #2d3748; font-weight: 700; font-size: 32px; margin: 15px 0 10px 0; letter-spacing: -0.5px;",
-                      "Ihre Expertise formt die Zukunft der Landwirtschaft"
-                    ),
-                    tags$p(
-                      style = "color: #e53e3e; font-size: 18px; font-weight: 600; margin: 0;",
-                      "Wir brauchen Ihre Hilfe!"
-                    )
-                  ),
-                  
-                  # Intro Box
-                  tags$div(
-                    style = "background: white; padding: 25px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-left: 5px solid #667eea;",
-                    tags$p(
-                      style = "font-size: 16px; line-height: 1.7; color: #4a5568; margin: 0;",
-                      "Diese App ermöglicht Ihnen, die Zukunft Ihrer Kulturpflanzen unter verschiedenen Klimaszenarien zu erkunden. Doch wahre Präzision entsteht erst durch ",
-                      tags$strong(style = "color: #667eea;", "Ihr Know-how"),
-                      ": Ihre Beobachtungen aus der Praxis, Ihre Erfahrungswerte, Ihre fundierte Einschätzung - sie alle machen den Unterschied."
-                    )
-                  ),
-                  
-                  # Steps Section
-                  tags$div(
-                    style = "margin-bottom: 30px;",
-                    tags$h3(
-                      style = "color: #2d3748; font-weight: 600; font-size: 24px; margin-bottom: 25px; text-align: center;",
-                      "So einfach geht's"
-                    ),
-                    
-                    # Step 1
-                    tags$div(
-                      style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); transition: transform 0.2s;",
-                      tags$div(
-                        style = "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
-                        "1"
-                      ),
-                      tags$div(
-                        style = "flex: 1;",
-                        tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Wählen Sie Ihre Pflanze"),
-                        tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "und definieren Sie Ihr Fachgebiet")
-                      )
-                    ),
-                    
-                    # Step 2
-                    tags$div(
-                      style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06);",
-                      tags$div(
-                        style = "background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
-                        "2"
-                      ),
-                      tags$div(
-                        style = "flex: 1;",
-                        tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Kalibrieren Sie das Modell"),
-                        tags$p(style = "margin: 0 0 8px 0; color: #718096; font-size: 15px; line-height: 1.6;", "Verwenden Sie die Register auf der linken Seite, um die Variablenbereiche entsprechend Ihren örtlichen Gegebenheiten anzupassen."),
+                       tags$div(
+                        style = "max-width: 900px; margin: 0 auto; padding: 30px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);",
+                        
+                        # Header Section with Icon
                         tags$div(
-                          style = "background: #edf2f7; padding: 10px 15px; border-radius: 8px; margin-top: 10px;",
-                          tags$span(style = "color: #4299e1; font-size: 14px;", "💡 "),
-                          tags$em(style = "color: #4a5568; font-size: 14px;", "Tipp: Fahren Sie mit der Maus über Parameter für detaillierte Erklärungen")
+                          style = "text-align: center; margin-bottom: 40px;",
+                          tags$div(
+                            style = "display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 50%; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);",
+                            tags$span(style = "font-size: 48px;", "🌱")
+                          ),
+                          tags$h2(
+                            style = "color: #2d3748; font-weight: 700; font-size: 32px; margin: 15px 0 10px 0; letter-spacing: -0.5px;",
+                            "Ihre Expertise formt die Zukunft der Landwirtschaft"
+                          ),
+                          tags$p(
+                            style = "color: #e53e3e; font-size: 18px; font-weight: 600; margin: 0;",
+                            "Wir brauchen Ihre Hilfe!"
+                          )
+                        ),
+                        
+                        # Intro Box
+                        tags$div(
+                          style = "background: white; padding: 25px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-left: 5px solid #667eea;",
+                          tags$p(
+                            style = "font-size: 16px; line-height: 1.7; color: #4a5568; margin: 0;",
+                            "Diese App ermöglicht Ihnen, die Zukunft Ihrer Kulturpflanzen unter verschiedenen Klimaszenarien zu erkunden. Doch wahre Präzision entsteht erst durch ",
+                            tags$strong(style = "color: #667eea;", "Ihr Know-how"),
+                            ": Ihre Beobachtungen aus der Praxis, Ihre Erfahrungswerte, Ihre fundierte Einschätzung - sie alle machen den Unterschied."
+                          )
+                        ),
+                        
+                        # Steps Section
+                        tags$div(
+                          style = "margin-bottom: 30px;",
+                          tags$h3(
+                            style = "color: #2d3748; font-weight: 600; font-size: 24px; margin-bottom: 25px; text-align: center;",
+                            "So einfach geht's"
+                          ),
+                          
+                          # Step 1
+                          tags$div(
+                            style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); transition: transform 0.2s;",
+                            tags$div(
+                              style = "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
+                              "1"
+                            ),
+                            tags$div(
+                              style = "flex: 1;",
+                              tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Wählen Sie Ihre Pflanze"),
+                              tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "und definieren Sie Ihr Fachgebiet")
+                            )
+                          ),
+                          
+                          # Step 2
+                          tags$div(
+                            style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06);",
+                            tags$div(
+                              style = "background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
+                              "2"
+                            ),
+                            tags$div(
+                              style = "flex: 1;",
+                              tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Kalibrieren Sie das Modell"),
+                              tags$p(style = "margin: 0 0 8px 0; color: #718096; font-size: 15px; line-height: 1.6;", "Verwenden Sie die Register auf der linken Seite, um die Variablenbereiche entsprechend Ihren örtlichen Gegebenheiten anzupassen."),
+                              tags$div(
+                                style = "background: #edf2f7; padding: 10px 15px; border-radius: 8px; margin-top: 10px;",
+                                tags$span(style = "color: #4299e1; font-size: 14px;", "💡 "),
+                                tags$em(style = "color: #4a5568; font-size: 14px;", "Tipp: Fahren Sie mit der Maus über Parameter für detaillierte Erklärungen")
+                              )
+                            )
+                          ),
+                          
+                          # Step 3
+                          tags$div(
+                            style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06);",
+                            tags$div(
+                              style = "background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
+                              "3"
+                            ),
+                            tags$div(
+                              style = "flex: 1;",
+                              tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Starten Sie die Simulation"),
+                              tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "Klicken Sie auf 'Modell ausführen', um eine Monte-Carlo-Simulation mit zufälligen Kombinationen aus den von Ihnen definierten Bereichen durchzuführen.")
+                            )
+                          ),
+                          
+                          # Step 4
+                          tags$div(
+                            style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.06);",
+                            tags$div(
+                              style = "background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
+                              "4"
+                            ),
+                            tags$div(
+                              style = "flex: 1;",
+                              tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Speichern & Analysieren"),
+                              tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "Sie können Eingaben speichern/laden. Sobald das Modell ausgeführt wird, werden die Ergebnisse unten angezeigt und Sie können diese Zahlen speichern.")
+                            )
+                          )
+                        ),
+                        
+                        # Why You Matter Section
+                        tags$div(
+                          style = "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);",
+                          tags$h3(
+                            style = "color: white; font-weight: 600; font-size: 22px; margin: 0 0 15px 0; text-align: center;",
+                            HTML("&#10024; Warum Sie wichtig sind")
+                          ),
+                          tags$p(
+                            style = "font-size: 16px; line-height: 1.7; margin: 0 0 15px 0; text-align: center;",
+                            "Jede Ihrer Eingaben verfeinert das Modell. Gemeinsam schaffen wir ein Werkzeug, das Landwirten, Forschenden und Entscheidungsträgern hilft, vorausschauend zu planen und die Herausforderungen des Klimawandels zu meistern."
+                          ),
+                          tags$p(
+                            style = "font-size: 18px; font-weight: 600; margin: 0; text-align: center; letter-spacing: 0.5px;",
+                            HTML("&#127806; Ihre Erfahrung von heute gestaltet die Ernten von morgen")
+                          )
+                        ),
+                        
+                        # Contact Section
+                        tags$div(
+                          style = "background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);",
+                          tags$h4(
+                            style = "color: #2d3748; font-weight: 600; font-size: 18px; margin: 0 0 20px 0;",
+                            HTML("&#128236; Geben Sie uns Feedback")
+                          ),
+                          tags$p(
+                            style = "color: #4a5568; font-size: 15px; margin: 0 0 15px 0;",
+                            "Über Rückmeldungen würden wir uns sehr freuen. Bitte kontaktieren Sie:"
+                          ),
+                          tags$div(
+                            style = "display: grid; gap: 12px;",
+                            tags$div(
+                              style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #667eea;",
+                              tags$a(
+                                href = "mailto:jbsl@uni-bonn.de",
+                                style = "color: #667eea; font-weight: 600; text-decoration: none; font-size: 15px;",
+                                "Jan-Bernd Schulze Lutum"
+                              ),
+                              tags$span(style = "color: #718096; font-size: 14px;", " - für die Spargel- und Erdbeermodelle")
+                            ),
+                            tags$div(
+                              style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #f093fb;",
+                              tags$a(
+                                href = "mailto:s7padaib@uni-bonn.de",
+                                style = "color: #f093fb; font-weight: 600; text-decoration: none; font-size: 15px;",
+                                "Paul Daiber"
+                              ),
+                              tags$span(style = "color: #718096; font-size: 14px;", " - für das Zwiebelmodell")
+                            ),
+                            tags$div(
+                              style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #4facfe;",
+                              tags$a(
+                                href = "mailto:pkasargo@uni-bonn.de",
+                                style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
+                                "Prajna Kasargodu Anebagilu"
+                              ),
+                              tags$span(style = "color: #718096; font-size: 14px;", " oder "),
+                              tags$a(
+                                href = "mailto:afuelle1@uni-bonn.de",
+                                style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
+                                "Adrian Fülle"
+                              ),
+                              tags$span(style = "color: #718096; font-size: 14px;", " - für Fragen die dieses Tool betreffen")
+                            )
+                          )
                         )
-                      )
-                    ),
-                    
-                    # Step 3
-                    tags$div(
-                      style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06);",
-                      tags$div(
-                        style = "background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
-                        "3"
-                      ),
-                      tags$div(
-                        style = "flex: 1;",
-                        tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Starten Sie die Simulation"),
-                        tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "Klicken Sie auf 'Modell ausführen', um eine Monte-Carlo-Simulation mit zufälligen Kombinationen aus den von Ihnen definierten Bereichen durchzuführen.")
-                      )
-                    ),
-                    
-                    # Step 4
-                    tags$div(
-                      style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.06);",
-                      tags$div(
-                        style = "background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
-                        "4"
-                      ),
-                      tags$div(
-                        style = "flex: 1;",
-                        tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Speichern & Analysieren"),
-                        tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "Sie können Eingaben speichern/laden. Sobald das Modell ausgeführt wird, werden die Ergebnisse unten angezeigt und Sie können diese Zahlen speichern.")
-                      )
-                    )
-                  ),
-                  
-                  # Why You Matter Section
-                  tags$div(
-                    style = "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);",
-                    tags$h3(
-                      style = "color: white; font-weight: 600; font-size: 22px; margin: 0 0 15px 0; text-align: center;",
-                      HTML("&#10024; Warum Sie wichtig sind")
-                    ),
-                    tags$p(
-                      style = "font-size: 16px; line-height: 1.7; margin: 0 0 15px 0; text-align: center;",
-                      "Jede Ihrer Eingaben verfeinert das Modell. Gemeinsam schaffen wir ein Werkzeug, das Landwirten, Forschenden und Entscheidungsträgern hilft, vorausschauend zu planen und die Herausforderungen des Klimawandels zu meistern."
-                    ),
-                    tags$p(
-                      style = "font-size: 18px; font-weight: 600; margin: 0; text-align: center; letter-spacing: 0.5px;",
-                      HTML("&#127806; Ihre Erfahrung von heute gestaltet die Ernten von morgen")
-                    )
-                  ),
-                  
-                  # Contact Section
-                  tags$div(
-                    style = "background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);",
-                    tags$h4(
-                      style = "color: #2d3748; font-weight: 600; font-size: 18px; margin: 0 0 20px 0;",
-                      HTML("&#128236; Geben Sie uns Feedback")
-                    ),
-                    tags$p(
-                      style = "color: #4a5568; font-size: 15px; margin: 0 0 15px 0;",
-                      "Über Rückmeldungen würden wir uns sehr freuen. Bitte kontaktieren Sie:"
-                    ),
-                    tags$div(
-                      style = "display: grid; gap: 12px;",
-                      tags$div(
-                        style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #667eea;",
-                        tags$a(
-                          href = "mailto:jbsl@uni-bonn.de",
-                          style = "color: #667eea; font-weight: 600; text-decoration: none; font-size: 15px;",
-                          "Jan-Bernd Schulze Lutum"
-                        ),
-                        tags$span(style = "color: #718096; font-size: 14px;", " - für die Spargel- und Erdbeermodelle")
-                      ),
-                      tags$div(
-                        style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #f093fb;",
-                        tags$a(
-                          href = "mailto:s7padaib@uni-bonn.de",
-                          style = "color: #f093fb; font-weight: 600; text-decoration: none; font-size: 15px;",
-                          "Paul Daiber"
-                        ),
-                        tags$span(style = "color: #718096; font-size: 14px;", " - für das Zwiebelmodell")
-                      ),
-                      tags$div(
-                        style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #4facfe;",
-                        tags$a(
-                          href = "mailto:pkasargo@uni-bonn.de",
-                          style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
-                          "Prajna Kasargodu Anebagilu"
-                        ),
-                        tags$span(style = "color: #718096; font-size: 14px;", " oder "),
-                        tags$a(
-                          href = "mailto:afuelle1@uni-bonn.de",
-                          style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
-                          "Adrian Fülle"
-                        ),
-                        tags$span(style = "color: #718096; font-size: 14px;", " - für Fragen die dieses Tool betreffen")
-                      )
-                    )
-                  )
-                ),
-                br()
-                                        
+                      ),  
+                      br(),
+
+
               
               ### Conceptual Model ------------------------------------------------------
               conditionalPanel(
@@ -1245,6 +1246,7 @@ server <- function(input, output, session) {
 
 
 shinyApp(ui = ui, server = server)
+
 
 
 
