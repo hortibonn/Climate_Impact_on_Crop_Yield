@@ -105,7 +105,7 @@ plot_onion_irrigated_vs_rainfed <- function(onion_mc_simulation) {
       legend.text      = ggplot2::element_text(size = 16),
       strip.placement  = "outside",
       strip.background = ggplot2::element_rect(fill = "lightgrey", colour = NA),
-      strip.text       = ggplot2::element_text(size = 12, face = "bold"),
+      strip.text       = ggplot2::element_text(size = 16, face = "bold"),
       panel.border     = ggplot2::element_rect(colour = "grey40", fill = NA, linewidth = 0.6),
       panel.spacing.x  = grid::unit(10, "pt")
     ) +
@@ -116,5 +116,3 @@ plot_onion_irrigated_vs_rainfed <- function(onion_mc_simulation) {
   
   return(p)
 }
-
-

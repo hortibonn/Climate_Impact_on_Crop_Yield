@@ -253,7 +253,7 @@ make_onion_vip_combined_plot <- function(onion_mc_simulation,
       
       theme_minimal(base_size = 12) +
       theme(
-        strip.text         = element_text(hjust = 0.5, size = 12),
+        strip.text         = element_text(hjust = 0.5, size = 16, face = "bold"),  # BIGGER: 2020, 2075 (SSP...) labels
         axis.text.y        = element_text(hjust = 0, vjust = 0.5),
         axis.text.x        = element_blank(),
         axis.ticks.x       = element_blank(),
@@ -262,7 +262,7 @@ make_onion_vip_combined_plot <- function(onion_mc_simulation,
         legend.title       = element_text(hjust = 0),
         legend.key.height  = grid::unit(0.6, "cm"),
         legend.key.width   = grid::unit(0.6, "cm"),
-        legend.text        = element_text(size = 9),
+        legend.text        = element_text(size = 14),  # BIGGER: legend text
         panel.spacing      = unit(0.5, "lines")
       )
     

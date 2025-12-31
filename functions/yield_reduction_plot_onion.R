@@ -1,7 +1,7 @@
 ## Main function: yield reduction heatmap by phase & stressor ----
 
 make_yield_reduction_heatmap <- function(mcSimulation_results) {
-
+  
   
   ############################################################
   ## 1) Definitions
@@ -126,21 +126,21 @@ make_yield_reduction_heatmap <- function(mcSimulation_results) {
       scales = "free_y",
       space  = "free_y"
     ) +
-    theme_minimal(base_size = 12) +
+    theme_minimal(base_size = 14) +  # BIGGER: Increased base size from 12 to 14
     theme(
-      plot.title        = element_text(hjust = 0.5, size = 12),
-      axis.text.y       = element_text(size = 12),   # LEFT: labels of stressors
-      axis.title.y      = element_text(size = 14),   # LEFT: "Stressfaktor (Phase)"
-      axis.text.x       = element_text(angle = 45, hjust = 1, size = 11),
+      plot.title        = element_text(hjust = 0.5, size = 16),  # BIGGER: was 12
+      axis.text.y       = element_text(size = 14),               # BIGGER: was 12, stressor labels on left
+      axis.title.y      = element_text(size = 16),               # BIGGER: was 14, "Stressfaktor (Phase)"
+      axis.text.x       = element_text(angle = 45, hjust = 1, size = 14),  # BIGGER: was 11, scenario labels
+      axis.title.x      = element_text(size = 16),               # BIGGER: "Szenario" label
       strip.placement   = "outside",
-      strip.text.y.left = element_text(angle = 0, face = "bold", size = 16),
-      strip.text.y.right = element_text(angle = 270,  size = 11), #face = "bold",
+      strip.text.y.right = element_text(angle = 0, hjust = 0, face = "bold", size = 18),  # BIGGER and HORIZONTAL: phase labels (Keimphase, etc.)
       
       panel.spacing.y    = unit(1.2, "lines"),     # space *between* phases
-      plot.margin        = margin(5.5, 40, 5.5, 5.5),  # extra room on the right
+      plot.margin        = margin(5.5, 80, 5.5, 5.5),  # EXTRA room on the right for phase labels (was 40)
       
-      legend.title      = element_text(size = 12),   # RIGHT: legend title
-      legend.text       = element_text(size = 10)    # RIGHT: legend tick labels
+      legend.title      = element_text(size = 14),   # BIGGER: was 12, legend title
+      legend.text       = element_text(size = 13)    # BIGGER: was 10, legend tick labels
     )
   
   return(heatmap_plot)
