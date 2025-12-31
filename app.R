@@ -1127,7 +1127,7 @@ server <- function(input, output, session) {
         add_meta(
           title    = "2020 vs. 2075: Wie Klimaszenarien die Zukunft der Ernte bestimmen",
           #subtitle = ''
-          caption  = "Diese Abbildung zeigt den Unterschied zwischen dem potenziellen Ertrag ohne Stressereignisse und dem tatsächlichen Ertrag, 
+          caption  = "Diese Abbildung zeigt den Unterschied zwischen dem potenziellen Ertrag (mit Bewässerung) ohne Stressereignisse und dem tatsächlichen Ertrag (mit Bewässerung), 
         bei dem alle simulierten Stressfaktoren berücksichtigt wurden. Die Boxplots stellen für jedes Klimaszenario die Ergebnisse der Monte-Carlo-Simulationen dar. 
         Die Prozentwerte darüber zeigen, wie stark der durchschnittliche Ertrag durch Stress reduziert wurde. Die gestrichelte Linie markiert einen typischen 
         Zwiebel-Ertrag im Regierungsbezirk Köln und dient als Orientierung. Die SSP-Szenarien stehen für mögliche zukünftige Klimaentwicklungen – von geringerer 
