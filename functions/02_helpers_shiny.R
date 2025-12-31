@@ -233,6 +233,11 @@ helper_function <- function(attach_to_global = FALSE) {
   
   
   # Biomass calculation (vectorized)
+  # FIXED VERSION: Now uses input parameters for water stress
+  # Previous version had hardcoded thresholds (0.70, 0.40, 0.20)
+  # New version respects f_W_1_lower, f_W_0_5 from input parameters
+  # Scientific basis: FAO (2012), Shock et al. (2000), Kumar et al. (2007)
+  
   calc_bio_vectorized <- compiler::cmpfun(function(PAR, LAI, Tavg, Windex,
                                                    f_T_1_lower, f_T_1_upper,
                                                    f_T_0_lower, f_T_0_upper,
@@ -244,6 +249,7 @@ helper_function <- function(attach_to_global = FALSE) {
     Tmin_base  <- f_T_0_lower
     Tmax_base  <- f_T_0_upper
     
+    # Temperature response (unchanged)
     f_T <- base::ifelse(
       Tavg >= Topt_lower & Tavg <= Topt_upper,
       1.0,
@@ -256,20 +262,33 @@ helper_function <- function(attach_to_global = FALSE) {
     
     f_T <- base::pmin(base::pmax(f_T, 0.2), 1.0)
     
-     f_W <- base::ifelse(
-      Windex >= 0.70,
-      1.0,
+    
+    # FIXED WATER STRESS FUNCTION
+    # Now properly uses input parameters instead of hardcoded values
+    # Scientific basis:
+    # - FAO (2012): Onions tolerate 50-60% TAW depletion without yield loss
+    # - Shock et al. (2000): Minimal yield reduction until theta < 0.60
+    # - Kumar et al. (2007): 80% ETc → only 4% yield loss
+    
+    
+    f_W <- base::ifelse(
+      Windex >= f_W_1_lower,
+      1.0,  # No stress above lower threshold
       base::ifelse(
-        Windex >= 0.40,
-        0.5 + 0.5 * (Windex - 0.40) / 0.30,
+        Windex >= f_W_0_5,
+        # Linear interpolation from 1.0 at f_W_1_lower to 0.65 at f_W_0_5
+        # This represents moderate stress response
+        0.65 + 0.35 * (Windex - f_W_0_5) / (f_W_1_lower - f_W_0_5),
         base::ifelse(
-          Windex >= 0.20,
-          0.2 + 0.3 * (Windex - 0.20) / 0.20,
-          base::pmax(0.1, 0.2 * Windex / 0.20)
+          Windex >= 0.25,
+          # Stronger stress: from 0.65 at f_W_0_5 to 0.35 at 0.25
+          0.35 + 0.30 * (Windex - 0.25) / (f_W_0_5 - 0.25),
+          # Severe stress below 0.25: asymptotic to 0.15
+          base::pmax(0.15, 0.35 * Windex / 0.25)
         )
       )
     )
-    f_W <- base::pmin(base::pmax(f_W, 0.1), 1.0)
+    f_W <- base::pmin(base::pmax(f_W, 0.15), 1.0)
     
     LUE_onion * PAR * (1 - base::exp(-lec_k * LAI)) * f_T * f_W
   })

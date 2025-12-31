@@ -267,12 +267,8 @@ ui <- fluidPage(
                       ),
                       tags$h2(
                         style = "color: #2d3748; font-weight: 700; font-size: 32px; margin: 15px 0 10px 0; letter-spacing: -0.5px;",
-                        "Ihre Expertise formt die Zukunft der Landwirtschaft"
-                      ),
-                      tags$p(
-                        style = "color: #e53e3e; font-size: 18px; font-weight: 600; margin: 0;",
                         "Wir brauchen Ihre Hilfe!"
-                      )
+                      ),
                     ),
                     
                     # Intro Box
@@ -280,9 +276,7 @@ ui <- fluidPage(
                       style = "background: white; padding: 25px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-left: 5px solid #667eea;",
                       tags$p(
                         style = "font-size: 16px; line-height: 1.7; color: #4a5568; margin: 0;",
-                        "Diese App ermöglicht Ihnen, die Zukunft des Anbaus von Spargel, Zwiebeln und bald Erdbeeren unter verschiedenen Klimaszenarien zu erkunden. Doch wahre Präzision entsteht erst durch ",
-                        tags$strong(style = "color: #667eea;", "Ihr Know-how"),
-                        ":Ihre Beobachtungen und Erfahrungswerte aus der Praxis machen unsere Simulationen realistischer."
+                        "Diese App ermöglicht Ihnen, die Zukunft des Anbaus von Spargel, Zwiebeln und bald Erdbeeren unter verschiedenen Klimaszenarien zu erkunden. Doch wahre Präzision entsteht erst durch Ihr Know-how: Ihre Beobachtungen und Erfahrungswerte aus der Praxis machen unsere Simulationen realistischer."
                       )
                     ),
                     
@@ -367,10 +361,6 @@ ui <- fluidPage(
                         style = "font-size: 16px; line-height: 1.7; margin: 0 0 15px 0; text-align: center;",
                         "Mit jeder Ihrer Eingaben wird unser Modell präziser. Unser Ziel ist es, ein Werkzeug zu entwickeln, das zukünftige Probleme im Anbau rechtzeitig identifiziert – Informationen, die dann direkt an politische Entscheidungsträger fließen. Sollten Sie sich fragen: 'Was machen die schon wieder für einen Quatsch an der Uni, haben die nicht wieder den wichtigen Punkt XY übersehen?' – genau dann brauchen wir Ihr Feedback! Sagen Sie uns, welche Aspekte aus Ihrer täglichen Praxis unbedingt berücksichtigt werden müssen."
                       ),
-                      tags$p(
-                        style = "font-size: 18px; font-weight: 600; margin: 0; text-align: center; letter-spacing: 0.5px;",
-                        HTML("&#127806; Ihre Erfahrung von heute gestaltet die Ernten von morgen")
-                      )
                     ),
                     
                     # Contact Section
@@ -433,14 +423,11 @@ ui <- fluidPage(
                   ### Conceptual Model ------------------------------------------------------
                   conditionalPanel(
                     condition = "output.show_image",
-                    div(
-                      class = "flex-container fullscreen-toggle",
-                      style = "max-width: 65%;",
-                      uiOutput("concepImg")
-                    ),
+                    uiOutput("concepImg_container"),
                     br(), br(),
                     uiOutput("download_ui"),
-                    br(), br()
+                    br(), br(),
+                    uiOutput("model_description_ui")
                   ),
                 ),
                 
@@ -851,6 +838,24 @@ server <- function(input, output, session) {
     )
   })
   
+  output$concepImg_container <- renderUI({
+    info <- img_info()
+    req(info$file)
+    
+    # Define presentation size of conceptual model
+    container_width <- if (tolower(info$crop) == "zwiebel") {
+      "100%" # Onion
+    } else {
+      "70%" #Asparagus
+    }
+    
+    div(
+      class = "flex-container fullscreen-toggle",
+      style = paste0("max-width: ", container_width, ";"),
+      uiOutput("concepImg")
+    )
+  })
+  
   output$concepImg <- renderUI({
     info <- img_info()
     req(info$file)
@@ -858,7 +863,8 @@ server <- function(input, output, session) {
     tags$img(
       src = info$file,
       alt = paste("Image for", info$crop),
-      id  = "cm-image"
+      id  = "cm-image",
+      style = "width: 100%; height: auto; max-height: none;"
     )
   })
   
@@ -868,6 +874,35 @@ server <- function(input, output, session) {
       style = "text-align: center;",
       downloadButton("downloadImage", "Bild herunterladen")
     )
+  })
+  
+  output$model_description_ui <- renderUI({
+    info <- img_info()
+    req(info$crop)
+    
+    if (tolower(info$crop) == "zwiebel") {
+      tags$div(
+        style = "max-width: 900px; margin: 20px auto; padding: 25px; background: #f8f9fa; border-radius: 12px; border-left: 5px solid #667eea;",
+        tags$h4(
+          style = "color: #2d3748; font-weight: 600; margin-bottom: 15px;",
+          "Wie das Klima Ihre Zwiebelernte beeinflusst"
+        ),
+        tags$p(
+          style = "font-size: 15px; line-height: 1.7; color: #4a5568; text-align: justify;",
+          "Dieses Modell simuliert den Weg der Zwiebel vom Feldaufgang bis zur Ernte und zeigt, wie Wettermuster den Ertrag in jeder Phase beeinflussen. Die Biomasseakkumulation wird durch Sonneneinstrahlung (PAR), Temperatur, Niederschlag und Bewässerung beeinflusst und durchläuft vier kritische Wachstumsphasen: Feldaufgang, vegetatives Wachstum, Bulbenbildung und Reifephase."
+        ),
+        tags$p(
+          style = "font-size: 15px; line-height: 1.7; color: #4a5568; text-align: justify;",
+          "Doch die Natur stellt Herausforderungen: Abiotische Stressfaktoren wie Starkregen, Hagel und Hitzewellen können die Pflanzen beeinträchtigen. Gleichzeitig entstehen biotische Bedrohungen durch Schädlinge und Krankheiten wie Fusarium, Falschen Mehltau,Zwiebelhals-Fäule und Thripse, deren Auftreten von Witterungsbedingungen abhängt."
+        ),
+        tags$p(
+          style = "font-size: 15px; line-height: 1.7; color: #4a5568; text-align: justify;",
+          "Jeder Stressfaktor kann das Ertragspotenzial beeinflussen. Das Modell führt 1.000 Monte-Carlo-Simulationen mit historischen Wetterdaten und zukünftigen Klimaszenarien (SSP1-2.6 bis SSP5-8.5) durch. Ihr Expertenwissen macht das Modell präziser: Kalibrieren Sie Schwellenwerte, Empfindlichkeiten und Ertragsverluste basierend auf Ihrer Praxiserfahrung. Ihre Eingaben helfen uns, das Modell kontinuierlich zu verbessern und an reale Anbaubedingungen anzupassen."
+        )
+      )
+    } else {
+      NULL
+    }
   })
   
   output$downloadImage <- downloadHandler(
@@ -962,7 +997,7 @@ server <- function(input, output, session) {
     }, once = TRUE)
     
   }, ignoreInit = TRUE)
-
+  
   
   
   ### Monte Carlo Simulation END
@@ -1100,8 +1135,20 @@ server <- function(input, output, session) {
         zukünftige Zwiebelerträge beeinflussen könnten und welche Ertragsspannen realistisch sind.")
       #, legend = "none")
       
+      source("functions/yield_boxplot_irrig_rainfed.R")
+      plot2<-plot_onion_irrigated_vs_rainfed(mc_data) |>
+        add_meta(
+          title    = "Bewässert vs. Unbewässert: Ertragsvergleich unter verschiedenen Klimaszenarien",
+          #subtitle = '',
+          caption  = "Diese Abbildung vergleicht den tatsächlichen Ertrag unter bewässerten und unbewässerten Bedingungen für verschiedene Klimaszenarien. 
+        Die Boxplots stellen für jedes Szenario die Ergebnisse der Monte-Carlo-Simulationen dar. Die gestrichelte Linie markiert einen typischen 
+        Zwiebel-Ertrag im Regierungsbezirk Köln und dient als Orientierung. Die SSP-Szenarien stehen für mögliche zukünftige Klimaentwicklungen – von geringerer 
+        Erwärmung (SSP1–2.6) bis hin zu hohen und sehr hohen Emissionen (SSP3–7.0 und SSP5–8.5). So lässt sich einschätzen, wie wichtig Bewässerung 
+        für zukünftige Zwiebelerträge unter Klimawandel sein wird.")
+      #, legend = "none")
+      
       source("functions/VIP_Plot_onion.R")
-      plot2<-make_onion_vip_combined_plot(mc_data) |>
+      plot3<-make_onion_vip_combined_plot(mc_data) |>
         add_meta(
           title    = "Wichtige Einflussfaktoren auf den Ertrag in 2020 und 2075 unter verschiedenen Klimaszenarien",
           #subtitle = '',
@@ -1113,7 +1160,7 @@ server <- function(input, output, session) {
           , legend = "bottom")
       
       source("functions/yield_reduction_plot_onion.R")
-      plot3<-make_yield_reduction_heatmap(mc_data) |>
+      plot4<-make_yield_reduction_heatmap(mc_data) |>
         add_meta(
           title    = "Stressfaktoren im Vergleich: Wie Klimaeinflüsse den Biomassezuwachs prägen",
           #subtitle = '',
@@ -1121,14 +1168,6 @@ server <- function(input, output, session) {
         Die Farbintensität gibt die durchschnittliche prozentuale Minderung an: Je dunkler das Rot, desto stärker wird das Pflanzenwachstum eingeschränkt.
         Dargestellt sind sowohl die Ergebnisse für das Basisjahr 2020 als auch für das Jahr 2075 unter vier möglichen Klimaszenarien (SSP) – von starkem 
         Klimaschutz (SSP1–2.6) bis hin zu sehr hohen Emissionen (SSP5–8.5).")
-
-      source("functions/yield_boxplot_irrig_rainfed.R")
-      plot4<-plot_onion_irrigated_vs_rainfed(mc_data) |>
-        add_meta(
-          title    = "Placeholder",
-          # subtitle = '',
-          # legend = "none",
-          caption  = "Placeholder")
     }
     
     
@@ -1343,9 +1382,3 @@ server <- function(input, output, session) {
 
 
 shinyApp(ui = ui, server = server)
-
-
-
-
-
-
