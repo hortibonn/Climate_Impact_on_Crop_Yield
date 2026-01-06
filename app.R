@@ -889,7 +889,7 @@ server <- function(input, output, session) {
         ),
         tags$p(
           style = "font-size: 15px; line-height: 1.7; color: #4a5568; text-align: justify;",
-          "Dieses Modell simuliert den Weg der Zwiebel vom Feldaufgang bis zur Ernte und zeigt, wie Wettermuster den Ertrag in jeder Phase beeinflussen. Die Biomasseakkumulation wird durch Sonneneinstrahlung (PAR), Temperatur, Niederschlag und Bewässerung beeinflusst und durchläuft vier kritische Wachstumsphasen: Feldaufgang, vegetatives Wachstum, Bulbenbildung und Reifephase."
+          "Dieses Modell simuliert den Weg von konventionell angebauten gesähten Sommerzwiebeln vom Feldaufgang bis zur Ernte und zeigt, wie Wettermuster den Ertrag in jeder Phase beeinflussen. Die Biomasseakkumulation wird durch Sonneneinstrahlung (PAR), Temperatur, Niederschlag und Bewässerung beeinflusst und durchläuft vier kritische Wachstumsphasen: Feldaufgang, vegetatives Wachstum, Bulbenbildung und Reifephase."
         ),
         tags$p(
           style = "font-size: 15px; line-height: 1.7; color: #4a5568; text-align: justify;",
