@@ -5,7 +5,7 @@ library(pool)
 `%||%` <- function(a, b) if (is.null(a) || length(a) == 0) b else a
 now_iso <- function() format(as.POSIXct(Sys.time(), tz = "UTC"), "%Y-%m-%dT%H:%M:%SZ")
 
-ALLOWED_VIEWERS <- c("Adrian", "Prajna")
+ALLOWED_VIEWERS <- c("Adrian", "Prajna", "Paul")
 
 # --- Feature flag (as before) ---
 sys <- tolower(Sys.info()[["sysname"]] %||% .Platform$OS.type)

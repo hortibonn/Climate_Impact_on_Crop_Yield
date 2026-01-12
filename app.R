@@ -363,54 +363,54 @@ ui <- fluidPage(
                       ),
                     ),
                     
-                    # Contact Section
-                    tags$div(
-                      style = "background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);",
-                      tags$h4(
-                        style = "color: #2d3748; font-weight: 600; font-size: 18px; margin: 0 0 20px 0;",
-                        HTML("&#128236; Geben Sie uns Feedback")
-                      ),
-                      tags$p(
-                        style = "color: #4a5568; font-size: 15px; margin: 0 0 15px 0;",
-                        "Über Rückmeldungen würden wir uns sehr freuen. Bitte kontaktieren Sie:"
-                      ),
-                      tags$div(
-                        style = "display: grid; gap: 12px;",
-                        tags$div(
-                          style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #667eea;",
-                          tags$a(
-                            href = "mailto:jbsl@uni-bonn.de",
-                            style = "color: #667eea; font-weight: 600; text-decoration: none; font-size: 15px;",
-                            "Jan-Bernd Schulze Lutum"
-                          ),
-                          tags$span(style = "color: #718096; font-size: 14px;", " - für die Spargel- und Erdbeermodelle")
-                        ),
-                        tags$div(
-                          style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #f093fb;",
-                          tags$a(
-                            href = "mailto:s7padaib@uni-bonn.de",
-                            style = "color: #f093fb; font-weight: 600; text-decoration: none; font-size: 15px;",
-                            "Paul Daiber"
-                          ),
-                          tags$span(style = "color: #718096; font-size: 14px;", " - für das Zwiebelmodell")
-                        ),
-                        tags$div(
-                          style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #4facfe;",
-                          tags$a(
-                            href = "mailto:pkasargo@uni-bonn.de",
-                            style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
-                            "Prajna Kasargodu Anebagilu"
-                          ),
-                          tags$span(style = "color: #718096; font-size: 14px;", " oder "),
-                          tags$a(
-                            href = "mailto:afuelle1@uni-bonn.de",
-                            style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
-                            "Adrian Fülle"
-                          ),
-                          tags$span(style = "color: #718096; font-size: 14px;", " - für Fragen die dieses Tool betreffen")
-                        )
-                      )
-                    )
+                    # # Contact Section
+                    # tags$div(
+                    #   style = "background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);",
+                    #   tags$h4(
+                    #     style = "color: #2d3748; font-weight: 600; font-size: 18px; margin: 0 0 20px 0;",
+                    #     HTML("&#128236; Geben Sie uns Feedback")
+                    #   ),
+                    #   tags$p(
+                    #     style = "color: #4a5568; font-size: 15px; margin: 0 0 15px 0;",
+                    #     "Über Rückmeldungen würden wir uns sehr freuen. Bitte kontaktieren Sie:"
+                    #   ),
+                    #   tags$div(
+                    #     style = "display: grid; gap: 12px;",
+                    #     tags$div(
+                    #       style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #667eea;",
+                    #       tags$a(
+                    #         href = "mailto:jbsl@uni-bonn.de",
+                    #         style = "color: #667eea; font-weight: 600; text-decoration: none; font-size: 15px;",
+                    #         "Jan-Bernd Schulze Lutum"
+                    #       ),
+                    #       tags$span(style = "color: #718096; font-size: 14px;", " - für die Spargel- und Erdbeermodelle")
+                    #     ),
+                    #     tags$div(
+                    #       style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #f093fb;",
+                    #       tags$a(
+                    #         href = "mailto:s7padaib@uni-bonn.de",
+                    #         style = "color: #f093fb; font-weight: 600; text-decoration: none; font-size: 15px;",
+                    #         "Paul Daiber"
+                    #       ),
+                    #       tags$span(style = "color: #718096; font-size: 14px;", " - für das Zwiebelmodell")
+                    #     ),
+                    #     tags$div(
+                    #       style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #4facfe;",
+                    #       tags$a(
+                    #         href = "mailto:pkasargo@uni-bonn.de",
+                    #         style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
+                    #         "Prajna Kasargodu Anebagilu"
+                    #       ),
+                    #       tags$span(style = "color: #718096; font-size: 14px;", " oder "),
+                    #       tags$a(
+                    #         href = "mailto:afuelle1@uni-bonn.de",
+                    #         style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
+                    #         "Adrian Fülle"
+                    #       ),
+                    #       tags$span(style = "color: #718096; font-size: 14px;", " - für Fragen die dieses Tool betreffen")
+                    #     )
+                    #   )
+                    # )
                   ),  
                   br(),
                   
@@ -460,10 +460,25 @@ ui <- fluidPage(
                     uiOutput("plot4_dl_ui"),
                   ),
                   
-                  ### Feedback ------------------------------------------------------
+
+                  
+                ),
+                
+                # Contact Section
+                tags$div(
+                  style = "background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);",
+                  tags$h4(
+                    style = "color: #2d3748; font-weight: 600; font-size: 18px; margin: 0 0 20px 0;",
+                    HTML("&#128236; Geben Sie uns Feedback")
+                  ),
+                  tags$p(
+                    style = "color: #4a5568; font-size: 15px; margin: 0 0 15px 0;",
+                    "Über Rückmeldungen würden wir uns sehr freuen."
+                  ),
+                  
+                  ## Feedback ------------------------------------------------------
                   if (NOTES_ENABLED) {
                     tagList(
-                      h4("Geben Sie uns Feedback"),
                       textInput("email", label = NULL, placeholder = "Ihre@E-Mail.Adresse (optional)*", width = "100%"),
                       textAreaInput("note", label = NULL, placeholder = "Ihr Feedback…", width = "100%", height = "200px"),
                       actionButton("submit", "Feedback absenden", class = "btn btn-primary"),
@@ -477,7 +492,50 @@ ui <- fluidPage(
                     NULL
                   },
                   
-                )),
+                  tags$p(
+                    style = "color: #4a5568; font-size: 15px; margin: 0 0 15px 0;",
+                    "Oder kontaktieren Sie uns direkt:"
+                  ),
+                  tags$div(
+                    style = "display: grid; gap: 12px;",
+                    tags$div(
+                      style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #667eea;",
+                      tags$a(
+                        href = "mailto:jbsl@uni-bonn.de",
+                        style = "color: #667eea; font-weight: 600; text-decoration: none; font-size: 15px;",
+                        "Jan-Bernd Schulze Lutum"
+                      ),
+                      tags$span(style = "color: #718096; font-size: 14px;", " - für die Spargel- und Erdbeermodelle")
+                    ),
+                    tags$div(
+                      style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #f093fb;",
+                      tags$a(
+                        href = "mailto:s7padaib@uni-bonn.de",
+                        style = "color: #f093fb; font-weight: 600; text-decoration: none; font-size: 15px;",
+                        "Paul Daiber"
+                      ),
+                      tags$span(style = "color: #718096; font-size: 14px;", " - für das Zwiebelmodell")
+                    ),
+                    tags$div(
+                      style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #4facfe;",
+                      tags$a(
+                        href = "mailto:pkasargo@uni-bonn.de",
+                        style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
+                        "Prajna Kasargodu Anebagilu"
+                      ),
+                      tags$span(style = "color: #718096; font-size: 14px;", " oder "),
+                      tags$a(
+                        href = "mailto:afuelle1@uni-bonn.de",
+                        style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
+                        "Adrian Fülle"
+                      ),
+                      tags$span(style = "color: #718096; font-size: 14px;", " - für Fragen die dieses Tool betreffen")
+                    )
+                  )
+                )
+                
+                
+                ),
               
               ### Requisites ------------------------------------------------------
               # Provide Funding declaration
