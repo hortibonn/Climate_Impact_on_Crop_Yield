@@ -345,7 +345,7 @@ ui <- fluidPage(
                         tags$div(
                           style = "flex: 1;",
                           tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Speichern & Analysieren"),
-                          tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "Sie können Eingaben speichern/laden. Sobald das Modell ausgeführt wird, werden die Ergebnisse unten angezeigt und Sie können diese Zahlen speichern.")
+                          tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "Bitte speichern Sie ihre Eingabe, damit uns die Daten zu Verfügung stehen. Ebenso können Sie dadurch ihre Eingaben laden. Sobald das Modell ausgeführt wird, werden die Ergebnisse unten angezeigt und Sie können diese Zahlen speichern.")
                         )
                       )
                     ),
