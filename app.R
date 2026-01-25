@@ -321,6 +321,8 @@ ui <- fluidPage(
                     textAreaInput("note", label = NULL, placeholder = "Ihr Feedback…", width = "100%", height = "200px"),
                     actionButton("submit", "Feedback absenden", class = "btn btn-primary"),
                     p(class = "text text--subtle", "* Die Angabe Ihrer E-Mail-Adresse ist optional und wird ausschließlich verwendet, um Sie bezüglich Ihres Feedbacks zu kontaktieren. Gespeicherte personenbezogene Daten werden mit Ende des Projekts oder nach einem Jahr gelöscht."),
+                    br(),
+                    uiOutput("viewer_panel"),
                   )
                 )
               }else NULL
