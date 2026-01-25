@@ -50,522 +50,360 @@ scenarios<-read.csv(scenario_path)
 ui <- fluidPage(
   
   ## Theme ------------------------------------------------------
-  theme = bs_theme(version = 5,
-                   bootswatch = 'flatly',
-                   base_font = font_google("Roboto")), 
+  theme = bs_theme(
+    version = 5,
+    bootswatch = "flatly",
+    base_font = font_google("Roboto"),
+    primary = "#1a5340",   # matches reforest theme
+    "border-radius" = "1rem"
+  ),  
   
   use_waiter(),
   
   ## Head ------------------------------------------------------
-  # Set actual browser tab title and favicon
   tags$head(
-    ### Tab ------------------------------------------------------
     tags$title("Agriculture Decision Support Tool"),
     tags$link(rel = "shortcut icon", href = "INRES.png"),
     
-    ### CSS ------------------------------------------------------
-    tags$style(HTML("
-      .flex-container {
-        display: flex;
-        justify-content: flex-start;  /* <– anchor left edge */
-        align-items: flex-start;
-        overflow: auto;               /* scroll if too big */
-        margin: 0 auto;
-      }
-      .flex-container img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-      }
-      .flex-container .shiny-plot-output {
-        min-width: 900px;  /* or whatever you designed for */
-        cursor: pointer;
-      }
-      #cm-image { cursor: pointer; }
-      
-      
-          /* Center the tab navigation */
-    .nav-tabs {
-      display: flex;
-      justify-content: center;
-      border-bottom: none;
-      margin-bottom: 25px;
-    }
-
-    /* Base tab style */
-    .nav-tabs > li > a {
-      background: #f1f5f9;
-      color: #4a5568;
-      border: none;
-      border-radius: 999px;
-      padding: 10px 22px;
-      margin: 0 6px;
-      font-weight: 600;
-      font-size: 18px;
-      transition: all 0.25s ease;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    }
-
-    /* Hover state */
-    .nav-tabs > li > a:hover {
-      background: #e2e8f0;
-      color: #2d3748;
-    }
-
-    /* Active tab */
-    .nav-tabs > li.active > a,
-    .nav-tabs > li.active > a:hover,
-    .nav-tabs > li.active > a:focus {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      box-shadow: 0 6px 15px rgba(102, 126, 234, 0.35);
-      border: none;
-    }
-
-    /* Remove default underline indicator */
-    .nav-tabs > li > a:after {
-      display: none;
-    }
+    # global stylesheet
+    tags$link(rel = "stylesheet", href = "theme.css"),
     
-      "
-    )),
-    ### JS ------------------------------------------------------
-    tags$script(HTML("
-      // Click any element with class 'fullscreen-toggle' to toggle fullscreen
-      document.addEventListener('click', function(e) {
-        const box = e.target.closest('.fullscreen-toggle');
-        if (!box) return;
-        
-        if (!document.fullscreenElement) {
-          if (box.requestFullscreen) box.requestFullscreen();
-        } else {
-          if (document.exitFullscreen) document.exitFullscreen();
-        }
-      });
-      "
-    ))
+    tags$script(src = "app.js"),
+    tags$script(HTML("/* document.documentElement.setAttribute('data-theme','reforest'); */"))
   ),
   
   ### Title ------------------------------------------------------
   tags$div(
-    style = "display:flex; align-items:center;justify-content:space-between;
-      width: 100% !important; margin: 20px; padding: 0 15px;
-      box-sizing: border-box; background-color: #f2f2f2;",
-    
-    # tags$a(href = "https://www.uni-bonn.de", target = "_blank",
-    tags$img(src = "logo-mix-nobg.png", height = "100px",
-             style = "margin-left: auto; max-width: 20%; height: auto; cursor: pointer;"),
-    # ),
-    # Provide Title of the DA model
-    tags$h2(tags$div("Auswirkungen des Klimawandels auf künftige Ernteerträge in 2075"),
-            #tags$div("conventional asparagus growing in 2075"),
-            style = "text-align: center; flex-grow: 1;")
-    # Provide Project Logo
-    # tags$a(href = "https://www.uni-bonn.de", target = "_blank",
-    # tags$img(src = "mlv-logo.png", height = "100px",
-    #          style = "margin-right: auto; max-width: 30%; height: auto; cursor: pointer;")
-    # # ),
+    class = "app-header",
+    tags$img(src = "logo-mix-nobg.png", height = "100px", class = "app-logo"),
+    tags$h2("Auswirkungen des Klimawandels auf künftige Ernteerträge in 2075", class = "app-title")
   ),
-  
   
   ## Sidebar ------------------------------------------------------
   sidebarLayout(
-    sidebarPanel(width = 4,
-                 style = "height: 100%; overflow-y: auto",
-                 
-                 accordion(
-                   id = "collapseSidebar",
-                   open = FALSE,
-                   
-                   div(
-                     class = "text-center",
-                     actionButton("run_simulation", "Modell ausführen",
-                                  icon = icon("play"), class = "btn-primary")
-                   ),
-                   br(),
-                   ### Accordions ------------------------------------------------------
-                   #### Save/Load functionality ------------------------------------------------------
-                   # saveLoadUI("savemod"),
-                   accordion_panel(
-                     title = "Projekt speichern/laden", value="save_load", icon = icon("folder-open"), #id="sll",
-                     tagList(
-                       textInput("state_name", "Projektname"),
-                       actionButton("save_btn",  label = tagList(icon("floppy-disk"),  "Speichern"  ), class = "btn btn-dark"),
-                       
-                       br(), br(),
-                       selectInput("state_picker", "Gespeicherte Versionen", choices = NULL),
-                       
-                       fluidRow(
-                         column(6, actionButton("load_btn",   tagList(icon("rotate"),  "Laden"  ), class = "btn btn-secondary")),
-                         #column(6, actionButton("delete_btn", tagList(icon("trash"),   "Löschen"), class = "btn btn-secondary"))
-                       ),
-                       hr(),
-                       downloadButton("download_csv", label = tagList(icon("download"), "Aktuelle Eingaben herunterladen (.csv)"))
-                     )
-                   ),
-                   #### Crop filter ------------------------------------------------------
-                   accordion_panel(
-                     title = "Pflanzenauswahl",
-                     icon = icon("clipboard-question"),
-                     tagList(
-                       tags$h5(
-                         #"Crop",
-                         # tags$span(
-                         #   icon("circle-question"),
-                         #   title = "Select your main expertise to view and edit only relevant variables.\nNot selecting any box shows all variables.\nDefaults apply to unselected categories in simulations.",
-                         #   style = "cursor: help; margin-left: 8px;"
-                         # )
-                       ),
-                       uiOutput("crop_filter_ui")
-                     )
-                   ),
-                   
-                   #### Expertise filter ------------------------------------------------------
-                   accordion_panel(
-                     title = "Fachgebietskategorien",
-                     icon = icon("clipboard-question"),
-                     tagList(
-                       tags$h5(
-                         "Fachwissen",
-                         tags$span(
-                           icon("circle-question"),
-                           title = "Wählen Sie Ihr Hauptfachgebiet aus, um nur relevante Variablen anzuzeigen und zu bearbeiten.\n Wenn Sie kein Kästchen auswählen, werden alle Variablen angezeigt.\n In Simulationen gelten die Standardeinstellungen für nicht ausgewählte Kategorien.",
-                           style = "cursor: help; margin-left: 8px;"
-                         )
-                       ),
-                       uiOutput("category_filter_ui")
-                     )
-                   ),
-                   
-                   #### Dynamic elements ------------------------------------------------------
-                   uiOutput("dynamic_element_ui")
-                 )
+    sidebarPanel(
+      width = 4,
+      div(
+        class = "cardish sidebar-panel",
+        
+        accordion(
+          id = "collapseSidebar",
+          open = FALSE,
+          
+          div(
+            class = "text-center",
+            actionButton(
+              "run_simulation", "Modell ausführen",
+              icon = icon("play"),
+              class = "btn-primary"
+            )
+          ),
+          br(),
+          
+          accordion_panel(
+            title = "Projekt speichern/laden",
+            value = "save_load",
+            icon = icon("folder-open"),
+            tagList(
+              textInput("state_name", "Projektname"),
+              actionButton(
+                "save_btn",
+                label = "Speichern",
+                class = "btn btn-dark"
+              ),
+              
+              # Only show load/delete to ALLOWED_VIEWERS
+              conditionalPanel(
+                condition = "output.can_view_db",
+                # selectInput("state_picker", "Gespeicherte Versionen", choices = NULL),
+                selectizeInput(
+                  "state_picker", "Gespeicherte Versionen",
+                  choices = NULL,
+                  options = list(dropdownParent = "body")
+                ),
+                
+                fluidRow(
+                  column(6, actionButton("load_btn",
+                                         tagList(icon("rotate"), "Laden"),
+                                         class = "btn btn-secondary"
+                  )),
+                  column(6, actionButton("delete_btn",
+                                         tagList(icon("trash"), "Löschen"),
+                                         class = "btn btn-outline-danger"
+                  ))
+                )
+              ),
+              
+              hr(),
+              downloadButton(
+                "download_csv",
+                label = "Aktuelle Eingaben herunterladen (.csv)"
+              )
+            )
+          ),
+          
+          accordion_panel(
+            title = "Pflanzenauswahl",
+            icon = icon("clipboard-question"),
+            tagList(
+              tags$h5(
+                #"Crop",
+                # tags$span(
+                #   class = "help-icon",
+                #   icon("circle-question"),
+                #   title = "Select your main expertise to view and edit only relevant variables.\nNot selecting any box shows all variables.\nDefaults apply to unselected categories in simulations.",
+                # )
+              ),
+              uiOutput("crop_filter_ui")
+            )
+          ),
+          
+          accordion_panel(
+            title = "Fachgebietskategorien",
+            icon = icon("clipboard-question"),
+            tagList(
+              tags$h5(
+                "Fachwissen",
+                tags$span(
+                  class = "help-icon",
+                  icon("circle-question"),
+                  title = "Wählen Sie Ihr Hauptfachgebiet aus, um nur relevante Variablen anzuzeigen und zu bearbeiten.\nWenn Sie kein Kästchen auswählen, werden alle Variablen angezeigt.\nIn Simulationen gelten die Standardeinstellungen für nicht ausgewählte Kategorien."
+                )
+              ),
+              uiOutput("category_filter_ui")
+            )
+          ),
+          
+          uiOutput("dynamic_element_ui")
+        )
+      )
     ),
     
     ## Main Panel ------------------------------------------------------
-    mainPanel(width = 8,
+    mainPanel(
+      width = 8,
+      
+      tabsetPanel(
+        id = "main_tabs",
+        selected = "Intro",
+        
+        tabPanel(
+          title = "📋 Beschreibung",
+          value = "Intro",
+          
+          div(
+            class = "page-shell page-shell--gradient stack stack--lg",
+            # Header
+            div(
+              class = "stack stack--md",
+              div(class = "intro-header text-center",
+                  div(class = "intro-icon-wrap", span(class = "intro-icon", "🌱")),
+                  h2(class = "heading heading--lg heading--center", "Wir brauchen Ihre Hilfe!")
+              )
+            ),
+            
+            # Intro box = card + accent
+            div(
+              class = "card card--accent",
+              p(class = "text", "Diese App ermöglicht Ihnen, die Zukunft des Anbaus von Spargel, Zwiebeln und bald Erdbeeren unter verschiedenen Klimaszenarien zu erkunden. Doch wahre Präzision entsteht erst durch Ihr Know-how: Ihre Beobachtungen und Erfahrungswerte aus der Praxis machen unsere Simulationen realistischer.")
+            ),
+            
+            # Steps title (shared heading)
+            h3(class = "heading heading--md heading--center", "So einfach geht's"),
+            
+            # Step cards = card + step layout
+            div(
+              class = "card",
+              div(class = "step",
+                  div(class = "step__badge step__badge--1", "1"),
+                  div(class = "step__content",
+                      h4(class = "step__title", "Wählen Sie Ihre Kulturpflanze"),
+                      p(class = "step__text", "und definieren Sie Ihr Fachgebiet")
+                  )
+              )
+            ),
+            
+            div(
+              class = "card",
+              div(class = "step",
+                  div(class = "step__badge step__badge--2", "2"),
+                  div(class = "step__content",
+                      h4(class = "step__title", "Kalibrieren Sie das Modell"),
+                      p(class = "step__text",
+                        "Passen Sie in den Registern links die Wertebereiche nach bestem Wissen an. Exakte Zahlen sind nicht nötig – realistische Spannen (z.B. Minimum bis Maximum) reichen völlig aus. Gerade diese Unsicherheit macht unsere Analyse robust und aussagekräftig."
+                      ),
+                      div(class = "tip",
+                          span(class = "tip__icon", "💡"),
+                          p(class = "tip__text", "Tipp: Fahren Sie mit der Maus über Parameter für detaillierte Erklärungen ")
+                      )
+                  )
+              )
+            ),
+            
+            div(
+              class = "card",
+              div(class = "step",
+                  div(class = "step__badge step__badge--3", "3"),
+                  div(class = "step__content",
+                      h4(class = "step__title", "Starten Sie die Simulation"),
+                      p(class = "step__text",
+                        "Klicken Sie auf 'Modell ausführen', um eine Monte-Carlo-Simulation mit zufälligen Kombinationen aus den von Ihnen definierten Bereichen durchzuführen."
+                      )
+                  )
+              )
+            ),
+            
+            div(
+              class = "card",
+              div(class = "step",
+                  div(class = "step__badge step__badge--4", "4"),
+                  div(class = "step__content",
+                      h4(class = "step__title", "Speichern & Analysieren"),
+                      p(class = "step__text",
+                        "Bitte speichern Sie ihre Eingabe, damit uns die Daten zu Verfügung stehen. Ebenso können Sie dadurch ihre Eingaben laden. Sobald das Modell ausgeführt wird, werden die Ergebnisse unten angezeigt und Sie können diese Zahlen speichern."
+                      )
+                  )
+              )
+            ),
+            
+            # Why card = feature card (green), centered, icon in heading
+            h3(class = "heading heading--md heading--center", "Warum Sie wichtig sind"),
+            
+            div(
+              class = "card card--feature card--feature-green card--center",
+              p(class = "text text--center",
+                "Mit jeder Ihrer Eingaben wird unser Modell präziser. Unser Ziel ist es, ein Werkzeug zu entwickeln, das zukünftige Probleme im Anbau rechtzeitig identifiziert – Informationen, die dann direkt an politische Entscheidungsträger fließen. Sollten Sie sich fragen: 'Was machen die schon wieder für einen Quatsch an der Uni, haben die nicht wieder den wichtigen Punkt XY übersehen?' – genau dann brauchen wir Ihr Feedback! Sagen Sie uns, welche Aspekte aus Ihrer täglichen Praxis unbedingt berücksichtigt werden müssen."
+              )
+            ),
+            
+            h3(class = "heading heading--md heading--center", "Feedback:"),
+            # Feedback card should also be inside shell and follow card logic
+            div(
+              class = "feedback-layout",
               
-              tabsetPanel(
-                id = "main_tabs",
-                selected = "Intro",
+              # LEFT column: contacts
+              div(
+                class = "feedback-layout__left stack stack--md",
+                p(class = "text", "Kontaktieren Sie uns direkt via E-Mail:"),
                 
-                tabPanel(
-                  title = "📋 Beschreibung",
-                  value = "Intro",
+                div(
+                  class = "contact-grid",
                   
-                  ### App description text ------------------------------------------------------
-                  # Provide brief explanation of the DA model
-                  tags$div(
-                    style = "max-width: 100%; margin: 0 auto; padding: 30px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);",
-                    
-                    # Header Section with Icon
-                    tags$div(
-                      style = "text-align: center; margin-bottom: 40px;",
-                      tags$div(
-                        style = "display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 50%; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);",
-                        tags$span(style = "font-size: 48px;", "🌱")
-                      ),
-                      tags$h2(
-                        style = "color: #2d3748; font-weight: 700; font-size: 32px; margin: 15px 0 10px 0; letter-spacing: -0.5px;",
-                        "Wir brauchen Ihre Hilfe!"
-                      ),
-                    ),
-                    
-                    # Intro Box
-                    tags$div(
-                      style = "background: white; padding: 25px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-left: 5px solid #667eea;",
-                      tags$p(
-                        style = "font-size: 16px; line-height: 1.7; color: #4a5568; margin: 0;",
-                        "Diese App ermöglicht Ihnen, die Zukunft des Anbaus von Spargel, Zwiebeln und bald Erdbeeren unter verschiedenen Klimaszenarien zu erkunden. Doch wahre Präzision entsteht erst durch Ihr Know-how: Ihre Beobachtungen und Erfahrungswerte aus der Praxis machen unsere Simulationen realistischer."
-                      )
-                    ),
-                    
-                    # Steps Section
-                    tags$div(
-                      style = "margin-bottom: 30px;",
-                      tags$h3(
-                        style = "color: #2d3748; font-weight: 600; font-size: 24px; margin-bottom: 25px; text-align: center;",
-                        "So einfach geht's"
-                      ),
-                      
-                      # Step 1
-                      tags$div(
-                        style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); transition: transform 0.2s;",
-                        tags$div(
-                          style = "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
-                          "1"
-                        ),
-                        tags$div(
-                          style = "flex: 1;",
-                          tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Wählen Sie Ihre Kulturpflanze"),
-                          tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "und definieren Sie Ihr Fachgebiet")
-                        )
-                      ),
-                      
-                      # Step 2
-                      tags$div(
-                        style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06);",
-                        tags$div(
-                          style = "background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
-                          "2"
-                        ),
-                        tags$div(
-                          style = "flex: 1;",
-                          tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Kalibrieren Sie das Modell"),
-                          tags$p(style = "margin: 0 0 8px 0; color: #718096; font-size: 15px; line-height: 1.6;", "Passen Sie in den Registern links die Wertebereiche nach bestem Wissen an. Exakte Zahlen sind nicht nötig – realistische Spannen (z.B. Minimum bis Maximum) reichen völlig aus. Gerade diese Unsicherheit macht unsere Analyse robust und aussagekräftig."),
-                          tags$div(
-                            style = "background: #edf2f7; padding: 10px 15px; border-radius: 8px; margin-top: 10px;",
-                            tags$span(style = "color: #4299e1; font-size: 14px;", "💡 "),
-                            tags$em(style = "color: #4a5568; font-size: 14px;", "Tipp: Fahren Sie mit der Maus über Parameter für detaillierte Erklärungen")
-                          )
-                        )
-                      ),
-                      
-                      # Step 3
-                      tags$div(
-                        style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.06);",
-                        tags$div(
-                          style = "background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
-                          "3"
-                        ),
-                        tags$div(
-                          style = "flex: 1;",
-                          tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Starten Sie die Simulation"),
-                          tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "Klicken Sie auf 'Modell ausführen', um eine Monte-Carlo-Simulation mit zufälligen Kombinationen aus den von Ihnen definierten Bereichen durchzuführen.")
-                        )
-                      ),
-                      
-                      # Step 4
-                      tags$div(
-                        style = "display: flex; align-items: start; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.06);",
-                        tags$div(
-                          style = "background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; flex-shrink: 0; margin-right: 20px;",
-                          "4"
-                        ),
-                        tags$div(
-                          style = "flex: 1;",
-                          tags$h4(style = "margin: 0 0 8px 0; color: #2d3748; font-size: 18px; font-weight: 600;", "Speichern & Analysieren"),
-                          tags$p(style = "margin: 0; color: #718096; font-size: 15px; line-height: 1.6;", "Bitte speichern Sie ihre Eingabe, damit uns die Daten zu Verfügung stehen. Ebenso können Sie dadurch ihre Eingaben laden. Sobald das Modell ausgeführt wird, werden die Ergebnisse unten angezeigt und Sie können diese Zahlen speichern.")
-                        )
-                      )
-                    ),
-                    
-                    # Why You Matter Section
-                    tags$div(
-                      style = "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);",
-                      tags$h3(
-                        style = "color: white; font-weight: 600; font-size: 22px; margin: 0 0 15px 0; text-align: center;",
-                        HTML("&#10024; Warum Sie wichtig sind")
-                      ),
-                      tags$p(
-                        style = "font-size: 16px; line-height: 1.7; margin: 0 0 15px 0; text-align: center;",
-                        "Mit jeder Ihrer Eingaben wird unser Modell präziser. Unser Ziel ist es, ein Werkzeug zu entwickeln, das zukünftige Probleme im Anbau rechtzeitig identifiziert – Informationen, die dann direkt an politische Entscheidungsträger fließen. Sollten Sie sich fragen: 'Was machen die schon wieder für einen Quatsch an der Uni, haben die nicht wieder den wichtigen Punkt XY übersehen?' – genau dann brauchen wir Ihr Feedback! Sagen Sie uns, welche Aspekte aus Ihrer täglichen Praxis unbedingt berücksichtigt werden müssen."
-                      ),
-                    ),
-                    
-                    # # Contact Section
-                    # tags$div(
-                    #   style = "background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);",
-                    #   tags$h4(
-                    #     style = "color: #2d3748; font-weight: 600; font-size: 18px; margin: 0 0 20px 0;",
-                    #     HTML("&#128236; Geben Sie uns Feedback")
-                    #   ),
-                    #   tags$p(
-                    #     style = "color: #4a5568; font-size: 15px; margin: 0 0 15px 0;",
-                    #     "Über Rückmeldungen würden wir uns sehr freuen. Bitte kontaktieren Sie:"
-                    #   ),
-                    #   tags$div(
-                    #     style = "display: grid; gap: 12px;",
-                    #     tags$div(
-                    #       style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #667eea;",
-                    #       tags$a(
-                    #         href = "mailto:jbsl@uni-bonn.de",
-                    #         style = "color: #667eea; font-weight: 600; text-decoration: none; font-size: 15px;",
-                    #         "Jan-Bernd Schulze Lutum"
-                    #       ),
-                    #       tags$span(style = "color: #718096; font-size: 14px;", " - für die Spargel- und Erdbeermodelle")
-                    #     ),
-                    #     tags$div(
-                    #       style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #f093fb;",
-                    #       tags$a(
-                    #         href = "mailto:s7padaib@uni-bonn.de",
-                    #         style = "color: #f093fb; font-weight: 600; text-decoration: none; font-size: 15px;",
-                    #         "Paul Daiber"
-                    #       ),
-                    #       tags$span(style = "color: #718096; font-size: 14px;", " - für das Zwiebelmodell")
-                    #     ),
-                    #     tags$div(
-                    #       style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #4facfe;",
-                    #       tags$a(
-                    #         href = "mailto:pkasargo@uni-bonn.de",
-                    #         style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
-                    #         "Prajna Kasargodu Anebagilu"
-                    #       ),
-                    #       tags$span(style = "color: #718096; font-size: 14px;", " oder "),
-                    #       tags$a(
-                    #         href = "mailto:afuelle1@uni-bonn.de",
-                    #         style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
-                    #         "Adrian Fülle"
-                    #       ),
-                    #       tags$span(style = "color: #718096; font-size: 14px;", " - für Fragen die dieses Tool betreffen")
-                    #     )
-                    #   )
-                    # )
-                  ),  
-                  br(),
-                  
-                ),
-                
-                tabPanel(
-                  title = "🧩 Konzeptmodell",
-                  value = "ConcModel",
-                  
-                  ### Conceptual Model ------------------------------------------------------
-                  conditionalPanel(
-                    condition = "output.show_image",
-                    uiOutput("concepImg_container"),
-                    br(), br(),
-                    uiOutput("download_ui"),
-                    br(), br(),
-                    uiOutput("model_description_ui")
-                  ),
-                ),
-                
-                
-                tabPanel(
-                  title = "📊 Simulations Ergebnisse",
-                  value = "SimRes",
-                  
-                  ### Plots ------------------------------------------------------
-                  conditionalPanel(
-                    condition = "output.show_results",
-                    br(),
-                    
-                    uiOutput("plot1_container"),
-                    br(),
-                    uiOutput("plot1_dl_ui"),
-                    br(),
-                    
-                    uiOutput("plot2_container"),
-                    br(),
-                    uiOutput("plot2_dl_ui"),
-                    br(),
-                    
-                    uiOutput("plot3_container"),
-                    br(),
-                    uiOutput("plot3_dl_ui"),
-                    
-                    uiOutput("plot4_container"),
-                    br(),
-                    uiOutput("plot4_dl_ui"),
+                  div(
+                    class = "card card--soft card--accent-green",
+                    a(class = "contact-link", href = "mailto:jbsl@uni-bonn.de", "Jan-Bernd Schulze Lutum"),
+                    span(class = "text text--subtle", " - für die Spargel- und Erdbeermodelle")
                   ),
                   
-
-                  
-                ),
-                
-                # Contact Section
-                tags$div(
-                  style = "background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);",
-                  tags$h4(
-                    style = "color: #2d3748; font-weight: 600; font-size: 18px; margin: 0 0 20px 0;",
-                    HTML("&#128236; Geben Sie uns Feedback")
-                  ),
-                  tags$p(
-                    style = "color: #4a5568; font-size: 15px; margin: 0 0 15px 0;",
-                    "Über Rückmeldungen würden wir uns sehr freuen."
+                  div(
+                    class = "card card--soft card--accent-brown",
+                    a(class = "contact-link", href = "mailto:s7padaib@uni-bonn.de", "Paul Daiber"),
+                    span(class = "text text--subtle", " - für das Zwiebelmodell")
                   ),
                   
-                  ## Feedback ------------------------------------------------------
-                  if (NOTES_ENABLED) {
-                    tagList(
-                      textInput("email", label = NULL, placeholder = "Ihre@E-Mail.Adresse (optional)*", width = "100%"),
-                      textAreaInput("note", label = NULL, placeholder = "Ihr Feedback…", width = "100%", height = "200px"),
-                      actionButton("submit", "Feedback absenden", class = "btn btn-primary"),
-                      br(),br(),
-                      p(style = "color: grey; font-style: italic; font-size: 0.9em;",
-                        "* Die Angabe Ihrer E-Mail-Adresse ist optional und wird ausschließlich verwendet, um Sie bezüglich Ihres Feedbacks zu kontaktieren. Gespeicherte personenbezogene Daten werden mit Ende des Projekts oder nach einem Jahr gelöscht."),
-                      br(),
-                      uiOutput("viewer_panel"),
-                    )
-                  } else {
-                    NULL
-                  },
-                  
-                  tags$p(
-                    style = "color: #4a5568; font-size: 15px; margin: 0 0 15px 0;",
-                    "Oder kontaktieren Sie uns direkt:"
-                  ),
-                  tags$div(
-                    style = "display: grid; gap: 12px;",
-                    tags$div(
-                      style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #667eea;",
-                      tags$a(
-                        href = "mailto:jbsl@uni-bonn.de",
-                        style = "color: #667eea; font-weight: 600; text-decoration: none; font-size: 15px;",
-                        "Jan-Bernd Schulze Lutum"
-                      ),
-                      tags$span(style = "color: #718096; font-size: 14px;", " - für die Spargel- und Erdbeermodelle")
-                    ),
-                    tags$div(
-                      style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #f093fb;",
-                      tags$a(
-                        href = "mailto:s7padaib@uni-bonn.de",
-                        style = "color: #f093fb; font-weight: 600; text-decoration: none; font-size: 15px;",
-                        "Paul Daiber"
-                      ),
-                      tags$span(style = "color: #718096; font-size: 14px;", " - für das Zwiebelmodell")
-                    ),
-                    tags$div(
-                      style = "background: #f7fafc; padding: 15px; border-radius: 8px; border-left: 3px solid #4facfe;",
-                      tags$a(
-                        href = "mailto:pkasargo@uni-bonn.de",
-                        style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
-                        "Prajna Kasargodu Anebagilu"
-                      ),
-                      tags$span(style = "color: #718096; font-size: 14px;", " oder "),
-                      tags$a(
-                        href = "mailto:afuelle1@uni-bonn.de",
-                        style = "color: #4facfe; font-weight: 600; text-decoration: none; font-size: 15px;",
-                        "Adrian Fülle"
-                      ),
-                      tags$span(style = "color: #718096; font-size: 14px;", " - für Fragen die dieses Tool betreffen")
-                    )
+                  div(
+                    class = "card card--soft card--accent-blue",
+                    a(class = "contact-link", href = "mailto:pkasargo@uni-bonn.de", "Prajna Kasargodu Anebagilu"),
+                    span(class = "text text--subtle", " oder "),
+                    a(class = "contact-link", href = "mailto:afuelle1@uni-bonn.de", "Adrian Fülle"),
+                    span(class = "text text--subtle", " - für Fragen die dieses Tool betreffen")
                   )
                 )
-                
-                
-                ),
+              ),
               
-              ### Requisites ------------------------------------------------------
-              # Provide Funding declaration
+              # RIGHT column: form
+              if (NOTES_ENABLED){
+                div(
+                  class = "feedback-layout__right stack stack--md",
+                  p(class = "text", "Oder nutzen Sie dieses Formular:"),
+                  tagList(
+                    textInput("email", label = NULL, placeholder = "Ihre@E-Mail.Adresse (optional)*", width = "100%"),
+                    textAreaInput("note", label = NULL, placeholder = "Ihr Feedback…", width = "100%", height = "200px"),
+                    actionButton("submit", "Feedback absenden", class = "btn btn-primary"),
+                    p(class = "text text--subtle", "* Die Angabe Ihrer E-Mail-Adresse ist optional und wird ausschließlich verwendet, um Sie bezüglich Ihres Feedbacks zu kontaktieren. Gespeicherte personenbezogene Daten werden mit Ende des Projekts oder nach einem Jahr gelöscht."),
+                  )
+                )
+              }else NULL
+            )
+          )
+        ),
+        
+        tabPanel(
+          title = "🧩 Konzeptmodell",
+          value = "ConcModel",
+          conditionalPanel(
+            condition = "output.show_image",
+            div(
+              class = "page-shell page-shell--gradient",
+              uiOutput("concepImg_container"),
+              br(), br(),
+              uiOutput("download_ui"),
+              br(), br(),
+              uiOutput("model_description_ui")
+            )
+          ),
+          
+          br(),
+        ),
+        
+        tabPanel(
+          title = "📊 Simulations Ergebnisse",
+          value = "SimRes",
+          conditionalPanel(
+            condition = "output.show_results",
+            div(
+              class = "page-shell page-shell--gradient",
               br(),
-              tags$h6(
-                "Projekt finanziert durch",
-                tags$br(),
-              ),
-              tags$img(src = "mlv-logo.png",
-                       style = "margin-right: auto; max-width: 30%; height: auto; cursor: pointer;"),
-              # #Provide tool usage disclaimer
-              tags$p(
-                tags$a("Disclaimer", href = "https://www.gartenbauwissenschaften.uni-bonn.de/imprint",
-                       target = "_blank"),
-                " | ",  
-                #Provide the correct link once the app and codes are hosted in HortiBonn repo
-                tags$a("View Source Code", href = "https://github.com/hortibonn/Climate_Impact_on_Crop_Yield", # temp link
-                       target = "_blank")
-              ),
-              br(), br(),br(), br(),
-              
-              
+              uiOutput("plot1_container"),
+              br(),
+              uiOutput("plot1_dl_ui"),
+              br(),
+              uiOutput("plot2_container"),
+              br(),
+              uiOutput("plot2_dl_ui"),
+              br(),
+              uiOutput("plot3_container"),
+              br(),
+              uiOutput("plot3_dl_ui"),
+              br(),
+              uiOutput("plot4_container"),
+              br(),
+              uiOutput("plot4_dl_ui")
+            )
+          ),
+          
+          br(),
+        )
+      ),
+      
+      ### Requisites ------------------------------------------------------
+      br(),
+      tags$h6(class = "funding-title", "Projekt finanziert durch"),
+      tags$img(src = "mlv-logo.png", class = "funding-logo"),
+      tags$p(
+        class = "footer-links",
+        tags$a("Disclaimer", href = "https://www.gartenbauwissenschaften.uni-bonn.de/imprint", target = "_blank"),
+        " | ",
+        tags$a("View Source Code", href = "https://github.com/hortibonn/Climate_Impact_on_Crop_Yield", target = "_blank")
+      ),
+      br(), br(), br(), br()
     )
   )
-  
 )
 
 
 # Server ------------------------------------------------------
 server <- function(input, output, session) {
+  
+  # Auth: current user + can_view flag
+  user <- reactiveVal(NA_character_)
+  observe({ user(current_user(session)) })
+  can_view_db <- reactive({
+    u <- user()
+    !is.na(u) && u %in% ALLOWED_VIEWERS
+  })
+  output$can_view_db <- reactive(can_view_db())
+  outputOptions(output, "can_view_db", suspendWhenHidden = FALSE)
   
   ## Dynamic UI START ------------------------------------------------------
   # read in input xlsx file
@@ -756,7 +594,12 @@ server <- function(input, output, session) {
   
   # saveLoadServer("savemod", current_input_table)
   # Provide Folder name instead of the current 'Germany' to store user saves
-  get_base_dir <- function() {
+  timestamp_name <- function(raw) {
+    paste0(format(Sys.time(), "%Y%m%d-%H%M%S"),"_",
+           gsub("[^A-Za-z0-9_.-]", "_", raw), ".rds")
+  }
+  
+  base_dir <- function() {
     if (Sys.info()[["sysname"]] == "Windows")
       "user-states/German_crops"
     else
@@ -767,24 +610,68 @@ server <- function(input, output, session) {
     uid <- session$user
     safe_uid <- if (is.null(uid) || uid == "") "anon"
     else gsub("[^A-Za-z0-9_.-]", "_", uid)
-    dir <- file.path(get_base_dir(), safe_uid)
+    dir <- file.path(base_dir(), safe_uid)
     if (!dir.exists(dir)) dir.create(dir, recursive = TRUE, showWarnings = FALSE)
+    # print(uid)
+    # print(safe_uid)
+    # print(dir)
     dir
   }
   
-  timestamp_name <- function(raw) {
-    paste0(format(Sys.time(), "%Y%m%d-%H%M%S"),"_",
-           gsub("[^A-Za-z0-9_.-]", "_", raw), ".rds")
-  }
+  # ---- manual refresh trigger (forces reactive to re-run immediately) ----
+  saves_refresh <- reactiveVal(0L)
+  bump_saves <- function() saves_refresh(isolate(saves_refresh()) + 1L)
   
+  # ---- list files (admin only), recomputed on bump + filesystem changes ----
+  saved_files <- reactive({
+    saves_refresh()                 # manual bump dependency
+    req(isTRUE(can_view_db()))      # only admins see anything
+    
+    bd <- base_dir()
+    if (!dir.exists(bd)) return(character(0))
+    
+    files <- list.files(
+      bd,
+      pattern = "\\.rds$",
+      full.names = TRUE,
+      recursive = TRUE
+    )
+    
+    sort(files, decreasing = TRUE)
+  })
+  
+  # ---- keep dropdown in sync whenever saved_files changes ----
+  observe({
+    req(isTRUE(can_view_db()))
+    
+    files <- saved_files() %>% sort()
+    bd    <- base_dir()
+    
+    # label like "Adrian/20260121-....rds"
+    rel <- if (length(files)) files %>% str_remove(paste0(bd,"/")) else character(0)
+    
+    # IMPORTANT: keep FULL PATH as value, nice REL path as label
+    # cat("rel:\n", rel)
+    # cat("\n\nfiles:\n", files)
+    choices <- setNames(files, rel)
+    
+    updateSelectInput(
+      session,
+      "state_picker",
+      choices = choices
+    )
+  })
+  
+  # ---- Save: after save, bump so dropdown updates immediately ----
   observeEvent(input$save_btn, {
     dir  <- get_user_dir()
     files <- list.files(dir, pattern = "\\.rds$", full.names = TRUE)
     
     if (length(files) >= 1000) {
-      showModal(modalDialog("Es gibt zu viele Speicherstände auf dem Server. Bitte wenden Sie sich an den Administrator, wenn Sie weitere Speicherstände benötigen.",
-                            #showModal(modalDialog("You already have several versions. Delete one first.",
-                            easyClose = TRUE))
+      showModal(modalDialog(
+        "Es gibt zu viele Speicherstände auf dem Server. Bitte wenden Sie sich an den Administrator, wenn Sie weitere Speicherstände benötigen.",
+        easyClose = TRUE
+      ))
       return()
     }
     
@@ -792,54 +679,155 @@ server <- function(input, output, session) {
     saveRDS(
       list(input_table = current_input_table(),
            raw_inputs  = reactiveValuesToList(input)),
-      file.path(dir, timestamp_name(input$state_name)), 
-      compress="xz"
+      file.path(dir, timestamp_name(input$state_name)),
+      compress = "xz"
     )
-  })
+    
+    bump_saves()
+  }, ignoreInit = TRUE)
   
-  saved_files <- reactiveFileReader(
-    2000, session, get_user_dir(),
-    function(dir) sort(list.files(dir, pattern = "\\.rds$", full.names = TRUE),decreasing = T)
-  )
-  
-  observe({
-    updateSelectInput(session, "state_picker",
-                      choices = basename(saved_files()))
-  })
-  
+  # ---- Load -------------------------------------------------------------
   observeEvent(input$load_btn, {
+    req(isTRUE(can_view_db()))
     req(input$state_picker)
-    obj <- readRDS(file.path(get_user_dir(), input$state_picker))
-    bslib::accordion_panel_open("collapseSidebar",TRUE,session)
+    
+    f  <- input$state_picker
+    bd <- base_dir()
+    req(startsWith(f, bd))
+    
+    obj  <- readRDS(f)
     vals <- obj$raw_inputs
+    
+    bslib::accordion_panel_open("collapseSidebar", TRUE, session)
     
     restore_one <- function(id, val) {
       if (is.null(val)) return()
       switch(class(val)[1],
              numeric   = updateNumericInput(session, id, value = val),
              integer   = updateNumericInput(session, id, value = val),
-             character = updateTextInput   (session, id, value = val),
+             character = updateTextInput(session, id, value = val),
              logical   = updateCheckboxInput(session, id, value = val),
-             factor    = updateSelectInput (session, id, selected = as.character(val)),
-             # length-2 numeric == slider
+             factor    = updateSelectInput(session, id, selected = as.character(val)),
              { if (is.numeric(val) && length(val) == 2)
                updateSliderInput(session, id, value = val) }
       )
     }
     
-    # ordinary widgets
     lapply(names(vals), \(id) try(restore_one(id, vals[[id]]), silent = TRUE))
-  })
+    
+  }, ignoreInit = TRUE)
   
+  # ---- Delete -----------------------------------------------------------
   observeEvent(input$delete_btn, {
+    req(isTRUE(can_view_db()))
     req(input$state_picker)
-    unlink(file.path(get_user_dir(), input$state_picker))
-  })
+    
+    f  <- input$state_picker
+    bd <- base_dir()
+    req(startsWith(f, bd))
+    
+    unlink(f)
+    
+    bump_saves()  # or whatever triggers saved_files() to refresh
+  }, ignoreInit = TRUE)
+  
+  
+  # 
+  # 
+  # observeEvent(input$save_btn, {
+  #   dir  <- get_user_dir()
+  #   files <- list.files(dir, pattern = "\\.rds$", full.names = TRUE)
+  # 
+  #   if (length(files) >= 1000) {
+  #     showModal(modalDialog("Es gibt zu viele Speicherstände auf dem Server. Bitte wenden Sie sich an den Administrator, wenn Sie weitere Speicherstände benötigen.",
+  #                           #showModal(modalDialog("You already have several versions. Delete one first.",
+  #                           easyClose = TRUE))
+  #     return()
+  #   }
+  #   
+  #   req(nzchar(input$state_name))
+  #   saveRDS(
+  #     list(input_table = current_input_table(),
+  #          raw_inputs  = reactiveValuesToList(input)),
+  #     file.path(dir, timestamp_name(input$state_name)), 
+  #     compress="xz"
+  #   )
+  # })
+  # 
+  # saved_files <- reactiveFileReader(
+  #   2000, session, get_base_dir(), #get_user_dir(),
+  #   function(dir) {
+  #     if (!isTRUE(can_view_db())) return(character(0))
+  #     sort(list.files(dir, pattern = "\\.rds$", full.names = TRUE, recursive = T), decreasing = TRUE)
+  #   }
+  # )
+  # 
+  # observe({
+  #   trigger <- saved_files()
+  #   
+  #   dir <- get_base_dir()
+  #   cho <- trigger %>% str_remove(paste0(dir,"/"))
+  #   
+  #   updateSelectInput(
+  #     session,
+  #     "state_picker",
+  #     choices = cho
+  #   )
+  # })
+  # 
+  # observeEvent(input$load_btn, {
+  #   req(can_view_db())
+  #   req(input$state_picker)
+  #   # obj <- readRDS(file.path(get_user_dir(), input$state_picker))
+  #   obj <- readRDS(file.path(get_base_dir(), input$state_picker))
+  #   bslib::accordion_panel_open("collapseSidebar",TRUE,session)
+  #   vals <- obj$raw_inputs
+  #   
+  #   restore_one <- function(id, val) {
+  #     if (is.null(val)) return()
+  #     switch(class(val)[1],
+  #            numeric   = updateNumericInput(session, id, value = val),
+  #            integer   = updateNumericInput(session, id, value = val),
+  #            character = updateTextInput   (session, id, value = val),
+  #            logical   = updateCheckboxInput(session, id, value = val),
+  #            factor    = updateSelectInput (session, id, selected = as.character(val)),
+  #            # length-2 numeric == slider
+  #            { if (is.numeric(val) && length(val) == 2)
+  #              updateSliderInput(session, id, value = val) }
+  #     )
+  #   }
+  #   
+  #   # ordinary widgets
+  #   lapply(names(vals), \(id) try(restore_one(id, vals[[id]]), silent = TRUE))
+  # })
+  # 
+  # observeEvent(input$delete_btn, {
+  #   req(can_view_db())
+  #   req(input$state_picker)
+  #   
+  #   # unlink(file.path(get_user_dir(), input$state_picker))
+  #   unlink(file.path(get_base_dir(), input$state_picker))
+  #   
+  #   trigger <- saved_files()
+  #   
+  #   dir <- get_base_dir()
+  #   cho <- trigger %>% str_remove(paste0(dir,"/"))
+  #   
+  #   updateSelectInput(
+  #     session,
+  #     "state_picker",
+  #     choices = cho,
+  #     selected = character(0)
+  #   )
+  # })
   
   output$download_csv <- downloadHandler(
     filename = function() paste0("current_input_", Sys.Date(), ".csv"),
     content  = function(file) write_csv(current_input_table(), file)
   )
+  
+  ## Save/Load functionality END
+  
   
   selected_crop <- reactive({
     crop_ids <- grep("^crop_", names(input), value = TRUE)
@@ -849,7 +837,6 @@ server <- function(input, output, session) {
     if (length(checked) == 0) return(NULL)
     sub("^crop_", "", checked[1])
   })
-  ## Save/Load functionality END
   
   # Switch to Simulation tab as soon as a crop is selected
   last_crop <- reactiveVal(NULL)
@@ -900,16 +887,10 @@ server <- function(input, output, session) {
     info <- img_info()
     req(info$file)
     
-    # Setze Breite basierend auf der Pflanze
-    container_width <- if (tolower(info$crop) == "zwiebel") {
-      "100%"
-    } else {
-      "65%"
-    }
+    width_class <- if (tolower(info$crop) == "zwiebel") "plot-frame--wide" else "plot-frame--narrow"
     
     div(
-      class = "flex-container fullscreen-toggle",
-      style = paste0("max-width: ", container_width, ";"),
+      class = paste("plot-frame fullscreen-toggle", width_class),
       uiOutput("concepImg")
     )
   })
@@ -922,41 +903,33 @@ server <- function(input, output, session) {
       src = info$file,
       alt = paste("Image for", info$crop),
       id  = "cm-image",
-      style = "width: 100%; height: auto; max-height: none;"
+      class = "plot-frame-img"
     )
   })
   
   output$download_ui <- renderUI({
     req(img_info())
     div(
-      style = "text-align: center;",
+      class = "plot-download",
       downloadButton("downloadImage", "Bild herunterladen")
     )
   })
+  
   
   output$model_description_ui <- renderUI({
     info <- img_info()
     req(info$crop)
     
     if (tolower(info$crop) == "zwiebel") {
-      tags$div(
-        style = "max-width: 900px; margin: 20px auto; padding: 25px; background: #f8f9fa; border-radius: 12px; border-left: 5px solid #667eea;",
-        tags$h4(
-          style = "color: #2d3748; font-weight: 600; margin-bottom: 15px;",
-          "Wie das Klima Ihre Zwiebelernte beeinflusst"
-        ),
-        tags$p(
-          style = "font-size: 15px; line-height: 1.7; color: #4a5568; text-align: justify;",
-          "Dieses Modell simuliert den Weg von konventionell angebauten gesähten Sommerzwiebeln vom Feldaufgang bis zur Ernte und zeigt, wie Wettermuster den Ertrag in jeder Phase beeinflussen. Die Biomasseakkumulation wird durch Sonneneinstrahlung (PAR), Temperatur, Niederschlag und Bewässerung beeinflusst und durchläuft vier kritische Wachstumsphasen: Feldaufgang, vegetatives Wachstum, Bulbenbildung und Reifephase."
-        ),
-        tags$p(
-          style = "font-size: 15px; line-height: 1.7; color: #4a5568; text-align: justify;",
-          "Doch die Natur stellt Herausforderungen: Abiotische Stressfaktoren wie Starkregen, Hagel und Hitzewellen können die Pflanzen beeinträchtigen. Gleichzeitig entstehen biotische Bedrohungen durch Schädlinge und Krankheiten wie Fusarium, Falschen Mehltau,Zwiebelhals-Fäule und Thripse, deren Auftreten von Witterungsbedingungen abhängt."
-        ),
-        tags$p(
-          style = "font-size: 15px; line-height: 1.7; color: #4a5568; text-align: justify;",
-          "Jeder Stressfaktor kann das Ertragspotenzial beeinflussen. Das Modell führt 1.000 Monte-Carlo-Simulationen mit historischen Wetterdaten und zukünftigen Klimaszenarien (SSP1-2.6 bis SSP5-8.5) durch. Ihr Expertenwissen macht das Modell präziser: Kalibrieren Sie Schwellenwerte, Empfindlichkeiten und Ertragsverluste basierend auf Ihrer Praxiserfahrung. Ihre Eingaben helfen uns, das Modell kontinuierlich zu verbessern und an reale Anbaubedingungen anzupassen."
-        )
+      tags$div(class = "model-description-card",
+               tags$h4(class = "model-description-title",
+                       "Wie das Klima Ihre Zwiebelernte beeinflusst"),
+               tags$p(class = "model-description-text",
+                      "Dieses Modell simuliert den Weg von konventionell angebauten gesähten Sommerzwiebeln vom Feldaufgang bis zur Ernte und zeigt, wie Wettermuster den Ertrag in jeder Phase beeinflussen. Die Biomasseakkumulation wird durch Sonneneinstrahlung (PAR), Temperatur, Niederschlag und Bewässerung beeinflusst und durchläuft vier kritische Wachstumsphasen: Feldaufgang, vegetatives Wachstum, Bulbenbildung und Reifephase."),
+               tags$p(class = "model-description-text",
+                      "Doch die Natur stellt Herausforderungen: Abiotische Stressfaktoren wie Starkregen, Hagel und Hitzewellen können die Pflanzen beeinträchtigen. Gleichzeitig entstehen biotische Bedrohungen durch Schädlinge und Krankheiten wie Fusarium, Falschen Mehltau,Zwiebelhals-Fäule und Thripse, deren Auftreten von Witterungsbedingungen abhängt."),
+               tags$p(class = "model-description-text",
+                      "Jeder Stressfaktor kann das Ertragspotenzial beeinflussen. Das Modell führt 1.000 Monte-Carlo-Simulationen mit historischen Wetterdaten und zukünftigen Klimaszenarien (SSP1-2.6 bis SSP5-8.5) durch. Ihr Expertenwissen macht das Modell präziser: Kalibrieren Sie Schwellenwerte, Empfindlichkeiten und Ertragsverluste basierend auf Ihrer Praxiserfahrung. Ihre Eingaben helfen uns, das Modell kontinuierlich zu verbessern und an reale Anbaubedingungen anzupassen.")
       )
     } else {
       NULL
@@ -1238,80 +1211,52 @@ server <- function(input, output, session) {
       output$plot4_ui <- renderPlot({ plot4 })
     }
     
-    output$plot1_container <- renderUI({
-      div(
-        class = "flex-container fullscreen-toggle",
-        style = "max-width: 100%;",
-        plotOutput("plot1_ui", height = "700px")
-      )
-    })
-    make_download("download_plot1", plot1, "Figure1_marketable_yield.png")
-    output$plot1_dl_ui <- renderUI({
-      div(
-        style = "text-align: center;",
-        downloadButton("download_plot1", "Abbildung herunterladen")
-      )
-    })
     
-    output$plot2_container <- renderUI({
-      div(
-        class = "flex-container fullscreen-toggle",
-        style = "max-width: 100%;",
-        plotOutput("plot2_ui", height = "900px")
-      )
-    })
+    output$plot1_container <- renderUI(plot_container_ui("plot1_ui", height = "700px"))
+    output$plot1_dl_ui     <- renderUI(plot_download_ui("download_plot1"))
+    make_download("download_plot1", plot1, "Figure1_marketable_yield.png")
+    
+    output$plot2_container <- renderUI(plot_container_ui("plot2_ui", height = "900px"))
+    output$plot2_dl_ui     <- renderUI(plot_download_ui("download_plot2"))
     make_download("download_plot2", plot2, "Figure2_VIP_compare.png")
-    output$plot2_dl_ui <- renderUI({
-      div(
-        style = "text-align: center;",
-        downloadButton("download_plot2", "Abbildung herunterladen")
-      )
-    })
     
     if (crop == "Zwiebel") {
-      output$plot3_container <- renderUI({
-        div(
-          class = "flex-container fullscreen-toggle",
-          style = "max-width: 100%;",
-          plotOutput("plot3_ui", height = "900px")
-        )
-      })
+      output$plot3_container <- renderUI(plot_container_ui("plot3_ui", height = "900px"))
+      output$plot3_dl_ui     <- renderUI(plot_download_ui("download_plot3"))
       make_download("download_plot3", plot3, "Figure3_Yield_Reduction.png")
-      output$plot3_dl_ui <- renderUI({
-        div(
-          style = "text-align: center;",
-          downloadButton("download_plot3", "Abbildung herunterladen")
-        )
-      })
       
-      output$plot4_container <- renderUI({
-        div(
-          class = "flex-container fullscreen-toggle",
-          style = "max-width: 100%;",
-          plotOutput("plot4_ui", height = "900px")
-        )
-      })
+      output$plot4_container <- renderUI(plot_container_ui("plot4_ui", height = "900px"))
+      output$plot4_dl_ui     <- renderUI(plot_download_ui("download_plot4"))
       make_download("download_plot4", plot4, "Figure4_irrigation-vs-rainfall.png")
-      output$plot4_dl_ui <- renderUI({
-        div(
-          style = "text-align: center;",
-          downloadButton("download_plot4", "Abbildung herunterladen")
-        )
-      })
     } else {
-      # no plot 3 → no container → no whitespace
       output$plot3_container <- renderUI(NULL)
       output$plot3_dl_ui     <- renderUI(NULL)
       output$plot4_container <- renderUI(NULL)
       output$plot4_dl_ui     <- renderUI(NULL)
     }
+    
     ### Generating plots END
     
     showModal(
-      modalDialog( title = "Kurze Erinnerung", "Wenn Sie mit den von Ihnen angegebenen Schätzungen zufrieden sind, speichern Sie bitte das Projekt, damit wir Ihre Eingaben überprüfen können.", 
-                   footer = tagList( actionButton("open_saveload", "Okay – Akkordeon-Panel „Speichern/Laden“ öffnen."), 
-                                     modalButton("Nein – ich möchte noch ein wenig mit den Eingabewerten experimentieren.") 
-                   ) 
+      modalDialog(
+        title = "Kurze Erinnerung",
+        div(
+          class = "app-modal-body",
+          "Wenn Sie mit den von Ihnen angegebenen Schätzungen zufrieden sind, speichern Sie bitte das Projekt, damit wir Ihre Eingaben überprüfen können."
+        ),
+        footer = tagList(
+          actionButton(
+            "open_saveload",
+            "Okay – Akkordeon-Panel „Speichern/Laden“ öffnen.",
+            class = "btn btn-primary"
+          ),
+          tags$button(
+            type = "button",
+            class = "btn btn-outline-secondary",
+            `data-bs-dismiss` = "modal",
+            "Nein – ich möchte noch ein wenig mit den Eingabewerten experimentieren."
+          )
+        )
       )
     )
     
@@ -1328,13 +1273,6 @@ server <- function(input, output, session) {
   
   
   ## Feedback logic START ------------------------------------------------------
-  # Auth: current user + can_view flag
-  user <- reactiveVal(NA_character_)
-  observe({ user(current_user(session)) })
-  can_view_db <- reactive({
-    u <- user()
-    !is.na(u) && u %in% ALLOWED_VIEWERS
-  })
   
   # # Simple email checker: optional field, but if present must look like an email
   # is_valid_email <- function(x) {
@@ -1423,7 +1361,7 @@ server <- function(input, output, session) {
   # Optional: small note in dev
   output$dev_notice <- renderUI({
     if (!NOTES_ENABLED) {
-      tags$p(class = "text-muted", style = "margin-top:10px;",
+      tags$p(class = "dev-notice text-muted", 
              "Feedback are disabled in this environment.")
     } else NULL
   })

@@ -1,0 +1,661 @@
+/* =========================================================
+Bootstrap 5 (bs_theme)
+        ↓
+Your design tokens (:root)
+        ↓
+Theme overrides ([data-theme="forest"])
+        ↓
+Component CSS (cards, plots, headers)
+========================================================= */
+
+
+/* =========================================================
+   1) Design tokens
+   ========================================================= */
+:root {
+  /* =========================================================
+     Gradient / primary (blue → indigo → purple)
+     ========================================================= */
+  --grad-a: #5b6ee1;   /* indigo-blue */
+  --grad-b: #7a5ccf;   /* soft violet */
+
+  /* Accent system */
+  --accent: #5b6ee1;
+  --accent-strong: #6a4fcf;
+
+  /* =========================================================
+     Status / highlights (cool spectrum)
+     ========================================================= */
+  --info: #dbeafe;     /* very light blue */
+  --warm: #ede9fe;     /* lavender (instead of yellow) */
+  --earth: #8b7cf0;    /* muted violet accent */
+
+  /* =========================================================
+     Surfaces (cool-neutral, slight blue tint)
+     ========================================================= */
+  --surface: #ffffff;
+  --surface-soft: #f3f6fd;
+  --surface-muted: #eef2ff;
+
+  /* =========================================================
+     Text (cool, slightly bluish)
+     ========================================================= */
+  --text: #1e293b;        /* slate-800 */
+  --text-muted: #475569; /* slate-600 */
+  --text-subtle: #64748b;/* slate-500 */
+
+  /* =========================================================
+     Borders
+     ========================================================= */
+  --border: rgba(30, 41, 59, 0.12);
+
+  /* =========================================================
+     Shadows (cool-tinted, not gray)
+     ========================================================= */
+  --shadow-sm: 0 2px 8px rgba(91, 110, 225, 0.12);
+  --shadow-md: 0 4px 18px rgba(91, 110, 225, 0.18);
+  --shadow-lg: 0 12px 36px rgba(91, 110, 225, 0.25);
+
+  /* =========================================================
+     Radii
+     ========================================================= */
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.25rem;
+
+  /* =========================================================
+     Component-specific helpers
+     ========================================================= */
+  --tab-shadow: 0 2px 6px rgba(91, 110, 225, 0.16);
+  --tab-active-shadow: 0 8px 20px rgba(122, 92, 207, 0.35);
+
+  --hero-shadow: 0 10px 24px rgba(122, 92, 207, 0.30);
+
+  /* Tip / callout */
+  --tip-bg: color-mix(in srgb, var(--info) 60%, white);
+  --tip-border: color-mix(in srgb, var(--accent) 35%, white);
+}
+
+[data-theme="reforest"] {
+  /* Brand palette mapped into semantics */
+  --grad-a: #1a5340;    /* dark-green */
+  --grad-b: #5a9f44;    /* green */
+
+  --accent: #5a9f44;
+  --accent-strong: #1a5340;
+
+  --info: #caebfa;      /* light-blue */
+  --warm: #fecf8b;      /* light-brown */
+  --earth: #c1865b;     /* brown */
+
+  --surface: #ffffff;
+  --surface-soft: #f4faf5;
+  --surface-muted: #f7fafc;
+
+  --text: #183028;
+  --text-muted: #2f4a3f;
+  --text-subtle: #5b7a6c;
+
+  --border: rgba(12, 40, 26, 0.14);
+
+  /* Shadows tuned for green theme */
+  --tab-active-shadow: 0 6px 15px rgba(26, 83, 64, 0.28);
+  --hero-shadow: 0 8px 20px rgba(26, 83, 64, 0.26);
+
+  /* Tip callout derived from semantic “warm/info/accent” */
+  --tip-bg: color-mix(in srgb, var(--warm) 35%, white);
+  --tip-border: color-mix(in srgb, var(--accent) 35%, white);
+}
+
+[data-theme="sunset"] {
+  --grad-a: #ed8936;
+  --grad-b: #dd6b20;
+  --surface-soft: #fff7ed;
+  --text: #3b2f2a;
+  --text-muted: #5c4b45;
+  --text-subtle: #7a6760;
+  --border: rgba(60, 30, 20, 0.12);
+}
+
+
+/* =========================================================
+   2) Global polish
+   ========================================================= */
+html,
+body {
+  color: var(--text);
+}
+
+a {
+  text-decoration: none;
+}
+
+.btn,
+.form-control,
+.selectize-input {
+  border-radius: var(--radius-md) !important;
+}
+
+hr {
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================================================
+   3) Utility classes
+   ========================================================= */
+.help-icon {
+  cursor: help;
+  margin-left: 8px;
+  color: var(--text-subtle);
+}
+
+.dev-notice {
+  margin-top: 10px;
+}
+
+
+/* =========================================================
+   4) Navigation tabs (Bootstrap 5)
+   ========================================================= */
+.nav-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  border-bottom: none;
+  margin-bottom: 25px;
+}
+
+.nav-tabs .nav-link {
+  background: var(--surface-soft);
+  color: var(--text-muted);
+  border: none;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-weight: 600;
+  font-size: 18px;
+  transition: all 0.25s ease;
+  box-shadow: var(--tab-shadow);
+}
+
+.nav-tabs .nav-link:hover {
+  background: #e2e8f0;
+  color: var(--text);
+}
+
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
+  background: linear-gradient(135deg, var(--grad-a) 0%, var(--grad-b) 100%);
+  color: #ffffff;
+  box-shadow: var(--tab-active-shadow);
+}
+
+
+/* =========================================================
+   5) Header
+   ========================================================= */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100% !important;
+  margin: 20px;
+  padding: 0 15px;
+  box-sizing: border-box;
+
+  background-color: #f2f2f2;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.app-header .app-logo {
+  margin-left: auto;
+  max-width: 20%;
+  height: auto;
+  cursor: pointer;
+}
+
+.app-header .app-title {
+  text-align: center;
+  flex-grow: 1;
+  margin: 0;
+}
+
+
+/* =========================================================
+   6) Cards & sidebar
+   ========================================================= */
+.cardish {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 16px;
+}
+
+.sidebar-panel {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.control-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Ensure selectize dropdown overlays the app */
+.selectize-dropdown {
+  z-index: 2000 !important;
+}
+
+/* =========================================================
+   7) Accordion polish
+   ========================================================= */
+.accordion-item {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.accordion-button {
+  border-radius: 0 !important;
+}
+
+.accordion-button:not(.collapsed) {
+  background: var(--surface-soft);
+  color: var(--text);
+}
+
+
+/* =========================================================
+   8) Intro page
+   ========================================================= */
+.intro-icon-wrap {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--grad-a) 0%, var(--grad-b) 100%);
+  padding: 20px; border-radius: 50%;
+  margin-bottom: 20px;
+  box-shadow: var(--hero-shadow);
+}
+
+.intro-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+  
+.intro-icon {
+  font-size: 48px;
+}
+/* =========================================================
+   Layout shells
+   ========================================================= */
+.page-shell{
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.page-shell--gradient{
+  border: none;
+  background: linear-gradient(
+    135deg,
+    var(--surface-soft) 0%,
+    var(--warm) 55%,
+    var(--info) 100%
+  );
+}
+
+/* =========================================================
+   Vertical rhythm helpers
+   ========================================================= */
+.stack{ display: grid; gap: 12px; }
+.stack--md{ gap: 18px; }
+.stack--lg{ gap: 28px; }
+
+
+/* =========================================================
+   Headings
+   ========================================================= */
+.heading{
+  margin: 0;
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.heading--lg{ font-size: 32px; }
+.heading--md{ font-size: 24px; }
+.heading--sm{ font-size: 18px; font-weight: 600; }
+
+.heading--center{ text-align: center; }
+
+
+/* =========================================================
+   Cards (inner)
+   ========================================================= */
+.card{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 20px;
+}
+
+.card--soft{
+  background: var(--surface-muted);
+  box-shadow: var(--shadow-sm);
+}
+
+.card--accent{
+  border-left: 5px solid var(--earth);
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.card--accent-brown { border-left: 5px solid var(--earth); }
+.card--accent-blue  { border-left: 5px solid var(--info);  }
+.card--accent-green { border-left: 5px solid var(--accent); }
+
+.card--center{
+  text-align: center;
+}
+
+.card--feature{
+  background: linear-gradient(135deg, var(--grad-a) 0%, var(--grad-b) 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.30);
+}
+
+.card--feature .heading,
+.card--feature p{ color: #fff; }
+
+/* A “green feature” version for your why-card */
+.card--feature-green{
+  background: linear-gradient(135deg, var(--grad-a) 0%, var(--grad-b) 100%);
+  box-shadow: 0 8px 25px rgba(26, 83, 64, 0.26);
+}
+
+/* Text styles */
+.text{
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.text--subtle{ color: var(--text-subtle); }
+.text--center{ text-align: center; }
+
+/* =========================================================
+   Steps
+   ========================================================= */
+.step{
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.step__badge{
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 18px;
+  flex: 0 0 auto;
+}
+
+.step__content{ flex: 1; }
+.step__title{
+  margin: 0 0 6px 0;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 600;
+}
+.step__text{ margin: 0; color: var(--text-subtle); line-height: 1.6; }
+
+/* Badge colors */
+.step__badge--1{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.step__badge--2{ background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.step__badge--3{ background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.step__badge--4{ background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+
+/* Tip box becomes a card variant */
+.tip{
+  background: var(--tip-bg);
+  border: 1px solid var(--tip-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+.tip__icon{ color: var(--accent-strong); }
+.tip__text{ color: var(--text-muted); font-size: 14px; margin: 0; }
+
+/* =========================================================
+   9) Concept model (image + description)
+   ========================================================= */
+
+/* Onion model description card */
+.model-description-card {
+  margin: 20px auto;
+  padding: 25px;
+  background: #ffffff;
+  border-radius: 12px;
+  border-left: 5px solid var(--grad-a);
+}
+
+.model-description-title {
+  color: var(--text);
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.model-description-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  text-align: justify;
+}
+
+
+/* =========================================================
+   10) Plots + fullscreen frame
+   ========================================================= */
+.plot-frame {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  overflow: auto;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 10px;
+}
+
+.plot-frame .shiny-plot-output {
+  cursor: pointer;
+  min-width: 900px; /* remove if you want responsive plots */
+}
+
+.plot-frame:fullscreen {
+  padding: 16px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.plot-download {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0 18px 0;
+}
+
+.plot-download .btn {
+  border-radius: 999px !important;
+  padding-left: 18px;
+  padding-right: 18px;
+}
+
+/* Optional width modifiers for plot-frame */
+.plot-frame--narrow { max-width: 65%; }
+.plot-frame--wide   { max-width: 100%; }
+
+/* Image inside plot-frame */
+.plot-frame-img{
+  width: 100%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   11) Feedback 2-column layout
+   ========================================================= */
+.feedback-layout{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+/* Optional: visually separate columns a bit */
+.feedback-layout__right{
+  border-left: 1px solid var(--border);
+  padding-left: 18px;
+}
+
+/* Collapse to one column on small screens */
+@media (max-width: 900px){
+  .feedback-layout{
+    grid-template-columns: 1fr;
+  }
+  .feedback-layout__right{
+    border-left: none;
+    padding-left: 0;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+}
+
+.contact-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.contact-link {
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+
+
+/* =========================================================
+   12) Footer
+   ========================================================= */
+.funding-title {
+  margin: 0;
+}
+
+.funding-logo {
+  margin-right: auto;
+  max-width: 30%;
+  height: auto;
+  cursor: pointer;
+  display: block;
+}
+
+.footer-links a {
+  text-decoration: none;
+}
+
+
+/* =========================================================
+   13) Modal polish
+   ========================================================= */
+.app-modal-body {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.modal-content {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-footer {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* =========================================================
+   14) fullscreen toggle images
+   ========================================================= */
+/* Make it obvious it’s clickable */
+.fullscreen-toggle { cursor: zoom-in; }
+
+/* Center content + backdrop while fullscreen */
+.fullscreen-toggle:fullscreen,
+.fullscreen-toggle:-webkit-full-screen {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px !important;
+  background: rgba(0,0,0,0.85) !important; /* modal-ish backdrop */
+}
+
+/* Make images scale nicely in fullscreen */
+.fullscreen-toggle:fullscreen .plot-frame-img,
+.fullscreen-toggle:-webkit-full-screen .plot-frame-img {
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: calc(100vh - 48px) !important;
+  object-fit: contain;
+  cursor: zoom-out;
+}
+
+/* Make plots scale/center better in fullscreen */
+.fullscreen-toggle:fullscreen .shiny-plot-output,
+.fullscreen-toggle:-webkit-full-screen .shiny-plot-output {
+  min-width: 0 !important;           /* your current CSS sets min-width: 900px */
+  width: 100% !important;
+  height: auto !important;
+  cursor: zoom-out;
+}
+
+/* Remove frame styling when fullscreen so it feels like a modal */
+.plot-frame:fullscreen,
+.plot-frame:-webkit-full-screen {
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  overflow: auto !important;
+}

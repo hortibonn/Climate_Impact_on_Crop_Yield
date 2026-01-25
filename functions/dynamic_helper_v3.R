@@ -183,9 +183,31 @@ create_ui_element <- function(row) {
     )
   }
   
+  real_ui <- div(class = "control-card", real_ui)
   # Apply the unified filter wrapper to all "real" elements
   wrap_with_filters(real_ui, expertise_tags, crop_tags, rotation_tags)
 }
+
+# -----------------------------------------------------------------------------
+# Helpers for plots (to be used in server) --------------------------------
+# -----------------------------------------------------------------------------
+
+plot_container_ui <- function(output_id, height = "900px") {
+  div(
+    class = "plot-frame fullscreen-toggle",
+    plotOutput(output_id, height = height)
+  )
+}
+
+plot_download_ui <- function(download_id, label = "Abbildung herunterladen") {
+  div(
+    class = "plot-download",
+    downloadButton(download_id, label)
+  )
+}
+
+
+
 
 # -----------------------------------------------------------------------------
 # Helpers for filter UI (to be used in server) --------------------------------
