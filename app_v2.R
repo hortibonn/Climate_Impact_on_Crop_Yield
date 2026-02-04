@@ -14,13 +14,16 @@ source("functions/youtputs_to_xinputs_scenarios.R")
 source("functions/plot_yield_asparagus.R")
 source("functions/asparagus_sim_scen_app.R")
 
+
 #onion scripts
 source("functions/01_weather_shiny.R")
 source("functions/02_helpers_shiny.R")
 source("functions/onion_model_shiny.R")
 
 #strawberry scripts
-
+source("functions/plot_yield_strawb.R")
+source("functions/VIP_plot_strawb.R")
+source("functions/strawb_sim_scen_app.R")
 
 # Dynamic helper to load the UI variables from the excel sheet
 source("functions/dynamic_helper_v3.R")
@@ -42,6 +45,8 @@ scenario_path<-file.path("data", "scenarios.csv")
 risk_df<-read.csv(risk_path)
 scenarios<-read.csv(scenario_path)
 
+risk_path_strawb<-file.path("data", "risk_df_strawb.csv")
+risk_df_strawb<-read.csv(risk_path_strawb)
 # onion_weather_path<-file.path("data", "weather_koeln-bonn_final_compressed.rds")
 # onion_weather<-readRDS(onion_weather_path)
 
@@ -886,6 +891,8 @@ server <- function(input, output, session) {
       "Spargel_CM.png"
     } else if (crop_lower == "zwiebel") {
       "Zwiebel_CM.jpeg"
+    } else if (crop_lower == "erdbeere") {
+      "Erdbeer_CM.png"
     } else {
       NULL
     }
@@ -902,6 +909,8 @@ server <- function(input, output, session) {
     
     # Setze Breite basierend auf der Pflanze
     container_width <- if (tolower(info$crop) == "zwiebel") {
+      "100%"
+    } else if (tolower(info$crop) == "erdbeere") {
       "100%"
     } else {
       "65%"
@@ -1045,6 +1054,16 @@ server <- function(input, output, session) {
           functionSyntax    = "plainNames"
         )
         
+      } else if (crop == "Erdbeere") {
+        environment(strawb_sim_scen)$scenarios <- scenarios
+        environment(strawb_sim_scen)$risk_df <- risk_df_strawb
+        
+        decisionSupport::mcSimulation(
+          estimate          = decisionSupport::as.estimate(input_file),
+          model_function    = strawb_sim_scen,
+          numberOfModelRuns = n_runs,
+          functionSyntax    = "plainNames"
+        )
       } else {
         showNotification("Unbekannte Nutzpflanze ausgewählt", type = "error")
         NULL
@@ -1228,7 +1247,65 @@ server <- function(input, output, session) {
         Klimaschutz (SSP1–2.6) bis hin zu sehr hohen Emissionen (SSP5–8.5).")
     }
     
-    
+    else if (crop=="Erdbeere"){
+      #restructure output, write additional parameters that are used in the model
+      #form output to input side for analysis
+      outputs<-c("summer_drought_stress_risk",
+                 "summer_insect_risk",
+                 "summer_disease_risk",
+                 "summer_mean_temp",
+                 "pad",
+                 "actual_chill",
+                 "winter_mean_temp",
+                 #"spring_start",
+                 "spring_pollinator",
+                 "spring_disease_risk",
+                 "spring_frost_risk",
+                 "spring_mean_temp",
+                 #"fruit_start",
+                 "fruit_frost_risk",
+                 "fruit_drought_stress_risk",
+                 "fruit_hail_risk",
+                 "fruit_sunburn_risk",
+                 "fruit_mean_temp",
+                 "fruit_insect_risk",
+                 "fruit_disease_risk",
+                 "fruit_snail_risk",
+                 "T_opt_fruit",
+                 #"harvest_start",
+                 "harvest_frost_risk",
+                 "harvest_heat_risk",
+                 "harvest_hail_risk",
+                 "harvest_rain_risk",
+                 "harvest_fly_risk",
+                 "harvest_mean_temp")
+      
+      mc_data_order<-youtputs_to_xinputs_scenarios(mc_data, outputs)
+      source("functions/plot_yield_strawb.R")
+      plot1<-plot_yield_strawb(mc_data_order) |>
+        add_meta(
+          title    = "2020 vs. 2075: Wie Klimaszenarien die Zukunft der Ernte bestimmen",
+          #subtitle = "",
+          caption  = "Diese Abbildung zeigt den Unterschied zwischen dem simulierten Ertrag unter den Wetterbedingungen des Jahr 2020 und dem simulierten Ertrag für Wettervorhersagen des Jahr 2075.
+          Die Boxplots stellen für jedes Klimaszenario die Ergebnissverteilungen der Monte-Carlo-Simulationen dar. 
+        Die Prozentwerte darüber zeigen, wie stark der durchschnittliche Ertrag reduziert wurde. Die gestrichelte Linie markiert den 
+        Erdbeer-Ertrag im Regierungsbezirk Köln im Jahr 2020 und dient als Orientierung. Die SSP-Szenarien stehen für mögliche zukünftige Klimaentwicklungen – von geringerer 
+        Erwärmung (SSP1–2.6) bis hin zu hohen und sehr hohen Emissionen (SSP3–7.0 und SSP5–8.5). So lässt sich einschätzen, wie Klimawandel und Stressereignisse       
+        zukünftige Erdbeererträge beeinflussen könnten und welche Ertragsspannen realistisch sind.")
+      #, legend = "none")
+      
+      source("functions/VIP_plot_strawb.R") 
+      plot2<-VIP_plot_strawb(mc_data_order)|>
+        add_meta(
+          title    = "Wichtige Einflussfaktoren auf den Ertrag in 2020 und 2075 unter verschiedenen Klimaszenarien",
+          #subtitle = ''
+          caption  = "Das VIP-Schaubild ((Variable Importance in Projection – Variablenwichtigkeit in der Projektion)  zeigt, welche Stressfaktoren den Erdbeerertrag
+        am stärksten beeinflussen. Jeder Punkt steht für einen Faktor. Je größer der Punkt, desto wichtiger ist dieser Faktor dafür, warum sich die Erträge unterscheiden.
+        Das Schaubild zeigt nicht, wie groß der Ertragsverlust durch einen einzelnen Stressor ist. Es zeigt, welche Faktoren insgesamt besonders wichtig für den Ertrag sind.
+        Darauf können Entscheidungen zu Risikomanagement, Sortenwahl oder Schutzmaßnahmen aufbauen. Die SSP-Szenarien stehen für mögliche Klimaentwicklungen: 
+        von wenig Erwärmung (SSP1–2.6) bis zu sehr hohen Emissionen und starker Erwärmung (SSP5–8.5).")
+      #, legend = "none")
+    }
     
     # Send plots to UI
     output$plot1_ui <- renderPlot({ plot1 })
