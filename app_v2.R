@@ -892,7 +892,7 @@ server <- function(input, output, session) {
     } else if (crop_lower == "zwiebel") {
       "Zwiebel_CM.jpeg"
     } else if (crop_lower == "erdbeere") {
-      "Erdbeer_CM.png"
+      "Erdbeere_CM.jpeg"
     } else {
       NULL
     }
