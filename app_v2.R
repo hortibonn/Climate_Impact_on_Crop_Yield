@@ -911,7 +911,7 @@ server <- function(input, output, session) {
     container_width <- if (tolower(info$crop) == "zwiebel") {
       "100%"
     } else if (tolower(info$crop) == "erdbeere") {
-      "100%"
+      "65%"
     } else {
       "65%"
     }
