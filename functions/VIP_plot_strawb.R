@@ -13,23 +13,23 @@ library(assertthat)
 # Labels (erlaubte X-Variablen-Basisnamen -> deutsche Anzeige)
 # ------------------------------------------------------------
 labels_map <- c(
-  "summer_drought_stress_damage_t" = "Schaden: Trockenstress Sommer",
-  "summer_insect_damage_t" = "Schaden: Insekten Sommer",
-  "summer_disease_damage_t" = "Schaden: Krankheiten Sommer",
-  "spring_disease_dmg_t" = "Schaden: Krankheiten Frühling",
-  "spring_frost_dmg_t" = "Schaden: Frost Frühling",
-  "fruit_frost_dmg_t" = "Schaden: Frost Fruchtreife",
-  "fruit_drought_stress_dmg_t" = "Schaden: Trockenstress Fruchtreife",
-  "fruit_hail_dmg_t" = "Schaden: Hagel Fruchtreife",
-  "fruit_sunburn_dmg_t" = "Schaden: Sonnenbrand Fruchtreife",
-  "fruit_insect_dmg_t" = "Schaden: Insekten Fruchtreife",
-  "fruit_disease_dmg_t" = "Schaden: Krankheiten Fruchtreife",
-  "fruit_snail_dmg_t" = "Schaden: Schnecken Fruchtreife",
-  "harvest_frost_damage_t" = "Schaden: Frost Ernte",
-  "harvest_heat_damage_t" = "Schaden: Hitze Ernte",
-  "harvest_hail_damage_t" = "Schaden: Hagel Ernte",
-  "harvest_rain_damage_t" = "Schaden: Starkregen Ernte",
-  "harvest_fly_damage_t" = "Schaden: Kirsch-Essig-Fliege Ernte",
+  "summer_drought_stress_dmg" = "Schaden: Trockenstress Sommer",
+  "summer_insect_dmg" = "Schaden: Insekten Sommer",
+  "summer_disease_dmg" = "Schaden: Krankheiten Sommer",
+  "spring_disease_dmg" = "Schaden: Krankheiten Frühling",
+  "spring_frost_dmg" = "Schaden: Frost Frühling",
+  "fruit_frost_dmg" = "Schaden: Frost Fruchtreife",
+  "fruit_drought_stress_dmg" = "Schaden: Trockenstress Fruchtreife",
+  "fruit_hail_dmg" = "Schaden: Hagel Fruchtreife",
+  "fruit_sunburn_dmg" = "Schaden: Sonnenbrand Fruchtreife",
+  "fruit_insect_dmg" = "Schaden: Insekten Fruchtreife",
+  "fruit_disease_dmg" = "Schaden: Krankheiten Fruchtreife",
+  "fruit_snail_dmg" = "Schaden: Schnecken Fruchtreife",
+  "harvest_frost_dmg" = "Schaden: Frost Ernte",
+  "harvest_heat_dmg" = "Schaden: Hitze Ernte",
+  "harvest_hail_dmg" = "Schaden: Hagel Ernte",
+  "harvest_rain_dmg" = "Schaden: Starkregen Ernte",
+  "harvest_fly_dmg" = "Schaden: Kirsch-Essig-Fliege Ernte",
   "summer_drought_stress_risk" = "Risiko: Trockenstress Sommer",
   "summer_insect_risk" = "Risiko: Insekten Sommer",
   "summer_disease_risk" = "Risiko: Krankheiten Sommer",
@@ -46,19 +46,19 @@ labels_map <- c(
   "harvest_heat_risk" = "Risiko: Extrmhitze Ernte",
   "harvest_hail_risk" = "Risiko: Hagel Ernte",
   "harvest_rain_risk" = "Risiko: Strakregen Ernte",
-  "harvest_fly_risk" = "Risiko: Kirsch-Essik-Fliege Ernte",
+  "harvest_fly_risk" = "Risiko: Kirschessigfliege Ernte",
   "harvest_mean_temp"  = "Durchschnittstemperatur Ernte",
   "fruit_mean_temp" = "Durchschnittstemperatur Fruchtreife",
   "spring_mean_temp" = "Durchschnittstemperatur Frühling",
   "winter_mean_temp" = "Durchschnittstemperatur Winter",
   "summer_mean_temp" = "Durchschnittstemperatur Sommer",
-  "actual_chill" = "Chillportions über deen Winter",
+  "actual_chill" = "Chillportions über den Winter",
   "spring_pollinator"  = "Bestäuberaktivität Frühling",
   "pad" = "Anzahl Photosynthesetage über den Sommer",
-  "photosynthetic_active_days_needed_p" = "Bedarf an guten Photosynthesetage über den Sommer",
-  "chill_need_p" = "Kältebedürfnis über den Winter",
-  "expected_yield_p" = "Optimalertrag",
-  "T_opt_fruit_p" = "Optimale Temperatur währned der Fruchtreife"
+  "photosynthetic_active_days_needed" = "Bedarf an guten Photosynthesetage über den Sommer",
+  "chill_need" = "Kältebedürfnis über den Winter",
+  "expected_yield" = "Optimalertrag",
+  "T_opt_fruit" = "Optimale Temperatur während der Fruchtreife"
 
 )
 
@@ -71,10 +71,10 @@ label_order <- unname(labels_map)
 scenario_order_codes <- c("today","ssp1","ssp2","ssp3","ssp5")
 scenario_labels <- c(
   today = "2020",
-  ssp1  = "2075 (SSP1-2.6)",
-  ssp2  = "2075 (SSP2-4.5)",
-  ssp3  = "2075 (SSP3-7.0)",
-  ssp5  = "2075 (SSP5-8.5)"
+  ssp1  = "2075\n(SSP1-2.6)",
+  ssp2  = "2075\n(SSP2-4.5)",
+  ssp3  = "2075\n(SSP3-7.0)",
+  ssp5  = "2075\n(SSP5-8.5)"
 )
 
 # ------------------------------------------------------------
@@ -231,7 +231,7 @@ run_plsr_for_scenario <- function(
 # Alle Szenarien zusammen → Facet-Bubble-Plot (konstante Y-Reihenfolge)
 # ------------------------------------------------------------
 #sim_results<-sim_scenarios_output
-#plot<-VIP_plot_strawb(sim_results)
+#plot<-VIP_plot(sim_results)
 VIP_plot_strawb <- function(sim_results, scen_codes = scenario_order_codes, include_unlabeled = FALSE) {
   vip_list <- lapply(scen_codes, function(sc) {
     res <- run_plsr_for_scenario(sim_results, sc, include_unlabeled = include_unlabeled)
@@ -257,12 +257,30 @@ VIP_plot_strawb <- function(sim_results, scen_codes = scenario_order_codes, incl
     ordered = TRUE
   )
   
-  # 1) Spacer-Level erzeugen
+  #  Spacer-Level erzeugen
   base_levels   <- label_order                    # deine gewünschte Reihenfolge (Anzeigenamen)
   spacers       <- paste0("SPACER__", seq_along(base_levels))
   spaced_levels <- as.vector(rbind(base_levels, spacers))  # label, spacer, label, spacer, ...
   
-  # 2) Variable auf „gespacete“ Levels abbilden
+  #  Variable auf „gespacete“ Levels abbilden
+  vip_combined$Variable_spaced <- factor(
+    vip_combined$Variable,
+    levels = spaced_levels,
+    ordered = TRUE
+  )
+  
+  #  Nur Variablen behalten, die tatsächlich Daten haben
+  present_vars <- unique(vip_combined$Variable)
+  
+  # Filtere die base_levels auf diejenigen, die in vip_combined vorkommen
+  # (Behält deine gewünschte Reihenfolge aus label_order bei)
+  active_base_levels <- label_order[label_order %in% present_vars]
+  
+  #  Spacer-Level nur für vorhandene Variablen erzeugen
+  spacers       <- paste0("SPACER__", seq_along(active_base_levels))
+  spaced_levels <- as.vector(rbind(active_base_levels, spacers))
+  
+  #  Variable auf diese reduzierten Levels abbilden
   vip_combined$Variable_spaced <- factor(
     vip_combined$Variable,
     levels = spaced_levels,
@@ -272,8 +290,8 @@ VIP_plot_strawb <- function(sim_results, scen_codes = scenario_order_codes, incl
   # 3) Plot: breaks = NUR echte Labels -> Gridlines nur dort
   p <- ggplot(vip_combined, aes(x = "VIP", y = Variable_spaced)) +
     geom_point(
-      aes(size = VIP, fill = coef_sign),
-      shape = 21,  colour = "white", stroke = 0.35
+      aes(size = VIP),
+      shape = 21, fill="firebrick", colour = "white", stroke = 0.35
     ) +
     facet_wrap(~ scenario_label, nrow = 1, scales = "fixed") +
     scale_size_continuous(
